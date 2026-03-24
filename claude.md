@@ -2,7 +2,7 @@
 
 ## Project Purpose
 
-This repo contains scripts for fitting orbits of stars around an IMBH candidate in the globular cluster ω Centauri (ω Cen), and for analysing and visualising the results. Orbit fitting uses `Octofitter_imbh.jl`, a development fork of [Octofitter](https://github.com/sefffal/Octofitter.jl), which performs Bayesian inference on stellar kinematics via HMC/NUTS sampling.
+This repo contains scripts for fitting orbits of stars around an IMBH candidate in the globular cluster ω Centauri (ω Cen), and for analysing and visualising the results. Orbit fitting uses `Octofitter_imbh.jl`, a development fork of [Octofitter](https://github.com/sefffal/Octofitter.jl), which performs Bayesian inference on orbits of fast stars via HMC/NUTS sampling.
 
 **Key model features (implemented in `Octofitter_imbh.jl`):**
 - RA and DEC position of the central mass are free parameters
