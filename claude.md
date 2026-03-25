@@ -12,33 +12,59 @@ This repo contains scripts for fitting orbits of stars around an IMBH candidate 
 
 ## Repo Structure
 
-This repo holds:
-- **Slurm job scripts** — submit orbit fitting runs to Digital Alliance of Canada (DAC) HPC clusters
-- **Analysis scripts** — load posterior chains, compute derived quantities, run diagnostics
-- **Figure scripts** — produce publication-quality plots from fit results
+- `example_scripts/octo_utils_julia_MCMC_centre.jl` — utility module: `StarData` struct, star dictionary (A–G with positions, PMs, accelerations), `build_star_observations` helper, `simulate_astrometry` (legacy), unit conversions
+- `example_scripts/octo_orbit_direct_likelihoods.jl` — **main fitting script** using direct PM/acceleration likelihoods (v8 API, Pigeons sampling, 192 chains, 18 rounds)
+- `example_scripts/octo_orbit_julia_192c_18r_all_MCMC_centre.jl` — legacy script using synthetic 3-epoch astrometry (v7 API, kept for comparison)
+- `tests/test_likelihoods.jl` — unit tests for `PlanetRelAstromObs` (with offsets), `PlanetPMObs`, `PlanetAccelObs` using a known orbit
+- `tests/test_ad_compatibility.jl` — type stability and ForwardDiff gradient verification
+- `tests/test_small_fit.jl` — short 2-star MCMC fit for end-to-end validation
 
 ---
 
-## Octofitter Usage
+## Octofitter v8 Usage
 
-Models are defined in Julia using the `@variables` DSL and run via `Octofitter_imbh.jl`. Key pattern:
+Models use the v8 API (`observations=`, `*Obs` naming). Each star gets 3 observation types: position + proper motion + acceleration.
 
 ```julia
-system = System(
-    @variables begin
-        M ~ LogUniform(1e3, 1e8)   # IMBH mass in solar masses
-        ra ~ Normal(0.0, 1.0)      # RA offset [mas]
-        dec ~ Normal(0.0, 1.0)     # DEC offset [mas]
-        plx = 0.198                # fixed parallax [mas]
-    end,
-    SomeLikelihood(...),
-    star1, star2, ...              # Planet objects for each tracked star
+using Octofitter
+
+# Build observations from star data
+astrom, pm, acc = build_star_observations(star, epoch_mjd)
+
+planet = Planet(
+    name = "A",
+    basis = Visual{KepOrbit},
+    observations = [ObsPriorAstromONeil2019(astrom), pm, acc],
+    variables = @variables begin
+        M = system.M
+        P ~ Uniform(10, 2_000_000)
+        a = cbrt(M * P^2)
+        e ~ Uniform(0.0, 0.99)
+        i ~ Sine()
+        ω ~ UniformCircular()
+        Ω ~ UniformCircular()
+        θ ~ UniformCircular()
+        tp = θ_at_epoch_to_tperi(θ, $epoch_mjd; a, e, i, ω, Ω, M)
+    end
 )
-model = LogDensityModel(system)
-chain = octofit(model)
+
+sys = System(
+    name = "Omega_Cen",
+    companions = [planet, ...],
+    observations = [],
+    variables = @variables begin
+        plx ~ truncated(Normal(0.19, 0.004), lower=0)
+        M ~ Uniform(100, 120_000)
+        offsetx ~ Normal(0, 10)   # IMBH RA offset from assumed center [mas]
+        offsety ~ Normal(0, 10)   # IMBH Dec offset from assumed center [mas]
+    end
+)
+
+model = Octofitter.LogDensityModel(sys)
+chain, pt = octofit_pigeons(model; n_rounds=18, n_chains=192)
 ```
 
-Chains are saved as HDF5 files and loaded for analysis. Use `Octofitter.loadchain` to read them.
+Chains are saved as FITS files via `Octofitter.savechain` and loaded for analysis.
 
 ---
 
