@@ -10,48 +10,19 @@ using PlanetOrbits
 using Distributions
 using CairoMakie
 
-# === Data for stars A and C (from omega Cen) ===
-# Cluster center
-ra_cm_deg  = 201.6970988
-dec_cm_deg = -47.4794533
-epoch_mjd  = 55197.0  # ~2010
+# Load utility module with canonical star data and build_star_observations
+push!(LOAD_PATH, joinpath(@__DIR__, "..", "example_scripts"))
+using octo_utils_julia_MCMC_centre
 
-# Star A
-ra_A_rel  = (201.6967263 - ra_cm_deg) * 3600 * 1000  # mas
-dec_A_rel = (-47.4795835 - dec_cm_deg) * 3600 * 1000
+epoch_mjd = 55197.0  # ~2010
 
-astrom_A = PlanetRelAstromObs(
-    (epoch=epoch_mjd, ra=ra_A_rel, dec=dec_A_rel, σ_ra=0.5, σ_dec=0.5, cor=0.0);
-    name="A_pos"
-)
-pm_A = PlanetPMObs(
-    (epoch=epoch_mjd, pmra=3.563, pmdec=2.564, σ_pmra=0.038, σ_pmdec=0.055, cor=0.0);
-    name="A_pm"
-)
-acc_A = PlanetAccelObs(
-    (epoch=epoch_mjd, accra=-0.0069, accdec=0.0085, σ_accra=0.0083, σ_accdec=0.0098, cor=0.0);
-    name="A_acc"
-)
-
-# Star C
-ra_C_rel  = (201.6966378 - ra_cm_deg) * 3600 * 1000
-dec_C_rel = (-47.4793672 - dec_cm_deg) * 3600 * 1000
-
-astrom_C = PlanetRelAstromObs(
-    (epoch=epoch_mjd, ra=ra_C_rel, dec=dec_C_rel, σ_ra=0.5, σ_dec=0.5, cor=0.0);
-    name="C_pos"
-)
-pm_C = PlanetPMObs(
-    (epoch=epoch_mjd, pmra=1.117, pmdec=3.514, σ_pmra=0.127, σ_pmdec=0.056, cor=0.0);
-    name="C_pm"
-)
-acc_C = PlanetAccelObs(
-    (epoch=epoch_mjd, accra=0.0028, accdec=-0.0060, σ_accra=0.0333, σ_accdec=0.0123, cor=0.0);
-    name="C_acc"
-)
+astrom_A, pm_A, acc_A = octo_utils_julia_MCMC_centre.build_star_observations(
+    octo_utils_julia_MCMC_centre.stars["A"], epoch_mjd)
+astrom_C, pm_C, acc_C = octo_utils_julia_MCMC_centre.build_star_observations(
+    octo_utils_julia_MCMC_centre.stars["C"], epoch_mjd)
 
 # === Define planets ===
-planet_A = Planet(
+star_A = Planet(
     name = "A",
     basis = Visual{KepOrbit},
     observations = [ObsPriorAstromONeil2019(astrom_A), pm_A, acc_A],
@@ -68,7 +39,7 @@ planet_A = Planet(
     end
 )
 
-planet_C = Planet(
+star_C = Planet(
     name = "C",
     basis = Visual{KepOrbit},
     observations = [ObsPriorAstromONeil2019(astrom_C), pm_C, acc_C],
@@ -88,7 +59,7 @@ planet_C = Planet(
 # === Define system ===
 sys = System(
     name = "Omega_Cen_2star",
-    companions = [planet_A, planet_C],
+    companions = [star_A, star_C],
     variables = @variables begin
         plx ~ truncated(Normal(0.19, 0.004), lower=0)
         M ~ Uniform(100, 120_000)

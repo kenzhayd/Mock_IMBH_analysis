@@ -10,38 +10,19 @@ using PlanetOrbits
 using Distributions
 using ForwardDiff
 
+# Load utility module with canonical star data and build_star_observations
+push!(LOAD_PATH, joinpath(@__DIR__, "..", "example_scripts"))
+using octo_utils_julia_MCMC_centre
+
 # === Build a 2-star system with all 3 likelihood types ===
 epoch_mjd = 55197.0  # ~2010
 
-# Star A data (from omega Cen dataset)
-astrom_A = PlanetRelAstromObs(
-    (epoch=epoch_mjd, ra=-13.42, dec=-4.69, σ_ra=0.5, σ_dec=0.5, cor=0.0);
-    name="A_pos"
-)
-pm_A = PlanetPMObs(
-    (epoch=epoch_mjd, pmra=3.563, pmdec=2.564, σ_pmra=0.038, σ_pmdec=0.055, cor=0.0);
-    name="A_pm"
-)
-acc_A = PlanetAccelObs(
-    (epoch=epoch_mjd, accra=-0.0069, accdec=0.0085, σ_accra=0.0083, σ_accdec=0.0098, cor=0.0);
-    name="A_acc"
-)
+astrom_A, pm_A, acc_A = octo_utils_julia_MCMC_centre.build_star_observations(
+    octo_utils_julia_MCMC_centre.stars["A"], epoch_mjd)
+astrom_C, pm_C, acc_C = octo_utils_julia_MCMC_centre.build_star_observations(
+    octo_utils_julia_MCMC_centre.stars["C"], epoch_mjd)
 
-# Star C data
-astrom_C = PlanetRelAstromObs(
-    (epoch=epoch_mjd, ra=-16.60, dec=3.10, σ_ra=0.5, σ_dec=0.5, cor=0.0);
-    name="C_pos"
-)
-pm_C = PlanetPMObs(
-    (epoch=epoch_mjd, pmra=1.117, pmdec=3.514, σ_pmra=0.127, σ_pmdec=0.056, cor=0.0);
-    name="C_pm"
-)
-acc_C = PlanetAccelObs(
-    (epoch=epoch_mjd, accra=0.0028, accdec=-0.0060, σ_accra=0.0333, σ_accdec=0.0123, cor=0.0);
-    name="C_acc"
-)
-
-planet_A = Planet(
+star_A = Planet(
     name = "A",
     basis = Visual{KepOrbit},
     observations = [ObsPriorAstromONeil2019(astrom_A), pm_A, acc_A],
@@ -58,7 +39,7 @@ planet_A = Planet(
     end
 )
 
-planet_C = Planet(
+star_C = Planet(
     name = "C",
     basis = Visual{KepOrbit},
     observations = [ObsPriorAstromONeil2019(astrom_C), pm_C, acc_C],
@@ -77,7 +58,7 @@ planet_C = Planet(
 
 sys = System(
     name = "Omega_Cen_test",
-    companions = [planet_A, planet_C],
+    companions = [star_A, star_C],
     variables = @variables begin
         plx ~ truncated(Normal(0.19, 0.004), lower=0)
         M ~ Uniform(100, 120_000)
