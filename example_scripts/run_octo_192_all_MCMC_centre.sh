@@ -10,7 +10,10 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=vincent.henault@smu.ca
 
-mkdir -p logs
+
+if [ ! -d logs ]; then
+    mkdir logs
+fi
 
 module load julia/1.10.10
 
