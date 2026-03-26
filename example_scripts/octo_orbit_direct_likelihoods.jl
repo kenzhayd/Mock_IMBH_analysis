@@ -27,7 +27,8 @@ push!(LOAD_PATH, raw"/home/vhenault/projects/def-vhenault/vhenault/octo/")
 using octo_utils_julia_MCMC_centre  # local module
 
 # === 1. Select stars and time config ===
-star_names = ["A", "B", "C", "D", "E", "F", "G"]
+star_names = ["A", "C", "D", "E", "F"]  # B and G excluded by default (lower quality data)
+# star_names = ["A", "B", "C", "D", "E", "F", "G"]  # uncomment to include all stars
 epoch_mjd = Octofitter.years2mjd(2010.0)
 
 # === 2. Build observation objects for each star ===
@@ -44,130 +45,32 @@ for name in star_names
 end
 
 # === 3. Define companions ===
-planet_1 = Planet(
-    name = "A",
-    basis = Visual{KepOrbit},
-    observations = [ObsPriorAstromONeil2019(astrom_obs["A"]), pm_obs["A"], acc_obs["A"]],
-    variables = @variables begin
-        M = system.M
-        P ~ Uniform(10, 2000000)         # Period in yrs
-        a = cbrt(M * P^2)                # Semi-Major axis in AU
-        e ~ Uniform(0.0, 0.99)           # Eccentricity
-        i ~ Sine()                       # Inclination [rad]
-        ω ~ UniformCircular()            # Argument of periastron [rad]
-        Ω ~ UniformCircular()            # Longitude of ascending node [rad]
-        θ ~ UniformCircular()            # Mean anomaly at reference epoch [rad]
-        tp = θ_at_epoch_to_tperi(θ, $epoch_mjd; a=a, e=e, i=i, ω=ω, Ω=Ω, M=M)
-    end
-)
-
-planet_2 = Planet(
-    name = "B",
-    basis = Visual{KepOrbit},
-    observations = [ObsPriorAstromONeil2019(astrom_obs["B"]), pm_obs["B"], acc_obs["B"]],
-    variables = @variables begin
-        M = system.M
-        P ~ Uniform(1, 2000000)
-        a = cbrt(M * P^2)
-        e ~ Uniform(0.0, 0.99)
-        i ~ Sine()
-        ω ~ UniformCircular()
-        Ω ~ UniformCircular()
-        θ ~ UniformCircular()
-        tp = θ_at_epoch_to_tperi(θ, $epoch_mjd; a=a, e=e, i=i, ω=ω, Ω=Ω, M=M)
-    end
-)
-
-planet_3 = Planet(
-    name = "C",
-    basis = Visual{KepOrbit},
-    observations = [ObsPriorAstromONeil2019(astrom_obs["C"]), pm_obs["C"], acc_obs["C"]],
-    variables = @variables begin
-        M = system.M
-        P ~ Uniform(10, 2000000)
-        a = cbrt(M * P^2)
-        e ~ Uniform(0.0, 0.99)
-        i ~ Sine()
-        ω ~ UniformCircular()
-        Ω ~ UniformCircular()
-        θ ~ UniformCircular()
-        tp = θ_at_epoch_to_tperi(θ, $epoch_mjd; a=a, e=e, i=i, ω=ω, Ω=Ω, M=M)
-    end
-)
-
-planet_4 = Planet(
-    name = "D",
-    basis = Visual{KepOrbit},
-    observations = [ObsPriorAstromONeil2019(astrom_obs["D"]), pm_obs["D"], acc_obs["D"]],
-    variables = @variables begin
-        M = system.M
-        P ~ Uniform(10, 2000000)
-        a = cbrt(M * P^2)
-        e ~ Uniform(0.0, 0.99)
-        i ~ Sine()
-        ω ~ UniformCircular()
-        Ω ~ UniformCircular()
-        θ ~ UniformCircular()
-        tp = θ_at_epoch_to_tperi(θ, $epoch_mjd; a=a, e=e, i=i, ω=ω, Ω=Ω, M=M)
-    end
-)
-
-planet_5 = Planet(
-    name = "E",
-    basis = Visual{KepOrbit},
-    observations = [ObsPriorAstromONeil2019(astrom_obs["E"]), pm_obs["E"], acc_obs["E"]],
-    variables = @variables begin
-        M = system.M
-        P ~ Uniform(10, 2000000)
-        a = cbrt(M * P^2)
-        e ~ Uniform(0.0, 0.99)
-        i ~ Sine()
-        ω ~ UniformCircular()
-        Ω ~ UniformCircular()
-        θ ~ UniformCircular()
-        tp = θ_at_epoch_to_tperi(θ, $epoch_mjd; a=a, e=e, i=i, ω=ω, Ω=Ω, M=M)
-    end
-)
-
-planet_6 = Planet(
-    name = "F",
-    basis = Visual{KepOrbit},
-    observations = [ObsPriorAstromONeil2019(astrom_obs["F"]), pm_obs["F"], acc_obs["F"]],
-    variables = @variables begin
-        M = system.M
-        P ~ Uniform(10, 2000000)
-        a = cbrt(M * P^2)
-        e ~ Uniform(0.0, 0.99)
-        i ~ Sine()
-        ω ~ UniformCircular()
-        Ω ~ UniformCircular()
-        θ ~ UniformCircular()
-        tp = θ_at_epoch_to_tperi(θ, $epoch_mjd; a=a, e=e, i=i, ω=ω, Ω=Ω, M=M)
-    end
-)
-
-planet_7 = Planet(
-    name = "G",
-    basis = Visual{KepOrbit},
-    observations = [ObsPriorAstromONeil2019(astrom_obs["G"]), pm_obs["G"], acc_obs["G"]],
-    variables = @variables begin
-        M = system.M
-        P ~ Uniform(1, 200000)
-        a = cbrt(M * P^2)
-        e ~ Uniform(0.0, 0.99)
-        i ~ Sine()
-        ω ~ UniformCircular()
-        Ω ~ UniformCircular()
-        θ ~ UniformCircular()
-        tp = θ_at_epoch_to_tperi(θ, $epoch_mjd; a=a, e=e, i=i, ω=ω, Ω=Ω, M=M)
-    end
-)
+companions = Planet[]
+for name in star_names
+    star = Planet(
+        name = name,
+        basis = Visual{KepOrbit},
+        observations = [ObsPriorAstromONeil2019(astrom_obs[name]), pm_obs[name], acc_obs[name]],
+        variables = @variables begin
+            M = system.M
+            P ~ Uniform(10, 2_000_000)       # Period [yrs]
+            a = cbrt(M * P^2)                # Semi-major axis [AU]
+            e ~ Uniform(0.0, 0.99)           # Eccentricity
+            i ~ Sine()                       # Inclination [rad]
+            ω ~ UniformCircular()            # Argument of periastron [rad]
+            Ω ~ UniformCircular()            # Longitude of ascending node [rad]
+            θ ~ UniformCircular()            # Mean anomaly at reference epoch [rad]
+            tp = θ_at_epoch_to_tperi(θ, $epoch_mjd; a=a, e=e, i=i, ω=ω, Ω=Ω, M=M)
+        end
+    )
+    push!(companions, star)
+end
 
 # === 4. Define the full system ===
 sys = System(
     name = "Omega_Cen",
     observations = [],
-    companions = [planet_1, planet_2, planet_3, planet_4, planet_5, planet_6, planet_7],
+    companions = companions,
     variables = @variables begin
         plx ~ truncated(Normal(0.19, 0.004), lower=0)  # Parallax [mas]
         M ~ Uniform(100, 120000)                        # Host mass [solar masses]
