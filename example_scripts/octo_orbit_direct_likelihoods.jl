@@ -82,8 +82,54 @@ sys = System(
 # === 5. Model ===
 model = Octofitter.LogDensityModel(sys)
 
-# === 6. Fit with Pigeons ===
-chain, pt = octofit_pigeons(model; n_rounds=18, n_chains=192, n_chains_variational=192, checkpoint=true)
+# === 6. Sampling config ===
+n_rounds = 18
+n_chains = 192
+n_chains_variational = 192
+
+# === 7. Write run summary ===
+slurm_job_id = get(ENV, "SLURM_JOB_ID", "none")
+summary_path = "logs/run_summary_$(slurm_job_id).md"
+open(summary_path, "w") do io
+    println(io, "# Run Summary")
+    println(io)
+    println(io, "- **Date:** $(Dates.now())")
+    println(io, "- **Slurm Job ID:** $(slurm_job_id)")
+    println(io, "- **Stars:** $(join(star_names, ", "))")
+    println(io, "- **Reference epoch:** $(epoch_mjd) MJD ($(2010.0) yr)")
+    println(io)
+    println(io, "## Sampling Parameters")
+    println(io)
+    println(io, "| Parameter | Value |")
+    println(io, "|---|---|")
+    println(io, "| n_rounds | $(n_rounds) |")
+    println(io, "| n_chains | $(n_chains) |")
+    println(io, "| n_chains_variational | $(n_chains_variational) |")
+    println(io)
+    println(io, "## System Priors")
+    println(io)
+    println(io, "| Parameter | Prior |")
+    println(io, "|---|---|")
+    println(io, "| plx | truncated(Normal(0.19, 0.004), lower=0) |")
+    println(io, "| M | Uniform(100, 120000) |")
+    println(io, "| offsetx | Normal(0, 10) |")
+    println(io, "| offsety | Normal(0, 10) |")
+    println(io)
+    println(io, "## Companion Priors (same for all stars)")
+    println(io)
+    println(io, "| Parameter | Prior |")
+    println(io, "|---|---|")
+    println(io, "| P | Uniform(10, 2_000_000) |")
+    println(io, "| e | Uniform(0.0, 0.99) |")
+    println(io, "| i | Sine() |")
+    println(io, "| ω | UniformCircular() |")
+    println(io, "| Ω | UniformCircular() |")
+    println(io, "| θ | UniformCircular() |")
+end
+println("Run summary written to $(summary_path)")
+
+# === 8. Fit with Pigeons ===
+chain, pt = octofit_pigeons(model; n_rounds, n_chains, n_chains_variational, checkpoint=true)
 println(chain)
 
 # Save Chain
