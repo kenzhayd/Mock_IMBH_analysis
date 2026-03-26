@@ -87,9 +87,15 @@ n_rounds = 18
 n_chains = 192
 n_chains_variational = 192
 
-# === 7. Write run summary ===
+# === 7. Output config ===
 slurm_job_id = get(ENV, "SLURM_JOB_ID", "none")
-summary_path = "logs/run_summary_$(slurm_job_id).md"
+output_dir = "/home/vhenault/projects/def-vhenault/vhenault/Ocen_IMBH_analysis/run_outputs"
+stars_tag = join(star_names, "")
+run_prefix = "stars$(stars_tag)_$(n_chains)c_$(n_rounds)r_$(slurm_job_id)"
+mkpath(output_dir)
+
+# === 8. Write run summary ===
+summary_path = "$(output_dir)/$(run_prefix)_summary.md"
 open(summary_path, "w") do io
     println(io, "# Run Summary")
     println(io)
@@ -128,27 +134,22 @@ open(summary_path, "w") do io
 end
 println("Run summary written to $(summary_path)")
 
-# === 8. Fit with Pigeons ===
-chain, pt = octofit_pigeons(model; n_rounds, n_chains, n_chains_variational, checkpoint=true)
+# === 9. Fit with Pigeons ===
+chain, pt = octofit_pigeons(model; n_rounds, n_chains, n_chains_variational, checkpoint=false)
 println(chain)
 
-# Save Chain
-chain_name = "all_192chains_18rounds_chain_direct_likelihoods.fits"
-Octofitter.savechain("/home/vhenault/projects/def-vhenault/vhenault/octo/all_fit_new/$(chain_name)", chain)
+# === 10. Save Chain ===
+Octofitter.savechain("$(output_dir)/$(run_prefix)_chain.fits", chain)
 
-# === 7. Corner Plot ===
+# === 11. Corner Plot ===
 corner_plot = octocorner(model, chain; small=true)
-corner_plot_name = "all_192chains_18rounds_octo_corner_direct_likelihoods"
-corner_filename = "/home/vhenault/projects/def-vhenault/vhenault/octo/all_fit_new/$(corner_plot_name).png"
-save(corner_filename, corner_plot)
+save("$(output_dir)/$(run_prefix)_corner.png", corner_plot)
 
-# === 8. Orbit Plot ===
+# === 12. Orbit Plot ===
 orbit_plot = octoplot(model, chain; show_physical_orbit=true, colorbar=true)
-orbit_plot_name = "all_orbit_v1_direct_likelihoods"
-orbit_filename = "/home/vhenault/projects/def-vhenault/vhenault/octo/all_fit_new/$(orbit_plot_name).png"
-save(orbit_filename, orbit_plot)
+save("$(output_dir)/$(run_prefix)_orbit.png", orbit_plot)
 
-# === 9. Orbit Plot (zoomed) ===
+# === 13. Orbit Plot (zoomed) ===
 ts = Octofitter.range(54600, 55700, length=200)
 orbit_plot_2 = octoplot(model, chain; show_physical_orbit=true, colorbar=false, figscale=1.5, ts=ts)
 
@@ -157,6 +158,4 @@ xlims!(ax_orbit, -200, 200)
 ylims!(ax_orbit, -100, 100)
 ax_orbit.title = "Orbits of Fast-Moving Stars in ω Cen (Direct Likelihoods)"
 
-orbit_plot_name_2 = "all_orbit_v2_direct_likelihoods"
-orbit_filename_2 = "/home/vhenault/projects/def-vhenault/vhenault/octo/all_fit_new/$(orbit_plot_name_2).png"
-save(orbit_filename_2, orbit_plot_2)
+save("$(output_dir)/$(run_prefix)_orbit_zoomed.png", orbit_plot_2)
