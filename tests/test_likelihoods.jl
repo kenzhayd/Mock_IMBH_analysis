@@ -299,7 +299,7 @@ model_rec = Octofitter.LogDensityModel(sys_rec)
 println("Recovery model compiled (D=$(model_rec.D) free parameters)")
 
 println("Running MCMC (500 iterations, 200 adaptation)...")
-chain_rec = octofit(model_rec; iterations=500, adaptation=200)
+chain_rec = octofit(model_rec; iterations=1500, adaptation=600)
 
 # === Print recovery statistics ===
 M_samples = vec(chain_rec[:M])
@@ -348,7 +348,7 @@ ts_plot = range(test_epoch - P_val * 365.25 / 2,
 # Draw 100 posterior orbit samples
 sample_idx = round.(Int, range(1, length(M_samples), length=100))
 
-fig = Figure(size=(1050, 1050))
+fig = Figure(size=(1050, 1050), fontsize=18)
 
 # Panel [1,1]: sky-plane orbits
 ax1 = Axis(fig[1, 1];
@@ -402,28 +402,31 @@ scatter!(ax1, [true_ra], [true_dec];
 axislegend(ax1; position=:rt, framevisible=false)
 
 # Helper: one-parameter posterior panel
-function param_panel!(layout, row, col, cidx, samples, true_val, xlabel, title)
-    ax = Axis(layout[row, col]; xlabel=xlabel, ylabel="Density", title=title,
+function param_panel!(layout, row, col, cidx, samples, true_val, xlabel; show_legend=false)
+    ax = Axis(layout[row, col]; xlabel=xlabel, ylabel="Probability Density",
               xgridvisible=false, ygridvisible=false)
     med = median(samples)
     hist!(ax, samples; normalization=:pdf, bins=30,
           color=(Makie.wong_colors()[cidx], 0.7))
     vlines!(ax, [true_val]; color=:black, linestyle=:dash,  label="True")
     vlines!(ax, [med];      color=Makie.wong_colors()[2], linestyle=:solid, label="Median")
-    axislegend(ax; position=:rt, framevisible=false)
+    show_legend && axislegend(ax; position=:rt, framevisible=false)
 end
 
-# Row 1: M, a, e  (orbit recovery is [1,1])
-param_panel!(fig, 1, 2, 1, M_samples, M_imbh,  "M [M☉]", "IMBH mass")
-param_panel!(fig, 1, 3, 3, a_samples, a_val,   "a [AU]",  "Semi-major axis")
+# Row 1: M (in 10⁴ M☉), a  — orbit recovery is [1,1]
+param_panel!(fig, 1, 2, 1, M_samples ./ 1e4, M_imbh / 1e4,
+    Makie.rich("M", Makie.subscript("IMBH"), " [10⁴ M☉]"); show_legend=true)
+param_panel!(fig, 1, 3, 3, a_samples, a_val, "a [AU]")
 # Row 2: e, i, ω
-param_panel!(fig, 2, 1, 4, e_samples, e_val,                       "e",       "Eccentricity")
-param_panel!(fig, 2, 2, 5, rad2deg.(i_samples), rad2deg(i_val),    "i [°]",   "Inclination")
-param_panel!(fig, 2, 3, 6, rad2deg.(ω_samples), rad2deg(omega_val),"ω [°]",   "Arg. of periapsis")
+param_panel!(fig, 2, 1, 4, e_samples, e_val, "e")
+param_panel!(fig, 2, 2, 5, rad2deg.(i_samples), rad2deg(i_val),     "i [°]")
+param_panel!(fig, 2, 3, 6, rad2deg.(ω_samples), rad2deg(omega_val), "ω [°]")
 # Row 3: Ω, offsetx, offsety
-param_panel!(fig, 3, 1, 7, rad2deg.(Ω_samples), rad2deg(Omega_val),"Ω [°]",   "Longitude of node")
-param_panel!(fig, 3, 2, 1, ox_samples, offset_ra_fit,  "offsetx [mas]", "IMBH RA offset")
-param_panel!(fig, 3, 3, 3, oy_samples, offset_dec_fit, "offsety [mas]", "IMBH Dec offset")
+param_panel!(fig, 3, 1, 7, rad2deg.(Ω_samples), rad2deg(Omega_val), "Ω [°]")
+param_panel!(fig, 3, 2, 1, ox_samples, offset_ra_fit,
+    Makie.rich("Δα*", Makie.subscript("IMBH"), " [mas]"))
+param_panel!(fig, 3, 3, 3, oy_samples, offset_dec_fit,
+    Makie.rich("Δδ", Makie.subscript("IMBH"), " [mas]"))
 
 save("test_likelihoods_recovery.png", fig, px_per_unit=3)
 println("Recovery figure saved to test_likelihoods_recovery.png")
