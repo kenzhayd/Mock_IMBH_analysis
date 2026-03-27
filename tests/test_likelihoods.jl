@@ -85,7 +85,7 @@ println("Acceleration:  accRA = $(round(true_accra, digits=8)) mas/yr², accDec 
         name = "test_system",
         companions = [planet],
         variables = @variables begin
-            M = $M_imbh
+            M ~ Uniform(100, 120_000)
             plx = $plx_val
             offsetx = $offset_ra
             offsety = $offset_dec
@@ -126,7 +126,7 @@ end
         name = "test_pm_system",
         companions = [planet],
         variables = @variables begin
-            M = $M_imbh
+            M ~ Uniform(100, 120_000)
             plx = $plx_val
         end
     )
@@ -169,7 +169,7 @@ end
         name = "test_acc_system",
         companions = [planet],
         variables = @variables begin
-            M = $M_imbh
+            M ~ Uniform(100, 120_000)
             plx = $plx_val
         end
     )
@@ -225,7 +225,7 @@ end
         name = "test_combined",
         companions = [planet],
         variables = @variables begin
-            M = $M_imbh
+            M ~ Uniform(100, 120_000)
             plx = $plx_val
             offsetx = $offset_ra
             offsety = $offset_dec
