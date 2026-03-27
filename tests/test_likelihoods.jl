@@ -298,7 +298,7 @@ model_rec = Octofitter.LogDensityModel(sys_rec)
 println("Recovery model compiled (D=$(model_rec.D) free parameters)")
 
 println("Running MCMC (500 iterations, 200 adaptation)...")
-chain_rec = octofit(model_rec; iterations=500, adaptation=200, n_chains=1)
+chain_rec = octofit(model_rec; iterations=500, adaptation=200)
 
 # === Print recovery statistics ===
 M_samples = vec(chain_rec[:M])

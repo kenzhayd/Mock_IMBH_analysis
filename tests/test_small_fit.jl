@@ -74,7 +74,7 @@ println("Model compiled. Number of free parameters: $(model.D)")
 
 # Short MCMC run (HMC/NUTS, not Pigeons)
 println("\nStarting short MCMC run (200 steps, 1 chain)...")
-chain = octofit(model; iterations=200, adaptation=100, n_chains=1)
+chain = octofit(model; iterations=200, adaptation=100)
 
 # === Basic diagnostics ===
 println("\n=== Chain summary ===")
