@@ -1,0 +1,34 @@
+========================================
+Running: test_likelihoods.jl
+========================================
+=== Known orbit observables at epoch 55197.0 ===
+Position:      RA = 236.849 mas, Dec = -8.618 mas
+Proper motion: pmRA = -1.334029 mas/yr, pmDec = -2.100076 mas/yr
+Acceleration:  accRA = -0.02697693 mas/yr², accDec = 0.00098161 mas/yr²
+PlanetRelAstromObs with offsetx/offsety: Error During Test at /project/6039459/vhenault/Ocen_IMBH_analysis/tests/test_likelihoods.jl:56
+  Got exception outside of a @test
+  Model includes no free variables
+  Stacktrace:
+    [1] error(s::String)
+      @ Base ./error.jl:35
+    [2] make_ln_prior_transformed(system::System{Octofitter.Priors, Octofitter.Derived, Tuple{}, @NamedTuple{test_star::Planet{Visual{KepOrbit}, Octofitter.Priors, Octofitter.Derived, Tuple{PlanetRelAstromObs{Table{@NamedTuple{epoch::Float64, ra::Float64, dec::Float64, σ_ra::Float64, σ_dec::Float64, cor::Float64}, 1, @NamedTuple{epoch::Vector{Float64}, ra::Vector{Float64}, dec::Vector{Float64}, σ_ra::Vector{Float64}, σ_dec::Vector{Float64}, cor::Vector{Float64}}}, Tuple{MvNormal{Float64, PDMats.PDMat{Float64, StaticArraysCore.SMatrix{2, 2, Float64, 4}}, FillArrays.Zeros{Float64, 1, Tuple{Base.OneTo{Int64}}}}}}}}}})
+      @ Octofitter ~/projects/def-vhenault/vhenault/Octofitter_imbh.jl/src/variables.jl:1350
+    [3] Octofitter.LogDensityModel(system::System{Octofitter.Priors, Octofitter.Derived, Tuple{}, @NamedTuple{test_star::Planet{Visual{KepOrbit}, Octofitter.Priors, Octofitter.Derived, Tuple{PlanetRelAstromObs{Table{@NamedTuple{epoch::Float64, ra::Float64, dec::Float64, σ_ra::Float64, σ_dec::Float64, cor::Float64}, 1, @NamedTuple{epoch::Vector{Float64}, ra::Vector{Float64}, dec::Vector{Float64}, σ_ra::Vector{Float64}, σ_dec::Vector{Float64}, cor::Vector{Float64}}}, Tuple{MvNormal{Float64, PDMats.PDMat{Float64, StaticArraysCore.SMatrix{2, 2, Float64, 4}}, FillArrays.Zeros{Float64, 1, Tuple{Base.OneTo{Int64}}}}}}}}}}; autodiff::Nothing, verbosity::Int64, chunk_sizes::Nothing)
+      @ Octofitter ~/projects/def-vhenault/vhenault/Octofitter_imbh.jl/src/logdensitymodel.jl:47
+    [4] Octofitter.LogDensityModel(system::System{Octofitter.Priors, Octofitter.Derived, Tuple{}, @NamedTuple{test_star::Planet{Visual{KepOrbit}, Octofitter.Priors, Octofitter.Derived, Tuple{PlanetRelAstromObs{Table{@NamedTuple{epoch::Float64, ra::Float64, dec::Float64, σ_ra::Float64, σ_dec::Float64, cor::Float64}, 1, @NamedTuple{epoch::Vector{Float64}, ra::Vector{Float64}, dec::Vector{Float64}, σ_ra::Vector{Float64}, σ_dec::Vector{Float64}, cor::Vector{Float64}}}, Tuple{MvNormal{Float64, PDMats.PDMat{Float64, StaticArraysCore.SMatrix{2, 2, Float64, 4}}, FillArrays.Zeros{Float64, 1, Tuple{Base.OneTo{Int64}}}}}}}}}})
+      @ Octofitter ~/projects/def-vhenault/vhenault/Octofitter_imbh.jl/src/logdensitymodel.jl:25
+    [5] macro expansion
+      @ /project/6039459/vhenault/Ocen_IMBH_analysis/tests/test_likelihoods.jl:95 [inlined]
+    [6] macro expansion
+      @ /cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v3/Core/julia/1.10.10/share/julia/stdlib/v1.10/Test/src/Test.jl:1577 [inlined]
+    [7] top-level scope
+      @ /project/6039459/vhenault/Ocen_IMBH_analysis/tests/test_likelihoods.jl:58
+    [8] include(mod::Module, _path::String)
+      @ Base ./Base.jl:495
+    [9] exec_options(opts::Base.JLOptions)
+      @ Base ./client.jl:323
+   [10] _start()
+      @ Base ./client.jl:557
+Test Summary:                           | Error  Total  Time
+PlanetRelAstromObs with offsetx/offsety |     1      1  4.1s
+FAILED: test_likelihoods.jl (exit code 1)
