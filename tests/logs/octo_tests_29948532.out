@@ -1,0 +1,40 @@
+========================================
+Running: test_likelihoods.jl
+========================================
+=== Known orbit observables at epoch 55197.0 ===
+Position:      RA = 236.849 mas, Dec = -8.618 mas
+Proper motion: pmRA = -1.334029 mas/yr, pmDec = -2.100076 mas/yr
+Acceleration:  accRA = -0.02697693 mas/yr², accDec = 0.00098161 mas/yr²
+PlanetRelAstromObs with offsetx/offsety: Error During Test at /project/6039459/vhenault/Ocen_IMBH_analysis/tests/test_likelihoods.jl:56
+  Got exception outside of a @test
+  Columns must be arrays
+  Stacktrace:
+    [1] error(s::String)
+      @ Base ./error.jl:35
+    [2] #s19#20
+      @ ~/.julia/packages/TypedTables/ItVth/src/Table.jl:60 [inlined]
+    [3] var"#s19#20"(names::Any, T::Any, ::Any, nt::Any)
+      @ TypedTables ./none:0
+    [4] (::Core.GeneratedFunctionStub)(::UInt64, ::LineNumberNode, ::Any, ::Vararg{Any})
+      @ Core ./boot.jl:602
+    [5] Table(ts::@NamedTuple{epoch::Float64, ra::Float64, dec::Float64, σ_ra::Float64, σ_dec::Float64, cor::Float64}; kwargs::@Kwargs{})
+      @ TypedTables ~/.julia/packages/TypedTables/ItVth/src/Table.jl:24
+    [6] Table
+      @ ~/.julia/packages/TypedTables/ItVth/src/Table.jl:24 [inlined]
+    [7] PlanetRelAstromObs(observations::@NamedTuple{epoch::Float64, ra::Float64, dec::Float64, σ_ra::Float64, σ_dec::Float64, cor::Float64}; variables::Tuple{Octofitter.Priors, Octofitter.Derived}, name::String)
+      @ Octofitter ~/projects/def-vhenault/vhenault/Octofitter_imbh.jl/src/likelihoods/relative-astrometry.jl:32
+    [8] macro expansion
+      @ /project/6039459/vhenault/Ocen_IMBH_analysis/tests/test_likelihoods.jl:64 [inlined]
+    [9] macro expansion
+      @ /cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v3/Core/julia/1.10.10/share/julia/stdlib/v1.10/Test/src/Test.jl:1577 [inlined]
+   [10] top-level scope
+      @ /project/6039459/vhenault/Ocen_IMBH_analysis/tests/test_likelihoods.jl:58
+   [11] include(mod::Module, _path::String)
+      @ Base ./Base.jl:495
+   [12] exec_options(opts::Base.JLOptions)
+      @ Base ./client.jl:323
+   [13] _start()
+      @ Base ./client.jl:557
+Test Summary:                           | Error  Total  Time
+PlanetRelAstromObs with offsetx/offsety |     1      1  1.2s
+FAILED: test_likelihoods.jl (exit code 1)
