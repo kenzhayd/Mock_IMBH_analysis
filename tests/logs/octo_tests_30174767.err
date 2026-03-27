@@ -1,0 +1,41 @@
+[ Info: Preparing model
+┌ Info: Determined number of free variables
+└   D = 1
+┌ Info: Determined number type
+└   T = Float64
+[ Info: Preparing model
+┌ Info: Determined number of free variables
+└   D = 1
+┌ Info: Determined number type
+└   T = Float64
+[ Info: Preparing model
+┌ Info: Determined number of free variables
+└   D = 1
+┌ Info: Determined number type
+└   T = Float64
+[ Info: Preparing model
+┌ Info: Determined number of free variables
+└   D = 1
+┌ Info: Determined number type
+└   T = Float64
+[ Info: Preparing model
+┌ Info: Determined number of free variables
+└   D = 2
+┌ Info: Determined number type
+└   T = Float64
+┌ Warning: At least 1000 steps of adapation are recomended for good sampling
+└ @ Octofitter ~/projects/def-vhenault/vhenault/Octofitter_imbh.jl/src/sampling.jl:330
+┌ Info: Starting values not provided for all parameters! Guessing starting point using global optimization:
+│   num_params = 2
+└   num_fixed = 0
+┌ Warning: Verbosity toggle: unrecognized_stop_reason 
+│  Unrecognized stop reason: Too many steps (101) without any function evaluations (probably search has converged). Defaulting to ReturnCode.Default.
+└ @ OptimizationBase ~/.julia/packages/OptimizationBase/y7Tug/src/utils.jl:170
+┌ Info: Found sample of initial positions
+│   logpost_range = (-9.116100845480542, -1.9385794355421515)
+└   mean_logpost = -2.8678940613194737
+┌ Info: Kepler solver will use multiple threads: false
+│   threads_avail = 4
+└   n_epochs > 15 = false
+[ Info: Sampling, beginning with adaptation phase...
+[ Info: Sampling compete. Building chains.
