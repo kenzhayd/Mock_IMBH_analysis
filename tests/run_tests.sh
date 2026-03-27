@@ -15,7 +15,7 @@ mkdir -p logs
 module load julia/1.10.10
 
 OCTOFITTER_PROJECT=/home/vhenault/projects/def-vhenault/vhenault/Octofitter_imbh.jl
-TESTS_DIR="$(dirname "$0")"
+TESTS_DIR="$SLURM_SUBMIT_DIR"
 
 run_test() {
     local script="$1"
