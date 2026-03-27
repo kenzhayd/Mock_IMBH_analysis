@@ -353,7 +353,7 @@ fig = Figure(size=(1050, 1050), fontsize=18)
 # Panel [1,1]: sky-plane orbits
 ax1 = Axis(fig[1, 1];
     xlabel="Δα* [mas]", ylabel="Δδ [mas]",
-    title="Orbit recovery (sky plane)",
+    title="",
     xreversed=true, autolimitaspect=1,
     xgridvisible=false, ygridvisible=false,
 )
@@ -387,13 +387,13 @@ med_ra     = raoff(sol_med);  med_dec    = decoff(sol_med)
 scale_pm = 50.0   # yr
 arrows!(ax1, [true_ra], [true_dec], [true_pmra * scale_pm], [true_pmdec * scale_pm];
     color=:royalblue, linewidth=2.0, arrowsize=10)
-arrows!(ax1, [med_ra], [med_dec], [med_pmra * scale_pm], [med_pmdec * scale_pm];
+arrows!(ax1, [true_ra], [true_dec], [med_pmra * scale_pm], [med_pmdec * scale_pm];
     color=:royalblue, linewidth=1.0, arrowsize=7, linestyle=:dash)
 # Instantaneous acceleration vector — true (solid) and posterior median (dashed)
 scale_acc = 5000.0  # yr²
 arrows!(ax1, [true_ra], [true_dec], [true_accra * scale_acc], [true_accdec * scale_acc];
     color=:firebrick, linewidth=2.0, arrowsize=10)
-arrows!(ax1, [med_ra], [med_dec], [med_accra * scale_acc], [med_accdec * scale_acc];
+arrows!(ax1, [true_ra], [true_dec], [med_accra * scale_acc], [med_accdec * scale_acc];
     color=:firebrick, linewidth=1.0, arrowsize=7, linestyle=:dash)
 # Observed position — drawn last so star symbol sits on top
 scatter!(ax1, [true_ra], [true_dec];
@@ -415,7 +415,7 @@ end
 
 # Row 1: M (in 10⁴ M☉), a  — orbit recovery is [1,1]
 param_panel!(fig, 1, 2, 1, M_samples ./ 1e4, M_imbh / 1e4,
-    Makie.rich("M", Makie.subscript("IMBH"), " [10⁴ M☉]"); show_legend=true)
+    Makie.rich("M", Makie.subscript("IMBH"), " [10⁴ M", Makie.subscript("☉"), "]"); show_legend=true)
 param_panel!(fig, 1, 3, 3, a_samples, a_val, "a [AU]")
 # Row 2: e, i, ω
 param_panel!(fig, 2, 1, 4, e_samples, e_val, "e")
