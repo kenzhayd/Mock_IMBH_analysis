@@ -1,0 +1,58 @@
+========================================
+Running: test_likelihoods.jl
+========================================
+=== Known orbit observables at epoch 55197.0 ===
+Position:      RA = 236.849 mas, Dec = -8.618 mas
+Proper motion: pmRA = -1.334029 mas/yr, pmDec = -2.100076 mas/yr
+Acceleration:  accRA = -0.02697693 mas/yr², accDec = 0.00098161 mas/yr²
+ℓπcallback(θ): 0.000009 seconds
+∇ℓπcallback(θ): 0.000014 seconds (1 allocation: 32 bytes)
+  Astrometry model compiled successfully
+Test Summary:                           | Pass  Total  Time
+PlanetRelAstromObs with offsetx/offsety |    1      1  5.6s
+ℓπcallback(θ): 0.000010 seconds
+∇ℓπcallback(θ): 0.000013 seconds (1 allocation: 32 bytes)
+  PM model compiled successfully
+  Expected max PM log-likelihood: 4.154
+Test Summary:          | Pass  Total  Time
+PlanetPMObs likelihood |    1      1  1.6s
+ℓπcallback(θ): 0.000007 seconds
+∇ℓπcallback(θ): 0.000014 seconds (1 allocation: 32 bytes)
+  Acceleration model compiled successfully
+  Expected max acceleration log-likelihood: 8.759
+Test Summary:             | Pass  Total  Time
+PlanetAccelObs likelihood |    1      1  1.4s
+ℓπcallback(θ): 0.000012 seconds
+∇ℓπcallback(θ): 0.000023 seconds (1 allocation: 32 bytes)
+  Combined model compiled successfully
+  Total parameters: 1
+Test Summary:             | Pass  Total  Time
+Combined pos + PM + accel |    1      1  1.7s
+
+=== All unit tests passed ===
+
+=== Fitting: should recover M ≈ 10000.0 M☉ ===
+ℓπcallback(θ): 0.000010 seconds
+∇ℓπcallback(θ): 0.000020 seconds (1 allocation: 32 bytes)
+Recovery model compiled (D=2 free parameters)
+Running MCMC (500 iterations, 200 adaptation)...
+Sampling report for chain:
+mean_accept                 = 0.9522306779895804
+ratio_divergent_transitions = 0.0
+mean_tree_depth             = 2.71
+max_tree_depth_frac         = 0.0
+total_steps                 = 7370
+μs/step (approx.)           = 165.0
+
+=== Recovery results ===
+Param         True      Median     68%% CI  In CI?
+M          10000.0     10025.2  [  9780.0,  10302.6]  ✓
+a           2154.4      2154.4  [  2150.0,   2159.0]  ✓
+
+Generating recovery figure...
+Recovery figure saved to test_likelihoods_recovery.png
+PASSED: test_likelihoods.jl
+
+========================================
+All tests passed.
+========================================
