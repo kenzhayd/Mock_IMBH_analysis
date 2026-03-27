@@ -345,7 +345,7 @@ end
 # True orbit
 ra_true  = [raoff(orbitsolve(orbit, t))  for t in ts_plot]
 dec_true = [decoff(orbitsolve(orbit, t)) for t in ts_plot]
-lines!(ax1, ra_true, dec_true; color=:black, linewidth=1.5, label="True orbit")
+#lines!(ax1, ra_true, dec_true; color=:black, linewidth=1.5, label="True orbit")
 # IMBH at origin — filled black circle
 scatter!(ax1, [0.0], [0.0];
     marker=:circle, markersize=12, color=:black)
