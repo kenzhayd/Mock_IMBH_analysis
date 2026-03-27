@@ -348,10 +348,21 @@ dec_true = [decoff(orbitsolve(orbit, t)) for t in ts_plot]
 lines!(ax1, ra_true, dec_true; color=:black, linewidth=1.5, label="True orbit")
 # Observed position (in orbit frame: subtract IMBH offset)
 scatter!(ax1, [true_ra], [true_dec];
-    color=Makie.wong_colors()[2], markersize=8, label="Observed position")
-# IMBH at origin
+    marker='★', color=Makie.wong_colors()[2], markersize=14,
+    strokecolor=:black, strokewidth=0.5, label="Observed position")
+# Proper motion vector (scaled for visibility)
+scale_pm = 50.0   # yr: arrow tip = pos + pm * scale_pm
+arrows!(ax1, [true_ra], [true_dec], [true_pmra * scale_pm], [true_pmdec * scale_pm];
+    color=:royalblue, linewidth=2.0, arrowsize=10,
+    label="PM (×$(Int(scale_pm)) yr)")
+# Plane-of-sky acceleration vector (scaled for visibility)
+scale_acc = 5000.0  # yr²: arrow tip = pos + acc * scale_acc
+arrows!(ax1, [true_ra], [true_dec], [true_accra * scale_acc], [true_accdec * scale_acc];
+    color=:firebrick, linewidth=2.0, arrowsize=10,
+    label="Accel (×$(Int(scale_acc)) yr²)")
+# IMBH at origin — filled black circle
 scatter!(ax1, [0.0], [0.0];
-    marker='★', markersize=20, color=:white, strokecolor=:black, strokewidth=1.5)
+    marker=:circle, markersize=12, color=:black)
 axislegend(ax1; position=:rt, framevisible=false)
 
 # Middle panel: M posterior histogram
