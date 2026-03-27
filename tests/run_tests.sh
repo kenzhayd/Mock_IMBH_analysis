@@ -14,7 +14,7 @@ mkdir -p logs
 
 module load julia/1.10.10
 
-OCTOFITTER_PROJECT=../../Octofitter_imbh.jl
+OCTOFITTER_PROJECT=/home/vhenault/projects/def-vhenault/vhenault/Octofitter_imbh.jl
 TESTS_DIR="$(dirname "$0")"
 
 run_test() {
