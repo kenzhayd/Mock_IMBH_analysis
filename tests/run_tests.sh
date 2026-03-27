@@ -33,8 +33,8 @@ run_test() {
 }
 
 run_test test_likelihoods.jl
-#run_test test_ad_compatibility.jl
-#run_test test_small_fit.jl
+run_test test_ad_compatibility.jl
+run_test test_small_fit.jl
 
 echo "========================================"
 echo "All tests passed."
