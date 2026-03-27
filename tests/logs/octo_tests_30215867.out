@@ -1,0 +1,111 @@
+========================================
+Running: test_likelihoods.jl
+========================================
+=== Known orbit observables at epoch 55197.0 ===
+Position:      RA = 236.849 mas, Dec = -8.618 mas
+Proper motion: pmRA = -1.334029 mas/yr, pmDec = -2.100076 mas/yr
+Acceleration:  accRA = -0.02697693 mas/yr², accDec = 0.00098161 mas/yr²
+ℓπcallback(θ): 0.000009 seconds
+∇ℓπcallback(θ): 0.000009 seconds (1 allocation: 32 bytes)
+  Astrometry model compiled successfully
+Test Summary:                           | Pass  Total  Time
+PlanetRelAstromObs with offsetx/offsety |    1      1  5.6s
+ℓπcallback(θ): 0.000004 seconds
+∇ℓπcallback(θ): 0.000009 seconds (1 allocation: 32 bytes)
+  PM model compiled successfully
+  Expected max PM log-likelihood: -0.452
+Test Summary:          | Pass  Total  Time
+PlanetPMObs likelihood |    1      1  1.6s
+ℓπcallback(θ): 0.000004 seconds
+∇ℓπcallback(θ): 0.000010 seconds (1 allocation: 32 bytes)
+  Acceleration model compiled successfully
+  Expected max acceleration log-likelihood: 4.154
+Test Summary:             | Pass  Total  Time
+PlanetAccelObs likelihood |    1      1  1.3s
+ℓπcallback(θ): 0.000007 seconds
+∇ℓπcallback(θ): 0.000014 seconds (1 allocation: 32 bytes)
+  Combined model compiled successfully
+  Total parameters: 1
+Test Summary:             | Pass  Total  Time
+Combined pos + PM + accel |    1      1  1.6s
+
+=== All unit tests passed ===
+
+=== Fitting: should recover M ≈ 10000.0 M☉ ===
+ℓπcallback(θ): 0.000013 seconds
+∇ℓπcallback(θ): 0.000046 seconds (1 allocation: 32 bytes)
+Recovery model compiled (D=12 free parameters)
+Running MCMC (2500 iterations, 600 adaptation)...
+Sampling report for chain:
+mean_accept                 = 0.825590235831794
+ratio_divergent_transitions = 0.0652
+mean_tree_depth             = 7.5776
+max_tree_depth_frac         = 0.0
+total_steps                 = 903001
+μs/step (approx.)           = 9.59
+
+=== Recovery results ===
+Param         True      Median     68%% CI  In CI?
+M          10000.0     12089.4  [  9063.0,  19741.0]  ✓
+a           2154.4      1471.9  [  1251.0,   1664.0]  ✗
+e            0.300       0.264  [   0.068,    0.493]  ✓
+i            1.000       0.942  [   0.698,    1.060]  ✓
+ω            0.500      -2.032  [  -2.654,    1.671]  ✓
+Ω            1.200       0.974  [   0.677,    1.115]  ✗
+offsetx         5.000       0.909  [  -9.705,   11.950]  ✓
+offsety        -3.000       1.766  [  -8.484,   11.488]  ✓
+
+Generating recovery figure...
+Recovery figure saved to test_likelihoods_recovery.png
+PASSED: test_likelihoods.jl
+
+========================================
+Running: test_ad_compatibility.jl
+========================================
+Compiling LogDensityModel...
+ℓπcallback(θ): 0.000025 seconds
+∇ℓπcallback(θ): 0.000100 seconds (1 allocation: 32 bytes)
+Number of free parameters: 22
+
+Testing gradient computation...
+Log-posterior at random point: -3.2322383196966754e11
+Gradient computed successfully (22 components)
+Gradient norm: 1.8414995142574182e12
+Gradient is finite — AD is working correctly.
+
+=== AD compatibility test passed ===
+PASSED: test_ad_compatibility.jl
+
+========================================
+Running: test_small_fit.jl
+========================================
+ℓπcallback(θ): 0.000029 seconds
+∇ℓπcallback(θ): 0.002010 seconds (1 allocation: 32 bytes)
+Model compiled. Number of free parameters: 22
+
+Starting short MCMC run (200 steps, 1 chain)...
+Sampling report for chain:
+mean_accept                 = 0.9432497572219982
+ratio_divergent_transitions = 0.0
+mean_tree_depth             = 12.0
+max_tree_depth_frac         = 1.0
+total_steps                 = 1228500
+μs/step (approx.)           = 25.2
+
+=== Chain summary ===
+MCMC chain (200×47×1 Array{Float64, 3})
+
+=== Key parameter posteriors ===
+M (IMBH mass): median=115085.7, 95% CI = [108172.0, 117556.9]
+offsetx: median=-3.36 mas
+offsety: median=-1.2 mas
+
+Generating orbit plot...
+Orbit plot saved to test_small_fit_orbits.png
+
+=== Small fit test completed successfully ===
+PASSED: test_small_fit.jl
+
+========================================
+All tests passed.
+========================================
