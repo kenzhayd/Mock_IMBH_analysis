@@ -249,8 +249,8 @@ println("\n=== Fitting: should recover M ≈ $M_imbh M☉ ===")
 offset_ra_fit  = 5.0
 offset_dec_fit = -3.0
 sigma_pos_fit  = 0.5
-sigma_pm_fit   = 0.5
-sigma_acc_fit  = 0.05
+sigma_pm_fit   = 0.05
+sigma_acc_fit  = 0.005
 
 astrom_rec = PlanetRelAstromObs(
     (epoch=[test_epoch], ra=[true_ra + offset_ra_fit], dec=[true_dec + offset_dec_fit],
@@ -275,11 +275,12 @@ planet_rec = Planet(
     variables = @variables begin
         M = system.M
         a ~ Uniform(100, 10_000)
-        e = $e_val
-        i = $i_val
-        ω = $omega_val
-        Ω = $Omega_val
-        tp = $tp_val
+        e ~ Uniform(0.0, 0.99)
+        i ~ Sine()
+        ω ~ UniformCircular()
+        Ω ~ UniformCircular()
+        θ ~ UniformCircular()
+        tp = θ_at_epoch_to_tperi(θ, $test_epoch; a, e, i, ω, Ω, M)
     end
 )
 
@@ -289,8 +290,8 @@ sys_rec = System(
     variables = @variables begin
         M ~ Uniform(100, 120_000)
         plx = $plx_val
-        offsetx = $offset_ra_fit
-        offsety = $offset_dec_fit
+        offsetx ~ Normal(0, 10)
+        offsety ~ Normal(0, 10)
     end
 )
 
@@ -303,14 +304,39 @@ chain_rec = octofit(model_rec; iterations=500, adaptation=200)
 # === Print recovery statistics ===
 M_samples = vec(chain_rec[:M])
 a_samples = vec(chain_rec[:test_star_a])
+e_samples = vec(chain_rec[:test_star_e])
+i_samples = vec(chain_rec[:test_star_i])
+ω_samples = vec(chain_rec[:test_star_ω])
+Ω_samples  = vec(chain_rec[:test_star_Ω])
+tp_samples = vec(chain_rec[:test_star_tp])
+ox_samples = vec(chain_rec[:offsetx])
+oy_samples = vec(chain_rec[:offsety])
 M_med = median(M_samples);  M_lo = quantile(M_samples, 0.16);  M_hi = quantile(M_samples, 0.84)
 a_med = median(a_samples);  a_lo = quantile(a_samples, 0.16);  a_hi = quantile(a_samples, 0.84)
+e_med = median(e_samples);  e_lo = quantile(e_samples, 0.16);  e_hi = quantile(e_samples, 0.84)
+i_med = median(i_samples);  i_lo = quantile(i_samples, 0.16);  i_hi = quantile(i_samples, 0.84)
+ω_med = median(ω_samples);  ω_lo = quantile(ω_samples, 0.16);  ω_hi = quantile(ω_samples, 0.84)
+Ω_med  = median(Ω_samples);  Ω_lo  = quantile(Ω_samples,  0.16);  Ω_hi  = quantile(Ω_samples,  0.84)
+ox_med = median(ox_samples); ox_lo = quantile(ox_samples, 0.16);  ox_hi = quantile(ox_samples, 0.84)
+oy_med = median(oy_samples); oy_lo = quantile(oy_samples, 0.16);  oy_hi = quantile(oy_samples, 0.84)
 println("\n=== Recovery results ===")
 @printf("%-6s  %10s  %10s  %10s  %s\n", "Param", "True", "Median", "68%% CI", "In CI?")
 @printf("%-6s  %10.1f  %10.1f  [%8.1f, %8.1f]  %s\n",
     "M", M_imbh, M_med, M_lo, M_hi, M_lo ≤ M_imbh ≤ M_hi ? "✓" : "✗")
 @printf("%-6s  %10.1f  %10.1f  [%8.1f, %8.1f]  %s\n",
     "a", a_val, a_med, a_lo, a_hi, a_lo ≤ a_val ≤ a_hi ? "✓" : "✗")
+@printf("%-6s  %10.3f  %10.3f  [%8.3f, %8.3f]  %s\n",
+    "e", e_val, e_med, e_lo, e_hi, e_lo ≤ e_val ≤ e_hi ? "✓" : "✗")
+@printf("%-6s  %10.3f  %10.3f  [%8.3f, %8.3f]  %s\n",
+    "i", i_val, i_med, i_lo, i_hi, i_lo ≤ i_val ≤ i_hi ? "✓" : "✗")
+@printf("%-6s  %10.3f  %10.3f  [%8.3f, %8.3f]  %s\n",
+    "ω", omega_val, ω_med, ω_lo, ω_hi, ω_lo ≤ omega_val ≤ ω_hi ? "✓" : "✗")
+@printf("%-6s  %10.3f  %10.3f  [%8.3f, %8.3f]  %s\n",
+    "Ω", Omega_val, Ω_med, Ω_lo, Ω_hi, Ω_lo ≤ Omega_val ≤ Ω_hi ? "✓" : "✗")
+@printf("%-9s  %10.3f  %10.3f  [%8.3f, %8.3f]  %s\n",
+    "offsetx", offset_ra_fit, ox_med, ox_lo, ox_hi, ox_lo ≤ offset_ra_fit ≤ ox_hi ? "✓" : "✗")
+@printf("%-9s  %10.3f  %10.3f  [%8.3f, %8.3f]  %s\n",
+    "offsety", offset_dec_fit, oy_med, oy_lo, oy_hi, oy_lo ≤ offset_dec_fit ≤ oy_hi ? "✓" : "✗")
 
 # === Figure: sky-plane orbit samples + M posterior ===
 println("\nGenerating recovery figure...")
@@ -322,32 +348,32 @@ ts_plot = range(test_epoch - P_val * 365.25 / 2,
 # Draw 100 posterior orbit samples
 sample_idx = round.(Int, range(1, length(M_samples), length=100))
 
-fig = Figure(size=(1000, 350))
+fig = Figure(size=(1300, 870))
 
-# Left panel: sky-plane orbits
-ax1 = Axis(fig[1, 1];
+# Left panel: sky-plane orbits (spans all three rows)
+ax1 = Axis(fig[1:3, 1];
     xlabel="Δα* [mas]", ylabel="Δδ [mas]",
     title="Orbit recovery (sky plane)",
     xreversed=true, autolimitaspect=1,
     xgridvisible=false, ygridvisible=false,
 )
-# Posterior orbit samples — thin gray transparent lines
+# True orbit — drawn first so posterior samples render on top
+ra_true  = [raoff(orbitsolve(orbit, t))  for t in ts_plot]
+dec_true = [decoff(orbitsolve(orbit, t)) for t in ts_plot]
+lines!(ax1, ra_true, dec_true; color=:black, linewidth=1.5, label="True orbit")
+# Posterior orbit samples — thin gray transparent lines (on top of true orbit)
 for idx in sample_idx
-    M_s   = M_samples[idx]
-    a_s   = a_samples[idx]
-    orb_s = Visual{KepOrbit}(; a=a_s, e=e_val, i=i_val,
-                               ω=omega_val, Ω=Omega_val, tp=tp_val,
+    M_s  = M_samples[idx];  a_s  = a_samples[idx]
+    e_s  = e_samples[idx];  i_s  = i_samples[idx]
+    ω_s  = ω_samples[idx];  Ω_s  = Ω_samples[idx];  tp_s = tp_samples[idx]
+    orb_s = Visual{KepOrbit}(; a=a_s, e=e_s, i=i_s, ω=ω_s, Ω=Ω_s, tp=tp_s,
                                M=M_s, plx=plx_val)
     ra_s  = [raoff(orbitsolve(orb_s, t))  for t in ts_plot]
     dec_s = [decoff(orbitsolve(orb_s, t)) for t in ts_plot]
     lines!(ax1, ra_s, dec_s; color=(:gray, 0.5), linewidth=0.5)
 end
-# True orbit
-ra_true  = [raoff(orbitsolve(orbit, t))  for t in ts_plot]
-dec_true = [decoff(orbitsolve(orbit, t)) for t in ts_plot]
-#lines!(ax1, ra_true, dec_true; color=:black, linewidth=1.5, label="True orbit")
-# IMBH at origin — filled black circle
-scatter!(ax1, [0.0], [0.0];
+# IMBH at its true offset position — filled black circle
+scatter!(ax1, [offset_ra_fit], [offset_dec_fit];
     marker=:circle, markersize=12, color=:black)
 # Instantaneous PM vector (scaled for visibility; no legend entry)
 scale_pm = 50.0   # yr
@@ -363,29 +389,29 @@ scatter!(ax1, [true_ra], [true_dec];
     strokecolor=:black, strokewidth=0.5, label="Observed position")
 axislegend(ax1; position=:rt, framevisible=false)
 
-# Middle panel: M posterior histogram
-ax2 = Axis(fig[1, 2];
-    xlabel="M [M☉]", ylabel="Density",
-    title="IMBH mass posterior",
-    xgridvisible=false, ygridvisible=false,
-)
-hist!(ax2, M_samples; normalization=:pdf, bins=30,
-    color=(Makie.wong_colors()[1], 0.7))
-vlines!(ax2, [M_imbh]; color=:black,  linestyle=:dash,  label="True M")
-vlines!(ax2, [M_med];  color=Makie.wong_colors()[2], linestyle=:solid, label="Median")
-axislegend(ax2; position=:rt, framevisible=false)
+# Helper: one-parameter posterior panel
+function param_panel!(layout, row, col, samples, true_val, xlabel, title)
+    ax = Axis(layout[row, col]; xlabel=xlabel, ylabel="Density", title=title,
+              xgridvisible=false, ygridvisible=false)
+    med = median(samples)
+    hist!(ax, samples; normalization=:pdf, bins=30,
+          color=(Makie.wong_colors()[col - 1], 0.7))
+    vlines!(ax, [true_val]; color=:black, linestyle=:dash,  label="True")
+    vlines!(ax, [med];      color=Makie.wong_colors()[2], linestyle=:solid, label="Median")
+    axislegend(ax; position=:rt, framevisible=false)
+end
 
-# Right panel: a posterior histogram
-ax3 = Axis(fig[1, 3];
-    xlabel="a [AU]", ylabel="Density",
-    title="Semi-major axis posterior",
-    xgridvisible=false, ygridvisible=false,
-)
-hist!(ax3, a_samples; normalization=:pdf, bins=30,
-    color=(Makie.wong_colors()[3], 0.7))
-vlines!(ax3, [a_val]; color=:black,  linestyle=:dash,  label="True a")
-vlines!(ax3, [a_med]; color=Makie.wong_colors()[2], linestyle=:solid, label="Median")
-axislegend(ax3; position=:rt, framevisible=false)
+# Row 1: M, a, e
+param_panel!(fig, 1, 2, M_samples, M_imbh,  "M [M☉]", "IMBH mass")
+param_panel!(fig, 1, 3, a_samples, a_val,   "a [AU]",  "Semi-major axis")
+param_panel!(fig, 1, 4, e_samples, e_val,   "e",       "Eccentricity")
+# Row 2: i, ω, Ω
+param_panel!(fig, 2, 2, i_samples, i_val,     "i [rad]", "Inclination")
+param_panel!(fig, 2, 3, ω_samples, omega_val, "ω [rad]", "Arg. of periapsis")
+param_panel!(fig, 2, 4, Ω_samples, Omega_val, "Ω [rad]", "Longitude of node")
+# Row 3: IMBH position offsets
+param_panel!(fig, 3, 2, ox_samples, offset_ra_fit,  "offsetx [mas]", "IMBH RA offset")
+param_panel!(fig, 3, 3, oy_samples, offset_dec_fit, "offsety [mas]", "IMBH Dec offset")
 
 save("test_likelihoods_recovery.png", fig, px_per_unit=3)
 println("Recovery figure saved to test_likelihoods_recovery.png")
