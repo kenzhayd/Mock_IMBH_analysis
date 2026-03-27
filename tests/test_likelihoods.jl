@@ -10,6 +10,9 @@ using Octofitter
 using PlanetOrbits
 using Distributions
 using Test
+using CairoMakie
+using Statistics
+using Printf
 
 # === 1. Define a known orbit ===
 # A star orbiting a 10,000 Msun IMBH at 5.43 kpc
@@ -240,3 +243,141 @@ end
 end
 
 println("\n=== All unit tests passed ===")
+
+# === 7. Fit and recovery check ===
+println("\n=== Fitting: should recover M ≈ $M_imbh M☉ ===")
+
+offset_ra_fit  = 5.0
+offset_dec_fit = -3.0
+sigma_pos_fit  = 0.5
+sigma_pm_fit   = 0.05
+sigma_acc_fit  = 0.005
+
+astrom_rec = PlanetRelAstromObs(
+    (epoch=[test_epoch], ra=[true_ra + offset_ra_fit], dec=[true_dec + offset_dec_fit],
+     σ_ra=[sigma_pos_fit], σ_dec=[sigma_pos_fit], cor=[0.0]);
+    name="rec_pos"
+)
+pm_rec = PlanetPMObs(
+    (epoch=[test_epoch], pmra=[true_pmra], pmdec=[true_pmdec],
+     σ_pmra=[sigma_pm_fit], σ_pmdec=[sigma_pm_fit], cor=[0.0]);
+    name="rec_pm"
+)
+acc_rec = PlanetAccelObs(
+    (epoch=[test_epoch], accra=[true_accra], accdec=[true_accdec],
+     σ_accra=[sigma_acc_fit], σ_accdec=[sigma_acc_fit], cor=[0.0]);
+    name="rec_acc"
+)
+
+planet_rec = Planet(
+    name = "test_star",
+    basis = Visual{KepOrbit},
+    observations = [ObsPriorAstromONeil2019(astrom_rec), pm_rec, acc_rec],
+    variables = @variables begin
+        M = system.M
+        a ~ Uniform(100, 10_000)
+        e = $e_val
+        i = $i_val
+        ω = $omega_val
+        Ω = $Omega_val
+        tp = $tp_val
+    end
+)
+
+sys_rec = System(
+    name = "test_recovery",
+    companions = [planet_rec],
+    variables = @variables begin
+        M ~ Uniform(100, 120_000)
+        plx = $plx_val
+        offsetx = $offset_ra_fit
+        offsety = $offset_dec_fit
+    end
+)
+
+model_rec = Octofitter.LogDensityModel(sys_rec)
+println("Recovery model compiled (type stable: $(model_rec.type_stable))")
+
+println("Running MCMC (500 iterations, 200 adaptation)...")
+chain_rec = octofit(model_rec; iterations=500, adaptation=200, n_chains=1)
+
+# === Print recovery statistics ===
+M_samples = vec(chain_rec[:M])
+a_samples = vec(chain_rec[:test_star_a])
+M_med = median(M_samples);  M_lo = quantile(M_samples, 0.16);  M_hi = quantile(M_samples, 0.84)
+a_med = median(a_samples);  a_lo = quantile(a_samples, 0.16);  a_hi = quantile(a_samples, 0.84)
+println("\n=== Recovery results ===")
+@printf("%-6s  %10s  %10s  %10s  %s\n", "Param", "True", "Median", "68%% CI", "In CI?")
+@printf("%-6s  %10.1f  %10.1f  [%8.1f, %8.1f]  %s\n",
+    "M", M_imbh, M_med, M_lo, M_hi, M_lo ≤ M_imbh ≤ M_hi ? "✓" : "✗")
+@printf("%-6s  %10.1f  %10.1f  [%8.1f, %8.1f]  %s\n",
+    "a", a_val, a_med, a_lo, a_hi, a_lo ≤ a_val ≤ a_hi ? "✓" : "✗")
+
+# === Figure: sky-plane orbit samples + M posterior ===
+println("\nGenerating recovery figure...")
+
+# Orbit time grid spanning one full period
+ts_plot = range(test_epoch - P_val * 365.25 / 2,
+                test_epoch + P_val * 365.25 / 2, length=300)
+
+# Draw 100 posterior orbit samples
+sample_idx = round.(Int, range(1, length(M_samples), length=100))
+cmap = Makie.cgrad([Makie.wong_colors()[1], "#FAFAFA"])
+
+fig = Figure(size=(1000, 350))
+
+# Left panel: sky-plane orbits
+ax1 = Axis(fig[1, 1];
+    xlabel="Δα* [mas]", ylabel="Δδ [mas]",
+    title="Orbit recovery (sky plane)",
+    xreversed=true, autolimitaspect=1,
+    xgridvisible=false, ygridvisible=false,
+)
+for (k, idx) in enumerate(sample_idx)
+    M_s   = M_samples[idx]
+    a_s   = a_samples[idx]
+    orb_s = Visual{KepOrbit}(; a=a_s, e=e_val, i=i_val,
+                               ω=omega_val, Ω=Omega_val, tp=tp_val,
+                               M=M_s, plx=plx_val)
+    ra_s  = [raoff(orbitsolve(orb_s, t))  for t in ts_plot]
+    dec_s = [decoff(orbitsolve(orb_s, t)) for t in ts_plot]
+    lines!(ax1, ra_s, dec_s; color=(cmap[k / length(sample_idx)], 0.2), linewidth=0.8)
+end
+# True orbit
+ra_true  = [raoff(orbitsolve(orbit, t))  for t in ts_plot]
+dec_true = [decoff(orbitsolve(orbit, t)) for t in ts_plot]
+lines!(ax1, ra_true, dec_true; color=:black, linewidth=1.5, label="True orbit")
+# Observed position (in orbit frame: subtract IMBH offset)
+scatter!(ax1, [true_ra], [true_dec];
+    color=Makie.wong_colors()[2], markersize=8, label="Observed position")
+# IMBH at origin
+scatter!(ax1, [0.0], [0.0];
+    marker='★', markersize=20, color=:white, strokecolor=:black, strokewidth=1.5)
+axislegend(ax1; position=:rt, framevisible=false)
+
+# Middle panel: M posterior histogram
+ax2 = Axis(fig[1, 2];
+    xlabel="M [M☉]", ylabel="Density",
+    title="IMBH mass posterior",
+    xgridvisible=false, ygridvisible=false,
+)
+hist!(ax2, M_samples; normalization=:pdf, bins=30,
+    color=(Makie.wong_colors()[1], 0.7))
+vlines!(ax2, [M_imbh]; color=:black,  linestyle=:dash,  label="True M")
+vlines!(ax2, [M_med];  color=Makie.wong_colors()[2], linestyle=:solid, label="Median")
+axislegend(ax2; position=:rt, framevisible=false)
+
+# Right panel: a posterior histogram
+ax3 = Axis(fig[1, 3];
+    xlabel="a [AU]", ylabel="Density",
+    title="Semi-major axis posterior",
+    xgridvisible=false, ygridvisible=false,
+)
+hist!(ax3, a_samples; normalization=:pdf, bins=30,
+    color=(Makie.wong_colors()[3], 0.7))
+vlines!(ax3, [a_val]; color=:black,  linestyle=:dash,  label="True a")
+vlines!(ax3, [a_med]; color=Makie.wong_colors()[2], linestyle=:solid, label="Median")
+axislegend(ax3; position=:rt, framevisible=false)
+
+save("test_likelihoods_recovery.png", fig, px_per_unit=3)
+println("Recovery figure saved to test_likelihoods_recovery.png")
