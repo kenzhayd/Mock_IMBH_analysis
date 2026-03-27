@@ -1,0 +1,65 @@
+========================================
+Running: test_likelihoods.jl
+========================================
+=== Known orbit observables at epoch 55197.0 ===
+Position:      RA = 236.849 mas, Dec = -8.618 mas
+Proper motion: pmRA = -1.334029 mas/yr, pmDec = -2.100076 mas/yr
+Acceleration:  accRA = -0.02697693 mas/yr², accDec = 0.00098161 mas/yr²
+ℓπcallback(θ): 0.000008 seconds
+∇ℓπcallback(θ): 0.000012 seconds (1 allocation: 32 bytes)
+  Astrometry model compiled successfully
+Test Summary:                           | Pass  Total  Time
+PlanetRelAstromObs with offsetx/offsety |    1      1  5.1s
+ℓπcallback(θ): 0.000004 seconds
+∇ℓπcallback(θ): 0.000009 seconds (1 allocation: 32 bytes)
+  PM model compiled successfully
+  Expected max PM log-likelihood: -0.452
+Test Summary:          | Pass  Total  Time
+PlanetPMObs likelihood |    1      1  1.4s
+ℓπcallback(θ): 0.000004 seconds
+∇ℓπcallback(θ): 0.000011 seconds (1 allocation: 32 bytes)
+  Acceleration model compiled successfully
+  Expected max acceleration log-likelihood: 4.154
+Test Summary:             | Pass  Total  Time
+PlanetAccelObs likelihood |    1      1  1.2s
+ℓπcallback(θ): 0.000007 seconds
+∇ℓπcallback(θ): 0.000022 seconds (1 allocation: 32 bytes)
+  Combined model compiled successfully
+  Total parameters: 1
+Test Summary:             | Pass  Total  Time
+Combined pos + PM + accel |    1      1  1.5s
+
+=== All unit tests passed ===
+
+=== Fitting: should recover M ≈ 10000.0 M☉ ===
+ℓπcallback(θ): 0.000020 seconds
+∇ℓπcallback(θ): 0.000044 seconds (1 allocation: 32 bytes)
+Recovery model compiled (D=12 free parameters)
+Running MCMC (500 iterations, 200 adaptation)...
+Sampling report for chain:
+mean_accept                 = 0.9009085385736157
+ratio_divergent_transitions = 0.014666666666666666
+mean_tree_depth             = 7.812
+max_tree_depth_frac         = 0.0
+total_steps                 = 664126
+μs/step (approx.)           = 8.92
+
+=== Recovery results ===
+Param         True      Median     68%% CI  In CI?
+M          10000.0     12495.4  [ 10240.5,  20050.2]  ✗
+a           2154.4      1490.2  [  1299.3,   1658.3]  ✗
+e            0.300       0.222  [   0.066,    0.490]  ✓
+i            1.000       0.952  [   0.809,    1.069]  ✓
+ω            0.500       0.880  [   0.094,    1.422]  ✓
+Ω            1.200      -2.159  [  -2.377,   -2.036]  ✗
+offsetx         5.000       1.007  [  -9.763,   10.514]  ✓
+offsety        -3.000       0.710  [  -8.757,   10.714]  ✓
+
+Generating recovery figure...
+Recovery figure saved to test_likelihoods_recovery.png
+PASSED: test_likelihoods.jl
+
+========================================
+Running: test_ad_compatibility.jl
+========================================
+FAILED: test_ad_compatibility.jl (exit code 1)
