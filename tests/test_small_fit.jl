@@ -70,6 +70,7 @@ sys = System(
     end
 )
 
+
 # === Compile and fit ===
 model = Octofitter.LogDensityModel(sys)
 println("Model compiled. Number of free parameters: $(model.D)")
