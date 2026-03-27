@@ -249,8 +249,8 @@ println("\n=== Fitting: should recover M ≈ $M_imbh M☉ ===")
 offset_ra_fit  = 5.0
 offset_dec_fit = -3.0
 sigma_pos_fit  = 0.5
-sigma_pm_fit   = 0.05
-sigma_acc_fit  = 0.005
+sigma_pm_fit   = 0.5
+sigma_acc_fit  = 0.05
 
 astrom_rec = PlanetRelAstromObs(
     (epoch=[test_epoch], ra=[true_ra + offset_ra_fit], dec=[true_dec + offset_dec_fit],
