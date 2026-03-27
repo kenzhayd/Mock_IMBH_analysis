@@ -371,22 +371,22 @@ function build_star_observations(star::StarData, epoch_mjd::Float64)
     ra_rel_mas = (star.ra - ra_cm_deg) * 3600 * 1000
     dec_rel_mas = (star.dec - dec_cm_deg) * 3600 * 1000
     astrom = PlanetRelAstromObs(
-        (epoch=epoch_mjd, ra=ra_rel_mas, dec=dec_rel_mas,
-         σ_ra=ustrip(ra_err), σ_dec=ustrip(dec_err), cor=0.0);
+        (epoch=[epoch_mjd], ra=[ra_rel_mas], dec=[dec_rel_mas],
+         σ_ra=[ustrip(ra_err)], σ_dec=[ustrip(dec_err)], cor=[0.0]);
         name="$(star.name)_pos"
     )
 
     # 2. Proper motion at same epoch
     pm = PlanetPMObs(
-        (epoch=epoch_mjd, pmra=star.pm_ra, pmdec=star.pm_dec,
-         σ_pmra=star.sigma_pm_ra, σ_pmdec=star.sigma_pm_dec, cor=0.0);
+        (epoch=[epoch_mjd], pmra=[star.pm_ra], pmdec=[star.pm_dec],
+         σ_pmra=[star.sigma_pm_ra], σ_pmdec=[star.sigma_pm_dec], cor=[0.0]);
         name="$(star.name)_pm"
     )
 
     # 3. Acceleration at same epoch
     acc = PlanetAccelObs(
-        (epoch=epoch_mjd, accra=star.acc_ra, accdec=star.acc_dec,
-         σ_accra=star.sigma_acc_ra, σ_accdec=star.sigma_acc_dec, cor=0.0);
+        (epoch=[epoch_mjd], accra=[star.acc_ra], accdec=[star.acc_dec],
+         σ_accra=[star.sigma_acc_ra], σ_accdec=[star.sigma_acc_dec], cor=[0.0]);
         name="$(star.name)_acc"
     )
 
