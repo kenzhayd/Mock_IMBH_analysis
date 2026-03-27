@@ -136,7 +136,7 @@ end
 
     model = Octofitter.LogDensityModel(sys)
     @test model isa Octofitter.LogDensityModel
-    println("  PM model compiled successfully (type stable: $(model.type_stable))")
+    println("  PM model compiled successfully")
 
     # Expected log-likelihood at zero residuals
     expected_ll = logpdf(MvNormal([sigma_pm^2 0; 0 sigma_pm^2]), [0.0, 0.0])
@@ -179,7 +179,7 @@ end
 
     model = Octofitter.LogDensityModel(sys)
     @test model isa Octofitter.LogDensityModel
-    println("  Acceleration model compiled successfully (type stable: $(model.type_stable))")
+    println("  Acceleration model compiled successfully")
 
     expected_ll = logpdf(MvNormal([sigma_acc^2 0; 0 sigma_acc^2]), [0.0, 0.0])
     println("  Expected max acceleration log-likelihood: $(round(expected_ll, digits=3))")
@@ -237,9 +237,8 @@ end
 
     model = Octofitter.LogDensityModel(sys)
     @test model isa Octofitter.LogDensityModel
-    @test model.type_stable == true
-    println("  Combined model compiled successfully (type stable: $(model.type_stable))")
-    println("  Total parameters: $(model.num_params)")
+    println("  Combined model compiled successfully")
+    println("  Total parameters: $(model.D)")
 end
 
 println("\n=== All unit tests passed ===")
@@ -296,7 +295,7 @@ sys_rec = System(
 )
 
 model_rec = Octofitter.LogDensityModel(sys_rec)
-println("Recovery model compiled (type stable: $(model_rec.type_stable))")
+println("Recovery model compiled (D=$(model_rec.D) free parameters)")
 
 println("Running MCMC (500 iterations, 200 adaptation)...")
 chain_rec = octofit(model_rec; iterations=500, adaptation=200, n_chains=1)

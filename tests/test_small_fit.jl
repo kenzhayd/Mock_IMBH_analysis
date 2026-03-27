@@ -70,8 +70,7 @@ sys = System(
 
 # === Compile and fit ===
 model = Octofitter.LogDensityModel(sys)
-println("Model compiled. Type stable: $(model.type_stable)")
-println("Number of parameters: $(model.num_params)")
+println("Model compiled. Number of free parameters: $(model.D)")
 
 # Short MCMC run (HMC/NUTS, not Pigeons)
 println("\nStarting short MCMC run (200 steps, 1 chain)...")

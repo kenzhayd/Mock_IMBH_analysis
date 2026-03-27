@@ -71,18 +71,12 @@ sys = System(
 println("Compiling LogDensityModel...")
 model = Octofitter.LogDensityModel(sys)
 
-println("Type stable: $(model.type_stable)")
-println("Number of parameters: $(model.num_params)")
-println("Parameter names: $(model.param_names)")
-
-if !model.type_stable
-    @warn "Model is NOT type stable — this will cause slow sampling. Check likelihood implementations."
-end
+println("Number of free parameters: $(model.D)")
 
 # === Test gradient computation ===
 println("\nTesting gradient computation...")
 # Draw a random sample from the prior (in transformed space)
-θ_init = randn(model.num_params)
+θ_init = randn(model.D)
 
 try
     # Evaluate log-posterior
