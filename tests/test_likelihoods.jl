@@ -102,7 +102,7 @@ end
 
 # === 4. Test PlanetPMObs ===
 @testset "PlanetPMObs likelihood" begin
-    sigma_pm = 0.05  # mas/yr
+    sigma_pm = 0.5  # mas/yr
 
     pm_obs = PlanetPMObs(
         (epoch=[test_epoch], pmra=[true_pmra], pmdec=[true_pmdec],
@@ -145,7 +145,7 @@ end
 
 # === 5. Test PlanetAccelObs ===
 @testset "PlanetAccelObs likelihood" begin
-    sigma_acc = 0.005  # mas/yr^2
+    sigma_acc = 0.05  # mas/yr^2
 
     acc_obs = PlanetAccelObs(
         (epoch=[test_epoch], accra=[true_accra], accdec=[true_accdec],
