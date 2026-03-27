@@ -94,7 +94,7 @@ println("Acceleration:  accRA = $(round(true_accra, digits=8)) mas/yr², accDec 
 
     model = Octofitter.LogDensityModel(sys)
     @test model isa Octofitter.LogDensityModel
-    println("  Astrometry model compiled successfully (type stable: $(model.type_stable))")
+    println("  Astrometry model compiled successfully")
 end
 
 # === 4. Test PlanetPMObs ===
