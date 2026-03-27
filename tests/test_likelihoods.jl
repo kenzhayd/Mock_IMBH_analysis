@@ -321,7 +321,6 @@ ts_plot = range(test_epoch - P_val * 365.25 / 2,
 
 # Draw 100 posterior orbit samples
 sample_idx = round.(Int, range(1, length(M_samples), length=100))
-cmap = Makie.cgrad([Makie.wong_colors()[1], "#FAFAFA"])
 
 fig = Figure(size=(1000, 350))
 
@@ -332,7 +331,8 @@ ax1 = Axis(fig[1, 1];
     xreversed=true, autolimitaspect=1,
     xgridvisible=false, ygridvisible=false,
 )
-for (k, idx) in enumerate(sample_idx)
+# Posterior orbit samples — thin gray transparent lines
+for idx in sample_idx
     M_s   = M_samples[idx]
     a_s   = a_samples[idx]
     orb_s = Visual{KepOrbit}(; a=a_s, e=e_val, i=i_val,
@@ -340,29 +340,27 @@ for (k, idx) in enumerate(sample_idx)
                                M=M_s, plx=plx_val)
     ra_s  = [raoff(orbitsolve(orb_s, t))  for t in ts_plot]
     dec_s = [decoff(orbitsolve(orb_s, t)) for t in ts_plot]
-    lines!(ax1, ra_s, dec_s; color=(cmap[k / length(sample_idx)], 0.2), linewidth=0.8)
+    lines!(ax1, ra_s, dec_s; color=(:gray, 0.5), linewidth=0.5)
 end
 # True orbit
 ra_true  = [raoff(orbitsolve(orbit, t))  for t in ts_plot]
 dec_true = [decoff(orbitsolve(orbit, t)) for t in ts_plot]
 lines!(ax1, ra_true, dec_true; color=:black, linewidth=1.5, label="True orbit")
-# Observed position (in orbit frame: subtract IMBH offset)
-scatter!(ax1, [true_ra], [true_dec];
-    marker='★', color=Makie.wong_colors()[2], markersize=14,
-    strokecolor=:black, strokewidth=0.5, label="Observed position")
-# Proper motion vector (scaled for visibility)
-scale_pm = 50.0   # yr: arrow tip = pos + pm * scale_pm
-arrows!(ax1, [true_ra], [true_dec], [true_pmra * scale_pm], [true_pmdec * scale_pm];
-    color=:royalblue, linewidth=2.0, arrowsize=10,
-    label="PM (×$(Int(scale_pm)) yr)")
-# Plane-of-sky acceleration vector (scaled for visibility)
-scale_acc = 5000.0  # yr²: arrow tip = pos + acc * scale_acc
-arrows!(ax1, [true_ra], [true_dec], [true_accra * scale_acc], [true_accdec * scale_acc];
-    color=:firebrick, linewidth=2.0, arrowsize=10,
-    label="Accel (×$(Int(scale_acc)) yr²)")
 # IMBH at origin — filled black circle
 scatter!(ax1, [0.0], [0.0];
     marker=:circle, markersize=12, color=:black)
+# Instantaneous PM vector (scaled for visibility; no legend entry)
+scale_pm = 50.0   # yr
+arrows!(ax1, [true_ra], [true_dec], [true_pmra * scale_pm], [true_pmdec * scale_pm];
+    color=:royalblue, linewidth=2.0, arrowsize=10)
+# Instantaneous acceleration vector (scaled for visibility; no legend entry)
+scale_acc = 5000.0  # yr²
+arrows!(ax1, [true_ra], [true_dec], [true_accra * scale_acc], [true_accdec * scale_acc];
+    color=:firebrick, linewidth=2.0, arrowsize=10)
+# Observed position — drawn last so star symbol sits on top
+scatter!(ax1, [true_ra], [true_dec];
+    marker='★', color=Makie.wong_colors()[2], markersize=14,
+    strokecolor=:black, strokewidth=0.5, label="Observed position")
 axislegend(ax1; position=:rt, framevisible=false)
 
 # Middle panel: M posterior histogram
