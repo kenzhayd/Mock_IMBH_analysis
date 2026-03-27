@@ -62,7 +62,7 @@ println("Acceleration:  accRA = $(round(true_accra, digits=8)) mas/yr², accDec 
     sigma = 0.5  # mas
 
     astrom = PlanetRelAstromObs(
-        (epoch=test_epoch, ra=obs_ra, dec=obs_dec, σ_ra=sigma, σ_dec=sigma, cor=0.0);
+        (epoch=[test_epoch], ra=[obs_ra], dec=[obs_dec], σ_ra=[sigma], σ_dec=[sigma], cor=[0.0]);
         name="test_pos"
     )
 
@@ -102,8 +102,8 @@ end
     sigma_pm = 0.05  # mas/yr
 
     pm_obs = PlanetPMObs(
-        (epoch=test_epoch, pmra=true_pmra, pmdec=true_pmdec,
-         σ_pmra=sigma_pm, σ_pmdec=sigma_pm, cor=0.0);
+        (epoch=[test_epoch], pmra=[true_pmra], pmdec=[true_pmdec],
+         σ_pmra=[sigma_pm], σ_pmdec=[sigma_pm], cor=[0.0]);
         name="test_pm"
     )
 
@@ -145,8 +145,8 @@ end
     sigma_acc = 0.005  # mas/yr^2
 
     acc_obs = PlanetAccelObs(
-        (epoch=test_epoch, accra=true_accra, accdec=true_accdec,
-         σ_accra=sigma_acc, σ_accdec=sigma_acc, cor=0.0);
+        (epoch=[test_epoch], accra=[true_accra], accdec=[true_accdec],
+         σ_accra=[sigma_acc], σ_accdec=[sigma_acc], cor=[0.0]);
         name="test_acc"
     )
 
@@ -191,18 +191,18 @@ end
     sigma_acc = 0.005
 
     astrom = PlanetRelAstromObs(
-        (epoch=test_epoch, ra=true_ra + offset_ra, dec=true_dec + offset_dec,
-         σ_ra=sigma_pos, σ_dec=sigma_pos, cor=0.0);
+        (epoch=[test_epoch], ra=[true_ra + offset_ra], dec=[true_dec + offset_dec],
+         σ_ra=[sigma_pos], σ_dec=[sigma_pos], cor=[0.0]);
         name="test_pos"
     )
     pm_obs = PlanetPMObs(
-        (epoch=test_epoch, pmra=true_pmra, pmdec=true_pmdec,
-         σ_pmra=sigma_pm, σ_pmdec=sigma_pm, cor=0.0);
+        (epoch=[test_epoch], pmra=[true_pmra], pmdec=[true_pmdec],
+         σ_pmra=[sigma_pm], σ_pmdec=[sigma_pm], cor=[0.0]);
         name="test_pm"
     )
     acc_obs = PlanetAccelObs(
-        (epoch=test_epoch, accra=true_accra, accdec=true_accdec,
-         σ_accra=sigma_acc, σ_accdec=sigma_acc, cor=0.0);
+        (epoch=[test_epoch], accra=[true_accra], accdec=[true_accdec],
+         σ_accra=[sigma_acc], σ_accdec=[sigma_acc], cor=[0.0]);
         name="test_acc"
     )
 
