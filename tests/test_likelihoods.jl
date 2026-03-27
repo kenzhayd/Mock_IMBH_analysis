@@ -348,10 +348,10 @@ ts_plot = range(test_epoch - P_val * 365.25 / 2,
 # Draw 100 posterior orbit samples
 sample_idx = round.(Int, range(1, length(M_samples), length=100))
 
-fig = Figure(size=(1300, 870))
+fig = Figure(size=(1050, 1050))
 
-# Left panel: sky-plane orbits (spans all three rows)
-ax1 = Axis(fig[1:3, 1];
+# Panel [1,1]: sky-plane orbits
+ax1 = Axis(fig[1, 1];
     xlabel="Δα* [mas]", ylabel="Δδ [mas]",
     title="Orbit recovery (sky plane)",
     xreversed=true, autolimitaspect=1,
@@ -375,14 +375,26 @@ end
 # IMBH at its true offset position — filled black circle
 scatter!(ax1, [offset_ra_fit], [offset_dec_fit];
     marker=:circle, markersize=12, color=:black)
-# Instantaneous PM vector (scaled for visibility; no legend entry)
+# Median posterior orbit — for computing median PM/acceleration vectors
+orb_med = Visual{KepOrbit}(;
+    a=a_med, e=e_med, i=i_med, ω=ω_med, Ω=Ω_med,
+    tp=median(tp_samples), M=M_med, plx=plx_val)
+sol_med    = orbitsolve(orb_med, test_epoch)
+med_pmra   = pmra(sol_med);   med_pmdec  = pmdec(sol_med)
+med_accra  = accra(sol_med);  med_accdec = accdec(sol_med)
+med_ra     = raoff(sol_med);  med_dec    = decoff(sol_med)
+# Instantaneous PM vector — true (solid) and posterior median (dashed)
 scale_pm = 50.0   # yr
 arrows!(ax1, [true_ra], [true_dec], [true_pmra * scale_pm], [true_pmdec * scale_pm];
     color=:royalblue, linewidth=2.0, arrowsize=10)
-# Instantaneous acceleration vector (scaled for visibility; no legend entry)
+arrows!(ax1, [med_ra], [med_dec], [med_pmra * scale_pm], [med_pmdec * scale_pm];
+    color=:royalblue, linewidth=1.0, arrowsize=7, linestyle=:dash)
+# Instantaneous acceleration vector — true (solid) and posterior median (dashed)
 scale_acc = 5000.0  # yr²
 arrows!(ax1, [true_ra], [true_dec], [true_accra * scale_acc], [true_accdec * scale_acc];
     color=:firebrick, linewidth=2.0, arrowsize=10)
+arrows!(ax1, [med_ra], [med_dec], [med_accra * scale_acc], [med_accdec * scale_acc];
+    color=:firebrick, linewidth=1.0, arrowsize=7, linestyle=:dash)
 # Observed position — drawn last so star symbol sits on top
 scatter!(ax1, [true_ra], [true_dec];
     marker='★', color=Makie.wong_colors()[2], markersize=14,
@@ -390,28 +402,28 @@ scatter!(ax1, [true_ra], [true_dec];
 axislegend(ax1; position=:rt, framevisible=false)
 
 # Helper: one-parameter posterior panel
-function param_panel!(layout, row, col, samples, true_val, xlabel, title)
+function param_panel!(layout, row, col, cidx, samples, true_val, xlabel, title)
     ax = Axis(layout[row, col]; xlabel=xlabel, ylabel="Density", title=title,
               xgridvisible=false, ygridvisible=false)
     med = median(samples)
     hist!(ax, samples; normalization=:pdf, bins=30,
-          color=(Makie.wong_colors()[col - 1], 0.7))
+          color=(Makie.wong_colors()[cidx], 0.7))
     vlines!(ax, [true_val]; color=:black, linestyle=:dash,  label="True")
     vlines!(ax, [med];      color=Makie.wong_colors()[2], linestyle=:solid, label="Median")
     axislegend(ax; position=:rt, framevisible=false)
 end
 
-# Row 1: M, a, e
-param_panel!(fig, 1, 2, M_samples, M_imbh,  "M [M☉]", "IMBH mass")
-param_panel!(fig, 1, 3, a_samples, a_val,   "a [AU]",  "Semi-major axis")
-param_panel!(fig, 1, 4, e_samples, e_val,   "e",       "Eccentricity")
-# Row 2: i, ω, Ω
-param_panel!(fig, 2, 2, i_samples, i_val,     "i [rad]", "Inclination")
-param_panel!(fig, 2, 3, ω_samples, omega_val, "ω [rad]", "Arg. of periapsis")
-param_panel!(fig, 2, 4, Ω_samples, Omega_val, "Ω [rad]", "Longitude of node")
-# Row 3: IMBH position offsets
-param_panel!(fig, 3, 2, ox_samples, offset_ra_fit,  "offsetx [mas]", "IMBH RA offset")
-param_panel!(fig, 3, 3, oy_samples, offset_dec_fit, "offsety [mas]", "IMBH Dec offset")
+# Row 1: M, a, e  (orbit recovery is [1,1])
+param_panel!(fig, 1, 2, 1, M_samples, M_imbh,  "M [M☉]", "IMBH mass")
+param_panel!(fig, 1, 3, 3, a_samples, a_val,   "a [AU]",  "Semi-major axis")
+# Row 2: e, i, ω
+param_panel!(fig, 2, 1, 4, e_samples, e_val,                       "e",       "Eccentricity")
+param_panel!(fig, 2, 2, 5, rad2deg.(i_samples), rad2deg(i_val),    "i [°]",   "Inclination")
+param_panel!(fig, 2, 3, 6, rad2deg.(ω_samples), rad2deg(omega_val),"ω [°]",   "Arg. of periapsis")
+# Row 3: Ω, offsetx, offsety
+param_panel!(fig, 3, 1, 7, rad2deg.(Ω_samples), rad2deg(Omega_val),"Ω [°]",   "Longitude of node")
+param_panel!(fig, 3, 2, 1, ox_samples, offset_ra_fit,  "offsetx [mas]", "IMBH RA offset")
+param_panel!(fig, 3, 3, 3, oy_samples, offset_dec_fit, "offsety [mas]", "IMBH Dec offset")
 
 save("test_likelihoods_recovery.png", fig, px_per_unit=3)
 println("Recovery figure saved to test_likelihoods_recovery.png")
