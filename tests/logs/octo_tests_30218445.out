@@ -1,0 +1,122 @@
+========================================
+Running: test_likelihoods.jl
+========================================
+=== Known orbit observables at epoch 55197.0 ===
+Position:      RA = 236.849 mas, Dec = -8.618 mas
+Proper motion: pmRA = -1.334029 mas/yr, pmDec = -2.100076 mas/yr
+Acceleration:  accRA = -0.02697693 mas/yr², accDec = 0.00098161 mas/yr²
+ℓπcallback(θ): 0.000011 seconds
+∇ℓπcallback(θ): 0.000014 seconds (1 allocation: 32 bytes)
+  Astrometry model compiled successfully
+Test Summary:                           | Pass  Total  Time
+PlanetRelAstromObs with offsetx/offsety |    1      1  5.8s
+ℓπcallback(θ): 0.000010 seconds
+∇ℓπcallback(θ): 0.000018 seconds (1 allocation: 32 bytes)
+  PM model compiled successfully
+  Expected max PM log-likelihood: -0.452
+Test Summary:          | Pass  Total  Time
+PlanetPMObs likelihood |    1      1  1.7s
+ℓπcallback(θ): 0.000011 seconds
+∇ℓπcallback(θ): 0.000015 seconds (1 allocation: 32 bytes)
+  Acceleration model compiled successfully
+  Expected max acceleration log-likelihood: 4.154
+Test Summary:             | Pass  Total  Time
+PlanetAccelObs likelihood |    1      1  1.4s
+ℓπcallback(θ): 0.000017 seconds
+∇ℓπcallback(θ): 0.000018 seconds (1 allocation: 32 bytes)
+  Combined model compiled successfully
+  Total parameters: 1
+Test Summary:             | Pass  Total  Time
+Combined pos + PM + accel |    1      1  1.7s
+
+=== All unit tests passed ===
+
+=== Fitting: should recover M ≈ 10000.0 M☉ ===
+ℓπcallback(θ): 0.000021 seconds
+∇ℓπcallback(θ): 0.000047 seconds (1 allocation: 32 bytes)
+Recovery model compiled (D=12 free parameters)
+Running MCMC (2500 iterations, 600 adaptation)...
+Sampling report for chain:
+mean_accept                 = 0.7956982752752512
+ratio_divergent_transitions = 0.0624
+mean_tree_depth             = 7.1132
+max_tree_depth_frac         = 0.0
+total_steps                 = 617892
+μs/step (approx.)           = 10.3
+
+=== Recovery results ===
+Param         True      Median     68%% CI  In CI?
+M          10000.0     12430.9  [ 10229.0,  17904.1]  ✗
+a           2154.4      1481.6  [  1287.3,   1666.2]  ✗
+e            0.300       0.200  [   0.058,    0.425]  ✓
+i            1.000       0.957  [   0.824,    1.042]  ✓
+ω            0.500      -2.066  [  -2.661,   -1.073]  ✗
+Ω            1.200       0.997  [   0.803,    1.116]  ✗
+offsetx         5.000       0.616  [  -9.780,   10.275]  ✓
+offsety        -3.000       0.113  [  -9.912,   10.297]  ✓
+
+Generating recovery figure...
+Recovery figure saved to test_likelihoods_recovery.png
+PASSED: test_likelihoods.jl
+
+========================================
+Running: test_ad_compatibility.jl
+========================================
+Compiling LogDensityModel...
+ℓπcallback(θ): 0.000031 seconds
+∇ℓπcallback(θ): 0.000129 seconds (1 allocation: 32 bytes)
+Number of free parameters: 22
+
+Testing gradient computation...
+Log-posterior at random point: -3.369921636365172e11
+Gradient computed successfully (22 components)
+Gradient norm: 1.3028617617766074e12
+Gradient is finite — AD is working correctly.
+
+=== AD compatibility test passed ===
+PASSED: test_ad_compatibility.jl
+
+========================================
+Running: test_small_fit.jl
+========================================
+ℓπcallback(θ): 0.000024 seconds
+∇ℓπcallback(θ): 0.000095 seconds (1 allocation: 32 bytes)
+Model compiled. Number of free parameters: 22
+
+Starting short MCMC run (500 iterations, 200 adaptation)...
+Sampling report for chain:
+mean_accept                 = 0.9718752284517886
+ratio_divergent_transitions = 0.0
+mean_tree_depth             = 11.976
+max_tree_depth_frac         = 0.976
+total_steps                 = 2852164
+μs/step (approx.)           = 22.3
+
+=== Posterior summaries (median, 68% CI) ===
+Param                   Median  [     16%,      84%]
+M_IMBH [10⁴ M☉]         11.184  [   9.995,   11.923]
+plx [mas]                0.191  [   0.187,    0.195]
+offsetx [mas]           -1.558  [ -10.796,    8.365]
+offsety [mas]           -0.813  [ -10.620,   10.305]
+A: a [AU]            16461.959  [11281.035, 27544.982]
+A: e                     0.724  [   0.601,    0.832]
+A: i [°]                75.197  [  70.183,   78.216]
+A: ω [°]               151.816  [ 126.247,  169.975]
+A: Ω [°]              -124.912  [-128.420, -121.431]
+C: a [AU]            11560.180  [9760.945, 15341.826]
+C: e                     0.001  [   0.000,    0.277]
+C: i [°]                41.208  [  30.698,   48.100]
+C: ω [°]                53.828  [ -12.825,  108.165]
+C: Ω [°]                26.498  [   8.166,   42.997]
+
+Generating orbit plot...
+Orbit plot saved to test_small_fit_orbits.png
+Generating posterior figure...
+Posterior figure saved to test_small_fit_posteriors.png
+
+=== Small fit test completed successfully ===
+PASSED: test_small_fit.jl
+
+========================================
+All tests passed.
+========================================
