@@ -22,6 +22,7 @@ using Unitful
 using UnitfulAstro
 using LinearAlgebra
 using Statistics
+using Printf
 using Dates
 using Pigeons
 
@@ -187,17 +188,151 @@ Octofitter.savechain(joinpath(output_dir, "$(run_prefix)_chain.fits"), chain)
 corner_plot = octocorner(model, chain; small=true)
 save(joinpath(output_dir, "$(run_prefix)_corner.png"), corner_plot)
 
-# === 12. Orbit Plot ===
-orbit_plot = octoplot(model, chain; show_physical_orbit=true, colorbar=true)
-save(joinpath(output_dir, "$(run_prefix)_orbit.png"), orbit_plot)
+# === 12. Extract posterior samples ===
+M_samples   = vec(chain[:M])
+plx_samples = vec(chain[:plx])
+ox_samples  = vec(chain[:offsetx])
+oy_samples  = vec(chain[:offsety])
 
-# === 13. Orbit Plot (zoomed) ===
-ts = Octofitter.range(54600, 55700, length=200)
-orbit_plot_2 = octoplot(model, chain; show_physical_orbit=true, colorbar=false, figscale=1.5, ts=ts)
+star_samples = Dict{String, NamedTuple}()
+for name in star_names
+    star_samples[name] = (
+        a  = vec(chain[Symbol("$(name)_a")]),
+        e  = vec(chain[Symbol("$(name)_e")]),
+        i  = vec(chain[Symbol("$(name)_i")]),
+        ω  = vec(chain[Symbol("$(name)_ω")]),
+        Ω  = vec(chain[Symbol("$(name)_Ω")]),
+        tp = vec(chain[Symbol("$(name)_tp")]),
+    )
+end
 
-ax_orbit = orbit_plot_2.content[1]
-xlims!(ax_orbit, -200, 200)
-ylims!(ax_orbit, -100, 100)
-ax_orbit.title = "Orbits of Fast-Moving Stars in ω Cen (Direct Likelihoods)"
+# === 13. Posterior summaries ===
+println("\n=== Posterior summaries (median, 68% CI) ===")
+@printf("%-20s  %10s  [%8s, %8s]\n", "Param", "Median", "16%", "84%")
+function print_stat(label, samples; scale=1.0)
+    med = median(samples) * scale
+    lo  = quantile(samples, 0.16) * scale
+    hi  = quantile(samples, 0.84) * scale
+    @printf("%-20s  %10.3f  [%8.3f, %8.3f]\n", label, med, lo, hi)
+end
+print_stat("M_IMBH [10⁴ M☉]", M_samples; scale=1e-4)
+print_stat("plx [mas]",        plx_samples)
+print_stat("offsetx [mas]",    ox_samples)
+print_stat("offsety [mas]",    oy_samples)
+for name in star_names
+    s = star_samples[name]
+    print_stat("$(name): a [AU]", s.a)
+    print_stat("$(name): e",      s.e)
+    print_stat("$(name): i [°]",  s.i; scale=180/π)
+    print_stat("$(name): ω [°]",  s.ω; scale=180/π)
+    print_stat("$(name): Ω [°]",  s.Ω; scale=180/π)
+end
 
-save(joinpath(output_dir, "$(run_prefix)_orbit_zoomed.png"), orbit_plot_2)
+# === 14. Sky-plane orbit panels (one per star) ===
+println("\nGenerating orbit panels...")
+
+sample_idx = round.(Int, range(1, length(M_samples), length=100))
+
+function star_orbit_panel!(ax, s, M_samp, plx_samp, ox_samp, oy_samp,
+                            obs_ra, obs_dec, epoch_mjd, sample_idx;
+                            scale_pm=50.0, scale_acc=5000.0)
+    ox_med_loc = median(ox_samp)
+    oy_med_loc = median(oy_samp)
+    # Time grid spanning one median period
+    P_med_yr = median(@. s.a ^ 1.5 / sqrt(M_samp))
+    ts = range(epoch_mjd - P_med_yr * 365.25 / 2,
+               epoch_mjd + P_med_yr * 365.25 / 2; length=300)
+    # Median orbit for vector computation
+    orb_med = Visual{KepOrbit}(;
+        a=median(s.a), e=median(s.e), i=median(s.i),
+        ω=median(s.ω), Ω=median(s.Ω), tp=median(s.tp),
+        M=median(M_samp), plx=median(plx_samp))
+    sol_med = orbitsolve(orb_med, epoch_mjd)
+    # Posterior orbit samples in sky frame (orbit + per-sample IMBH offset)
+    for idx in sample_idx
+        orb_s = Visual{KepOrbit}(;
+            a=s.a[idx], e=s.e[idx], i=s.i[idx],
+            ω=s.ω[idx], Ω=s.Ω[idx], tp=s.tp[idx],
+            M=M_samp[idx], plx=plx_samp[idx])
+        ra_s  = [raoff(orbitsolve(orb_s, t)) + ox_samp[idx] for t in ts]
+        dec_s = [decoff(orbitsolve(orb_s, t)) + oy_samp[idx] for t in ts]
+        lines!(ax, ra_s, dec_s; color=(:gray, 0.5), linewidth=0.5)
+    end
+    # Coordinate origin — black cross
+    scatter!(ax, [0.0], [0.0]; marker=:cross, markersize=16, color=:black)
+    # Inferred IMBH position — filled black circle
+    scatter!(ax, [ox_med_loc], [oy_med_loc]; marker=:circle, markersize=12, color=:black)
+    # Instantaneous PM and acceleration vectors from posterior median
+    arrows!(ax, [obs_ra], [obs_dec],
+        [pmra(sol_med) * scale_pm], [pmdec(sol_med) * scale_pm];
+        color=:royalblue, linewidth=2.0, arrowsize=10)
+    arrows!(ax, [obs_ra], [obs_dec],
+        [accra(sol_med) * scale_acc], [accdec(sol_med) * scale_acc];
+        color=:firebrick, linewidth=2.0, arrowsize=10)
+    # Observed star position — drawn last so star sits on top
+    scatter!(ax, [obs_ra], [obs_dec];
+        marker='★', color=Makie.wong_colors()[2], markersize=14,
+        strokecolor=:black, strokewidth=0.5, label="Observed position")
+    axislegend(ax; position=:rt, framevisible=false)
+end
+
+n_stars    = length(star_names)
+n_cols_orb = min(n_stars, 3)
+n_rows_orb = ceil(Int, n_stars / n_cols_orb)
+fig_orbits = Figure(size=(n_cols_orb * 420, n_rows_orb * 440), fontsize=18)
+
+for (k, name) in enumerate(star_names)
+    row = ceil(Int, k / n_cols_orb)
+    col = mod1(k, n_cols_orb)
+    ax  = Axis(fig_orbits[row, col];
+        xlabel="Δα* [mas]", ylabel="Δδ [mas]", title="Star $name",
+        xreversed=true, autolimitaspect=1,
+        xgridvisible=false, ygridvisible=false)
+    star_orbit_panel!(ax, star_samples[name], M_samples, plx_samples,
+        ox_samples, oy_samples,
+        astrom_obs[name].table.ra[1], astrom_obs[name].table.dec[1],
+        epoch_mjd, sample_idx)
+end
+save(joinpath(output_dir, "$(run_prefix)_orbit_panels.png"), fig_orbits, px_per_unit=3)
+println("Orbit panels saved to $(run_prefix)_orbit_panels.png")
+
+# === 15. Posterior panels (one per free parameter) ===
+println("Generating posterior panels...")
+
+function param_panel!(layout, row, col, cidx, samples, xlabel; show_legend=false)
+    ax = Axis(layout[row, col]; xlabel=xlabel, ylabel="Probability Density",
+              xgridvisible=false, ygridvisible=false)
+    med = median(samples)
+    hist!(ax, samples; normalization=:pdf, bins=30,
+          color=(Makie.wong_colors()[cidx], 0.7))
+    vlines!(ax, [med]; color=Makie.wong_colors()[2], linestyle=:solid, label="Median")
+    show_legend && axislegend(ax; position=:rt, framevisible=false)
+end
+
+# Layout: row 1 = system params, rows 2..N+1 = one per star (5 orbital params each)
+fig_post = Figure(size=(1600, (1 + n_stars) * 260), fontsize=18)
+
+# Row 1: system-level parameters
+param_panel!(fig_post, 1, 1, 1, M_samples ./ 1e4,
+    Makie.rich("M", Makie.subscript("IMBH"), " [10⁴ M", Makie.subscript("☉"), "]");
+    show_legend=true)
+param_panel!(fig_post, 1, 2, 1, plx_samples, "plx [mas]")
+param_panel!(fig_post, 1, 3, 1, ox_samples,
+    Makie.rich("Δα*", Makie.subscript("IMBH"), " [mas]"))
+param_panel!(fig_post, 1, 4, 1, oy_samples,
+    Makie.rich("Δδ", Makie.subscript("IMBH"), " [mas]"))
+
+# Per-star rows: a, e, i, ω, Ω
+star_cidx = [3, 4, 5, 6, 7]
+for (k, name) in enumerate(star_names)
+    cidx = star_cidx[mod1(k, length(star_cidx))]
+    row  = k + 1
+    s    = star_samples[name]
+    param_panel!(fig_post, row, 1, cidx, s.a,           "$(name): a [AU]")
+    param_panel!(fig_post, row, 2, cidx, s.e,           "$(name): e")
+    param_panel!(fig_post, row, 3, cidx, rad2deg.(s.i), "$(name): i [°]")
+    param_panel!(fig_post, row, 4, cidx, rad2deg.(s.ω), "$(name): ω [°]")
+    param_panel!(fig_post, row, 5, cidx, rad2deg.(s.Ω), "$(name): Ω [°]")
+end
+save(joinpath(output_dir, "$(run_prefix)_posteriors.png"), fig_post, px_per_unit=3)
+println("Posterior panels saved to $(run_prefix)_posteriors.png")

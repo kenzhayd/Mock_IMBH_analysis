@@ -84,11 +84,13 @@ plx_samples = vec(chain[:plx])
 ox_samples  = vec(chain[:offsetx])
 oy_samples  = vec(chain[:offsety])
 # Star A
-aA_samples = vec(chain[:A_a]);  eA_samples = vec(chain[:A_e])
-iA_samples = vec(chain[:A_i]);  ωA_samples = vec(chain[:A_ω]);  ΩA_samples = vec(chain[:A_Ω])
+aA_samples  = vec(chain[:A_a]);  eA_samples = vec(chain[:A_e])
+iA_samples  = vec(chain[:A_i]);  ωA_samples = vec(chain[:A_ω]);  ΩA_samples = vec(chain[:A_Ω])
+tpA_samples = vec(chain[:A_tp])
 # Star C
-aC_samples = vec(chain[:C_a]);  eC_samples = vec(chain[:C_e])
-iC_samples = vec(chain[:C_i]);  ωC_samples = vec(chain[:C_ω]);  ΩC_samples = vec(chain[:C_Ω])
+aC_samples  = vec(chain[:C_a]);  eC_samples = vec(chain[:C_e])
+iC_samples  = vec(chain[:C_i]);  ωC_samples = vec(chain[:C_ω]);  ΩC_samples = vec(chain[:C_Ω])
+tpC_samples = vec(chain[:C_tp])
 
 # === Print diagnostics ===
 println("\n=== Posterior summaries (median, 68% CI) ===")
@@ -114,11 +116,79 @@ print_stat("C: i [°]",         iC_samples; scale=180/π)
 print_stat("C: ω [°]",         ωC_samples; scale=180/π)
 print_stat("C: Ω [°]",         ΩC_samples; scale=180/π)
 
-# === Orbit plot ===
-println("\nGenerating orbit plot...")
-fig_orbit = octoplot(model, chain; show_physical_orbit=true, colorbar=false)
-save("test_small_fit_orbits.png", fig_orbit, px_per_unit=3)
-println("Orbit plot saved to test_small_fit_orbits.png")
+# === Sky-plane orbit panels (one per star) ===
+println("\nGenerating orbit panels...")
+
+sample_idx = round.(Int, range(1, length(M_samples), length=100))
+
+# Collect per-star samples as named tuples (consistent with main fitting script)
+sA = (a=aA_samples, e=eA_samples, i=iA_samples, ω=ωA_samples, Ω=ΩA_samples, tp=tpA_samples)
+sC = (a=aC_samples, e=eC_samples, i=iC_samples, ω=ωC_samples, Ω=ΩC_samples, tp=tpC_samples)
+
+function star_orbit_panel!(ax, s, M_samp, plx_samp, ox_samp, oy_samp,
+                            obs_ra, obs_dec, epoch_mjd, sample_idx;
+                            scale_pm=50.0, scale_acc=5000.0)
+    ox_med_loc = median(ox_samp)
+    oy_med_loc = median(oy_samp)
+    # Time grid spanning one median period
+    P_med_yr = median(@. s.a ^ 1.5 / sqrt(M_samp))
+    ts = range(epoch_mjd - P_med_yr * 365.25 / 2,
+               epoch_mjd + P_med_yr * 365.25 / 2; length=300)
+    # Median orbit for vector computation
+    orb_med = Visual{KepOrbit}(;
+        a=median(s.a), e=median(s.e), i=median(s.i),
+        ω=median(s.ω), Ω=median(s.Ω), tp=median(s.tp),
+        M=median(M_samp), plx=median(plx_samp))
+    sol_med = orbitsolve(orb_med, epoch_mjd)
+    # Posterior orbit samples in sky frame (orbit + per-sample IMBH offset)
+    for idx in sample_idx
+        orb_s = Visual{KepOrbit}(;
+            a=s.a[idx], e=s.e[idx], i=s.i[idx],
+            ω=s.ω[idx], Ω=s.Ω[idx], tp=s.tp[idx],
+            M=M_samp[idx], plx=plx_samp[idx])
+        ra_s  = [raoff(orbitsolve(orb_s, t)) + ox_samp[idx] for t in ts]
+        dec_s = [decoff(orbitsolve(orb_s, t)) + oy_samp[idx] for t in ts]
+        lines!(ax, ra_s, dec_s; color=(:gray, 0.5), linewidth=0.5)
+    end
+    # Coordinate origin — black cross
+    scatter!(ax, [0.0], [0.0]; marker=:cross, markersize=16, color=:black)
+    # Inferred IMBH position — filled black circle
+    scatter!(ax, [ox_med_loc], [oy_med_loc]; marker=:circle, markersize=12, color=:black)
+    # Instantaneous PM and acceleration vectors from posterior median
+    arrows!(ax, [obs_ra], [obs_dec],
+        [pmra(sol_med) * scale_pm], [pmdec(sol_med) * scale_pm];
+        color=:royalblue, linewidth=2.0, arrowsize=10)
+    arrows!(ax, [obs_ra], [obs_dec],
+        [accra(sol_med) * scale_acc], [accdec(sol_med) * scale_acc];
+        color=:firebrick, linewidth=2.0, arrowsize=10)
+    # Observed star position — drawn last so star sits on top
+    scatter!(ax, [obs_ra], [obs_dec];
+        marker='★', color=Makie.wong_colors()[2], markersize=14,
+        strokecolor=:black, strokewidth=0.5, label="Observed position")
+    axislegend(ax; position=:rt, framevisible=false)
+end
+
+# Observed star positions (sky frame: relative to coordinate centre)
+obs_ra_A = astrom_A.table.ra[1];   obs_dec_A = astrom_A.table.dec[1]
+obs_ra_C = astrom_C.table.ra[1];   obs_dec_C = astrom_C.table.dec[1]
+
+fig_orbits = Figure(size=(840, 450), fontsize=18)
+ax_A = Axis(fig_orbits[1, 1];
+    xlabel="Δα* [mas]", ylabel="Δδ [mas]", title="Star A",
+    xreversed=true, autolimitaspect=1,
+    xgridvisible=false, ygridvisible=false)
+star_orbit_panel!(ax_A, sA, M_samples, plx_samples, ox_samples, oy_samples,
+    obs_ra_A, obs_dec_A, epoch_mjd, sample_idx)
+
+ax_C = Axis(fig_orbits[1, 2];
+    xlabel="Δα* [mas]", ylabel="Δδ [mas]", title="Star C",
+    xreversed=true, autolimitaspect=1,
+    xgridvisible=false, ygridvisible=false)
+star_orbit_panel!(ax_C, sC, M_samples, plx_samples, ox_samples, oy_samples,
+    obs_ra_C, obs_dec_C, epoch_mjd, sample_idx)
+
+save("test_small_fit_orbits.png", fig_orbits, px_per_unit=3)
+println("Orbit panels saved to test_small_fit_orbits.png")
 
 # === Posterior figure: one panel per free parameter ===
 println("Generating posterior figure...")
