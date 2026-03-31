@@ -21,7 +21,7 @@ using Pigeons
 
 # Add the directory to LOAD_PATH 
 push!(LOAD_PATH, raw"/home/vhenault/projects/def-vhenault/vhenault/octo/")
-using octo_utils_julia_MCMC_centre  # local module
+using octo_utils  # local module
 
 # === 1. Select stars and time config ===
 star_names = ["A", "B", "C", "D", "E", "F", "G"]
@@ -38,9 +38,9 @@ astrom_likelihoods = Dict{String, Any}()
 
 # === 2. Simulate astrometry and create likelihood objects ===
 for name in star_names
-    star = octo_utils_julia_MCMC_centre.stars[name]
+    star = octo_utils.stars[name]
 
-    emjd, ra_r, dec_r, ra_e, dec_e = octo_utils_julia_MCMC_centre.simulate_astrometry(star, epoch, dt)
+    emjd, ra_r, dec_r, ra_e, dec_e = octo_utils.simulate_astrometry(star, epoch, dt)
 
     epochs_mjd[name] = emjd
     ra_rel[name] = ra_r

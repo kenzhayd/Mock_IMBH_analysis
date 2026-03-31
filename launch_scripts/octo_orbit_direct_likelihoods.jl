@@ -28,7 +28,7 @@ using Pigeons
 
 # Add the directory to LOAD_PATH
 push!(LOAD_PATH, @__DIR__)
-using octo_utils_julia_MCMC_centre  # local module
+using octo_utils  # local module
 
 # Load configuration helpers and config file
 include(joinpath(@__DIR__, "parse_config.jl"))
@@ -47,8 +47,8 @@ pm_obs = Dict{String, Any}()
 acc_obs = Dict{String, Any}()
 
 for name in star_names
-    star = octo_utils_julia_MCMC_centre.stars[name]
-    a, p, ac = octo_utils_julia_MCMC_centre.build_star_observations(star, epoch_mjd)
+    star = octo_utils.stars[name]
+    a, p, ac = octo_utils.build_star_observations(star, epoch_mjd)
     astrom_obs[name] = a
     pm_obs[name] = p
     acc_obs[name] = ac

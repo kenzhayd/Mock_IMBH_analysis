@@ -11,16 +11,16 @@ using Distributions
 using ForwardDiff
 
 # Load utility module with canonical star data and build_star_observations
-push!(LOAD_PATH, joinpath(@__DIR__, "..", "example_scripts"))
-using octo_utils_julia_MCMC_centre
+push!(LOAD_PATH, joinpath(@__DIR__, "..", "launch_scripts"))
+using octo_utils
 
 # === Build a 2-star system with all 3 likelihood types ===
 epoch_mjd = 55197.0  # ~2010
 
-astrom_A, pm_A, acc_A = octo_utils_julia_MCMC_centre.build_star_observations(
-    octo_utils_julia_MCMC_centre.stars["A"], epoch_mjd)
-astrom_C, pm_C, acc_C = octo_utils_julia_MCMC_centre.build_star_observations(
-    octo_utils_julia_MCMC_centre.stars["C"], epoch_mjd)
+astrom_A, pm_A, acc_A = octo_utils.build_star_observations(
+    octo_utils.stars["A"], epoch_mjd)
+astrom_C, pm_C, acc_C = octo_utils.build_star_observations(
+    octo_utils.stars["C"], epoch_mjd)
 
 star_A = Planet(
     name = "A",

@@ -13,15 +13,15 @@ using Statistics
 using Printf
 
 # Load utility module with canonical star data and build_star_observations
-push!(LOAD_PATH, joinpath(@__DIR__, "..", "example_scripts"))
-using octo_utils_julia_MCMC_centre
+push!(LOAD_PATH, joinpath(@__DIR__, "..", "launch_scripts"))
+using octo_utils
 
 epoch_mjd = 55197.0  # ~2010
 
-astrom_A, pm_A, acc_A = octo_utils_julia_MCMC_centre.build_star_observations(
-    octo_utils_julia_MCMC_centre.stars["A"], epoch_mjd)
-astrom_C, pm_C, acc_C = octo_utils_julia_MCMC_centre.build_star_observations(
-    octo_utils_julia_MCMC_centre.stars["C"], epoch_mjd)
+astrom_A, pm_A, acc_A = octo_utils.build_star_observations(
+    octo_utils.stars["A"], epoch_mjd)
+astrom_C, pm_C, acc_C = octo_utils.build_star_observations(
+    octo_utils.stars["C"], epoch_mjd)
 
 # === Define planets ===
 star_A = Planet(
@@ -187,8 +187,8 @@ ax_C = Axis(fig_orbits[1, 2];
 star_orbit_panel!(ax_C, sC, M_samples, plx_samples, ox_samples, oy_samples,
     obs_ra_C, obs_dec_C, epoch_mjd, sample_idx)
 
-save("test_small_fit_orbits.png", fig_orbits, px_per_unit=3)
-println("Orbit panels saved to test_small_fit_orbits.png")
+save(joinpath(@__DIR__, "figures", "test_small_fit_orbits.png"), fig_orbits, px_per_unit=3)
+println("Orbit panels saved to figures/test_small_fit_orbits.png")
 
 # === Posterior figure: one panel per free parameter ===
 println("Generating posterior figure...")
@@ -226,7 +226,7 @@ param_panel!(fig_post, 3, 2, 4, eC_samples,           "C: e")
 param_panel!(fig_post, 3, 3, 4, rad2deg.(iC_samples), "C: i [°]")
 param_panel!(fig_post, 3, 4, 4, rad2deg.(ωC_samples), "C: ω [°]")
 param_panel!(fig_post, 3, 5, 4, rad2deg.(ΩC_samples), "C: Ω [°]")
-save("test_small_fit_posteriors.png", fig_post, px_per_unit=3)
-println("Posterior figure saved to test_small_fit_posteriors.png")
+save(joinpath(@__DIR__, "figures", "test_small_fit_posteriors.png"), fig_post, px_per_unit=3)
+println("Posterior figure saved to figures/test_small_fit_posteriors.png")
 
 println("\n=== Small fit test completed successfully ===")

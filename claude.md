@@ -12,9 +12,9 @@ This repo contains scripts for fitting orbits of stars around an IMBH candidate 
 
 ## Repo Structure
 
-- `example_scripts/octo_utils_julia_MCMC_centre.jl` — utility module: `StarData` struct, star dictionary (A–G with positions, PMs, accelerations), `build_star_observations` helper, `simulate_astrometry` (legacy), unit conversions
-- `example_scripts/octo_orbit_direct_likelihoods.jl` — **main fitting script** using direct PM/acceleration likelihoods (v8 API, Pigeons sampling, 192 chains, 18 rounds)
-- `example_scripts/octo_orbit_julia_192c_18r_all_MCMC_centre.jl` — legacy script using synthetic 3-epoch astrometry (v7 API, kept for comparison)
+- `launch_scripts/octo_utils.jl` — utility module: `StarData` struct, star dictionary (A–G with positions, PMs, accelerations), `build_star_observations` helper, `simulate_astrometry` (legacy), unit conversions
+- `launch_scripts/octo_orbit_direct_likelihoods.jl` — **main fitting script** using direct PM/acceleration likelihoods (v8 API, Pigeons sampling, 192 chains, 18 rounds)
+- `launch_scripts/old_scripts/octo_orbit_192c_18r.jl` — legacy script using synthetic 3-epoch astrometry (v7 API, kept for comparison)
 - `tests/test_likelihoods.jl` — unit tests for `PlanetRelAstromObs` (with offsets), `PlanetPMObs`, `PlanetAccelObs` using a known orbit
 - `tests/test_ad_compatibility.jl` — type stability and ForwardDiff gradient verification
 - `tests/test_small_fit.jl` — short 2-star MCMC fit for end-to-end validation

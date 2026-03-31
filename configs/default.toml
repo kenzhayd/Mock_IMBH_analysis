@@ -9,7 +9,7 @@
 #   julia octo_orbit_direct_likelihoods.jl configs/my_run.toml   # local
 #
 # Star observational data (positions, PMs, accelerations) lives in
-# octo_utils_julia_MCMC_centre.jl and is NOT duplicated here.
+# octo_utils.jl and is NOT duplicated here.
 # ============================================================
 
 # --- Run metadata (written into the run summary) ---

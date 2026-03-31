@@ -428,5 +428,5 @@ param_panel!(fig, 3, 2, 1, ox_samples, offset_ra_fit,
 param_panel!(fig, 3, 3, 3, oy_samples, offset_dec_fit,
     Makie.rich("Δδ", Makie.subscript("IMBH"), " [mas]"))
 
-save("test_likelihoods_recovery.png", fig, px_per_unit=3)
-println("Recovery figure saved to test_likelihoods_recovery.png")
+save(joinpath(@__DIR__, "figures", "test_likelihoods_recovery.png"), fig, px_per_unit=3)
+println("Recovery figure saved to figures/test_likelihoods_recovery.png")

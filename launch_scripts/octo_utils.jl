@@ -1,4 +1,4 @@
-module octo_utils_julia_MCMC_centre
+module octo_utils
 
 # ========== Environment variables ==========
 ENV["JULIA_NUM_THREADS"] = "auto"
@@ -40,14 +40,15 @@ struct StarData
 end
 
 # ========== Omega Centauri Data ==========
-# We find the center to be at (α,δ) = (13:26:47.24, −47:28:46.45).
-# from https://iopscience.iop.org/article/10.1088/0004-637X/710/2/1032
-# reference 6 in Haberle et al. (2024; Nature, Vol. 631) 
-# We assume the IMBH is located at the cluster center
+# Cluster center from Anderson & van der Marel (2010), ApJ 710, 1032:
+# (α, δ) = (13:26:47.24, −47:28:46.45)  →  201.6968333°, −47.4795694°
+# https://iopscience.iop.org/article/10.1088/0004-637X/710/2/1032
+# Used as the origin of the relative astrometry frame; the IMBH position
+# is a free parameter (offsetx, offsety) relative to this point.
 
 # Center of mass RA and Dec in deg
-ra_cm_deg  = 201.6970988
-dec_cm_deg = -47.4794533
+ra_cm_deg  = 201.6968333
+dec_cm_deg = -47.4795694
 
 # Distance to Omega Centauri center (kiloparsecs and converted to km)
 distance_kpc = 5.43u"kpc"
