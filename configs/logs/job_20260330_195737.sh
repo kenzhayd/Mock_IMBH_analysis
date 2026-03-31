@@ -1,0 +1,20 @@
+#!/bin/bash
+#SBATCH --account=def-vhenault
+#SBATCH --job-name=octo_imbh
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=192
+#SBATCH --mem-per-cpu=3G
+#SBATCH --time=72:00:00
+#SBATCH --output=/lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/configs/logs/octo_imbh_%j.out
+#SBATCH --error=/lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/configs/logs/octo_imbh_%j.err
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=vincent.henault@smu.ca
+
+mkdir -p /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/configs/logs
+mkdir -p /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/configs/run_outputs
+
+module load julia/1.10.10
+
+julia --project=/lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/configs/../../Octofitter_imbh.jl -t 192 \
+    /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/example_scripts/octo_orbit_direct_likelihoods.jl \
+    /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/configs/test_run.toml 2>&1 | tee /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/configs/logs/output_${SLURM_JOB_ID}.log
