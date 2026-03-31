@@ -73,7 +73,7 @@ Chains are saved as FITS files via `Octofitter.savechain` and loaded for analysi
 - Job scripts should use `#SBATCH` headers with explicit resource requests (nodes, CPUs, memory, time)
 - Load Julia via the DAC module system: `module load julia`
 - Use `julia --project=path/to/Octofitter_imbh.jl` to point at the local package
-- Output logs to a `logs/` subdirectory; chain files to `chains/`
+- Output logs to `results/logs/`; chain files and run outputs to `results/run_outputs/`
 - Parameterise scripts (star ID, prior bounds, etc.) via command-line arguments where possible
 
 ---

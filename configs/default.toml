@@ -90,5 +90,5 @@ mail_user     = "vincent.henault@smu.ca"
 # Relative paths are resolved from the directory containing this config file.
 [paths]
 project    = "../../Octofitter_imbh.jl"     # --project= argument for Julia
-output_dir = "run_outputs"                   # chain files, plots, summaries
-log_dir    = "logs"                          # Slurm stdout/stderr and tee logs
+output_dir = "../results/run_outputs"        # chain files, plots, summaries
+log_dir    = "../results/logs"               # Slurm stdout/stderr and tee logs
