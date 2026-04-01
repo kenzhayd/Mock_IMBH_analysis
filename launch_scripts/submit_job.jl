@@ -65,7 +65,7 @@ module load $(slurm["julia_module"])
 
 export JULIA_CONDAPKG_BACKEND=Null
 
-julia --project=$(project_dir) -e 'using Pkg; Pkg.instantiate()' 2>&1 | tee $(log_dir)/instantiate_\${SLURM_JOB_ID}.log
+julia --project=$(project_dir) -e 'using Pkg; Pkg.instantiate(); Pkg.add(["CairoMakie", "PairPlots", "Distributions"])' 2>&1 | tee $(log_dir)/instantiate_\${SLURM_JOB_ID}.log
 
 julia --project=$(project_dir) -t $(slurm["julia_threads"]) \\
     $(fitting_script) \\
