@@ -96,10 +96,10 @@ sys = System(
     observations = [],
     companions = companions,
     variables = @variables begin
-        plx ~ $plx_prior             # Parallax [mas]
-        M ~ $M_prior                 # Host mass [solar masses]
-        offsetx ~ $offsetx_prior     # IMBH RA offset from assumed center [mas]
-        offsety ~ $offsety_prior     # IMBH Dec offset from assumed center [mas]
+        plx ~ plx_prior              # Parallax [mas]
+        M ~ M_prior                  # Host mass [solar masses]
+        offsetx ~ offsetx_prior      # IMBH RA offset from assumed center [mas]
+        offsety ~ offsety_prior      # IMBH Dec offset from assumed center [mas]
     end
 )
 
