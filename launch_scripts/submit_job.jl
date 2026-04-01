@@ -63,6 +63,8 @@ mkdir -p $(output_dir)
 
 module load $(slurm["julia_module"])
 
+julia --project=$(project_dir) -e 'using Pkg; Pkg.instantiate()' 2>&1 | tee $(log_dir)/instantiate_\${SLURM_JOB_ID}.log
+
 julia --project=$(project_dir) -t $(slurm["julia_threads"]) \\
     $(fitting_script) \\
     $(abs_config) 2>&1 | tee $(log_dir)/output_\${SLURM_JOB_ID}.log
