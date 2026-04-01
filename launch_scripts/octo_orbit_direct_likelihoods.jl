@@ -71,13 +71,13 @@ for name in star_names
         observations = [ObsPriorAstromONeil2019(astrom_obs[name]), pm_obs[name], acc_obs[name]],
         variables = @variables begin
             M = system.M
-            P ~ $P_prior                 # Period [yrs]
+            P ~ P_prior                  # Period [yrs]
             a = cbrt(M * P^2)            # Semi-major axis [AU]
-            e ~ $e_prior                 # Eccentricity
-            i ~ $i_prior                 # Inclination [rad]
-            ω ~ $ω_prior                 # Argument of periastron [rad]
-            Ω ~ $Ω_prior                 # Longitude of ascending node [rad]
-            θ ~ $θ_prior                 # Mean anomaly at reference epoch [rad]
+            e ~ e_prior                  # Eccentricity
+            i ~ i_prior                  # Inclination [rad]
+            ω ~ ω_prior                  # Argument of periastron [rad]
+            Ω ~ Ω_prior                  # Longitude of ascending node [rad]
+            θ ~ θ_prior                  # Mean anomaly at reference epoch [rad]
             tp = θ_at_epoch_to_tperi(θ, $epoch_mjd; a=a, e=e, i=i, ω=ω, Ω=Ω, M=M)
         end
     )
