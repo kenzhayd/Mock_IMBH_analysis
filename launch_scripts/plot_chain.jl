@@ -88,7 +88,7 @@ col_names = Set(Symbol.(names(chain)))
 summary_stars_line = match(r"\*\*Stars:\*\*\s*([^\n]+)", summary_text)
 summary_stars_line !== nothing ||
     error("Could not find '**Stars:**' line in $summary_path")
-star_names = sort!(strip.(split(summary_stars_line[1], ",")))
+star_names = sort!(String.(strip.(split(summary_stars_line[1], ","))))
 println("Star names from summary: $(join(star_names, ", "))")
 
 # Helper: find a chain column for a given star and orbital element, trying
