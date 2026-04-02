@@ -82,7 +82,7 @@ println(chain)
 # differently on save/load.  Use the summary as the authoritative source for
 # star names, then discover the actual column names for each orbital element.
 
-col_names = Set(propertynames(chain))
+col_names = Set(Symbol.(names(chain)))
 
 # Primary: parse from summary
 summary_stars_line = match(r"\*\*Stars:\*\*\s*([^\n]+)", summary_text)
