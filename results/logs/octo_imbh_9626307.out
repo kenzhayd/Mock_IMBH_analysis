@@ -1,0 +1,26 @@
+┌ Warning: Circular dependency detected.
+│ Precompilation will be skipped for dependencies in this cycle:
+│  ┌ Octofitter → OctofitterPairPlotsExt
+│  └─ Octofitter → OctofitterMakieExt
+│ Precompilation will also be skipped for the following, which depend on the above cycle:
+│   Octofitter → OctofitterPigeonsExt
+└ @ Pkg.API.Precompilation /cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v3/Core/julia/1.10.10/share/julia/stdlib/v1.10/Pkg/src/precompilation.jl:583
+┌ Warning: could not download https://pkg.julialang.org/registries
+│   exception = RequestError: Failed to connect to pkg.julialang.org port 443 after 30006 ms: Timeout was reached while requesting https://pkg.julialang.org/registries
+└ @ Pkg.Registry /cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v3/Core/julia/1.10.10/share/julia/stdlib/v1.10/Pkg/src/Registry/Registry.jl:69
+   Resolving package versions...
+  No Changes to `/lustre09/project/6039459/vhenault/OCen_IMBH/Octofitter_imbh.jl/Project.toml`
+  No Changes to `/lustre09/project/6039459/vhenault/OCen_IMBH/Octofitter_imbh.jl/Manifest.toml`
+┌ Warning: Circular dependency detected.
+│ Precompilation will be skipped for dependencies in this cycle:
+│  ┌ Octofitter → OctofitterPairPlotsExt
+│  └─ Octofitter → OctofitterMakieExt
+│ Precompilation will also be skipped for the following, which depend on the above cycle:
+│   Octofitter → OctofitterPigeonsExt
+└ @ Pkg.API.Precompilation /cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v3/Core/julia/1.10.10/share/julia/stdlib/v1.10/Pkg/src/precompilation.jl:583
+Loaded config: /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/configs/test_run2.toml
+ERROR: LoadError: syntax: "$" expression outside quote around /lustre09/project/6039459/vhenault/OCen_IMBH/Octofitter_imbh.jl/src/macros.jl:101
+Stacktrace:
+ [1] top-level scope
+   @ /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/launch_scripts/octo_orbit_direct_likelihoods.jl:59
+in expression starting at /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/launch_scripts/octo_orbit_direct_likelihoods.jl:59
