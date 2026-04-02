@@ -255,9 +255,10 @@ function simulate_astrometry(star::StarData, epoch::Real, dt::Real)
     ra_abs = [past_ra_mas, ra0_mas, future_ra_mas]
     dec_abs = [past_dec_mas, dec0_mas, future_dec_mas]
 
-    # --- Convert to relative RA/Dec  ---
-    ra_rel  = ra_abs .- (ra_cm_deg * 3600 * 1000)
-    dec_rel = dec_abs .- (dec_cm_deg * 3600 * 1000)
+    # --- Convert to relative RA/Dec (Δα*, Δδ) ---
+    # Apply cos(δ_ref) to RA differences to match the α* convention used by Octofitter.
+    ra_rel  = (ra_abs .- (ra_cm_deg  * 3600 * 1000)) .* cosd(dec_cm_deg)
+    dec_rel =  dec_abs .- (dec_cm_deg * 3600 * 1000)
 
     # --- Error propagation ---
     past_ra_err   = propagate_error(ustrip(ra_err), star.sigma_pm_ra, star.sigma_acc_ra, -dt)
@@ -368,8 +369,10 @@ Returns:
 - acc: PlanetAccelObs (single-epoch acceleration)
 """
 function build_star_observations(star::StarData, epoch_mjd::Float64)
-    # 1. Single-epoch position relative to cluster center
-    ra_rel_mas = (star.ra - ra_cm_deg) * 3600 * 1000
+    # 1. Single-epoch position relative to cluster center.
+    # RA offset is multiplied by cos(δ_ref) to give Δα* (east in mas), consistent
+    # with the α* convention used by raoff(sol), pmra(sol), and the input PM/accel data.
+    ra_rel_mas  = (star.ra  - ra_cm_deg)  * 3600 * 1000 * cosd(dec_cm_deg)
     dec_rel_mas = (star.dec - dec_cm_deg) * 3600 * 1000
     astrom = PlanetRelAstromObs(
         (epoch=[epoch_mjd], ra=[ra_rel_mas], dec=[dec_rel_mas],
