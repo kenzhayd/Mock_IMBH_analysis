@@ -185,7 +185,13 @@ println(chain)
 Octofitter.savechain(joinpath(output_dir, "$(run_prefix)_chain.fits"), chain)
 
 # === 11. Corner Plot ===
-corner_plot = octocorner(model, chain; small=true)
+corner_plot = octocorner(model, chain; small=true,
+    includecols=["M", "offsetx", "offsety"],
+    labels=Dict{Symbol,Any}(
+        :offsetx => "Δα*_IMBH [mas]",
+        :offsety => "Δδ_IMBH [mas]",
+    )
+)
 save(joinpath(output_dir, "$(run_prefix)_corner.png"), corner_plot)
 
 # === 12. Extract posterior samples ===
@@ -263,12 +269,12 @@ function star_orbit_panel!(ax, s, M_samp, plx_samp, ox_samp, oy_samp,
     # Inferred IMBH position — filled black circle
     scatter!(ax, [ox_med_loc], [oy_med_loc]; marker=:circle, markersize=12, color=:black)
     # Instantaneous PM and acceleration vectors from posterior median
-    arrows!(ax, [obs_ra], [obs_dec],
+    arrows2d!(ax, [obs_ra], [obs_dec],
         [pmra(sol_med) * scale_pm], [pmdec(sol_med) * scale_pm];
-        color=:royalblue, linewidth=2.0, arrowsize=10)
-    arrows!(ax, [obs_ra], [obs_dec],
+        color=:royalblue, linewidth=2.0, tipwidth=10, tiplength=10)
+    arrows2d!(ax, [obs_ra], [obs_dec],
         [accra(sol_med) * scale_acc], [accdec(sol_med) * scale_acc];
-        color=:firebrick, linewidth=2.0, arrowsize=10)
+        color=:firebrick, linewidth=2.0, tipwidth=10, tiplength=10)
     # Observed star position — drawn last so star sits on top
     scatter!(ax, [obs_ra], [obs_dec];
         marker='★', color=Makie.wong_colors()[2], markersize=14,
