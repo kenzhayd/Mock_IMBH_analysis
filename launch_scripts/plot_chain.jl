@@ -268,13 +268,13 @@ function star_orbit_panel!(ax, s, M_samp, plx_samp, ox_samp, oy_samp,
     scatter!(ax, [ox_med_loc], [oy_med_loc]; marker=:circle, markersize=12, color=:black)
     arrows2d!(ax, [obs_ra], [obs_dec],
         [obs_pmra * scale_pm], [obs_pmdec * scale_pm];
-        color=:royalblue, linewidth=2.0, tipwidth=10, tiplength=10)
+        color=:royalblue, shaftwidth=2.0, tipwidth=10, tiplength=10)
     arrows2d!(ax, [obs_ra], [obs_dec],
         [pmra(sol_med) * scale_pm], [pmdec(sol_med) * scale_pm];
-        color=:royalblue, linewidth=2.0, tipwidth=10, tiplength=10, linestyle=:dash)
+        color=:royalblue, shaftwidth=2.0, tipwidth=10, tiplength=10, linestyle=:dash)
     arrows2d!(ax, [obs_ra], [obs_dec],
         [accra(sol_med) * scale_acc], [accdec(sol_med) * scale_acc];
-        color=:firebrick, linewidth=2.0, tipwidth=10, tiplength=10, linestyle=:dash)
+        color=:firebrick, shaftwidth=2.0, tipwidth=10, tiplength=10, linestyle=:dash)
     scatter!(ax, [obs_ra], [obs_dec];
         marker='★', color=Makie.wong_colors()[2], markersize=14,
         strokecolor=:black, strokewidth=0.5)
