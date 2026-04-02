@@ -17,7 +17,7 @@ configuration is embedded in that file, so no separate config.toml is needed.
 Star names are also cross-checked against the chain column names (columns
 ending in _a with matching _e, _i, _ω, _Ω, _tp companions).
 
-Output files are written to the same directory as chain.fits, using the same
+Output files are written to the same directory as *chain.fits, using the same
 run_prefix (everything before _chain.fits in the filename).
 """
 
@@ -77,38 +77,43 @@ chain = Octofitter.loadchain(chain_path)
 println("Loaded chain: $chain_path")
 println(chain)
 
-# ── 4. Infer star names from chain column names ───────────────────────────────
-# Each fitted star contributes columns {name}_a, {name}_e, {name}_i, {name}_ω,
-# {name}_Ω, {name}_tp.  Collect names that have all six.
+# ── 4. Get star names from summary, verify against chain columns ──────────────
+# FITS column names are ASCII-only; Unicode characters (ω, Ω) may be encoded
+# differently on save/load.  Use the summary as the authoritative source for
+# star names, then discover the actual column names for each orbital element.
 
-orbital_suffixes = [:a, :e, :i, :ω, :Ω, :tp]
 col_names = Set(propertynames(chain))
-star_names = String[]
-for col in col_names
-    s = String(col)
-    if endswith(s, "_a")
-        cand = s[1:end-2]
-        if all(Symbol("$(cand)_$(suf)") in col_names for suf in orbital_suffixes)
-            push!(star_names, cand)
-        end
-    end
-end
-sort!(star_names)
-isempty(star_names) && error(
-    "Could not infer star names from chain columns. " *
-    "Expected columns like 'A_a', 'A_e', 'A_i', 'A_ω', 'A_Ω', 'A_tp'.")
-println("Inferred star names: $(join(star_names, ", "))")
 
-# Cross-check against the star list recorded in the summary
+# Primary: parse from summary
 summary_stars_line = match(r"\*\*Stars:\*\*\s*([^\n]+)", summary_text)
-if summary_stars_line !== nothing
-    recorded = strip.(split(summary_stars_line[1], ","))
-    recorded_set = Set(recorded)
-    chain_set    = Set(star_names)
-    if recorded_set != chain_set
-        @warn "Stars in summary ($(join(sort(collect(recorded_set)), ", "))) differ " *
-              "from chain columns ($(join(star_names, ", "))); using chain columns."
+summary_stars_line !== nothing ||
+    error("Could not find '**Stars:**' line in $summary_path")
+star_names = sort!(strip.(split(summary_stars_line[1], ",")))
+println("Star names from summary: $(join(star_names, ", "))")
+
+# Helper: find a chain column for a given star and orbital element, trying
+# multiple name variants to handle FITS ASCII encoding of Unicode symbols.
+const _col_variants = Dict(
+    "a"  => ["a"],
+    "e"  => ["e"],
+    "i"  => ["i"],
+    "ω"  => ["ω",  "omega", "w"],
+    "Ω"  => ["Ω",  "Omega", "W"],
+    "tp" => ["tp"],
+)
+function find_col(col_names, star, element)
+    for v in _col_variants[element]
+        sym = Symbol("$(star)_$(v)")
+        sym in col_names && return sym
     end
+    error("Cannot find chain column for $(star)_$(element). " *
+          "Available columns with prefix '$(star)_': " *
+          join(filter(c -> startswith(String(c), "$(star)_"), collect(col_names)), ", "))
+end
+
+# Verify all expected columns exist
+for name in star_names, el in keys(_col_variants)
+    find_col(col_names, name, el)   # errors early with a clear message if missing
 end
 
 # ── 5. Rebuild observation objects ───────────────────────────────────────────
@@ -186,12 +191,12 @@ oy_samples  = vec(chain[:offsety])
 star_samples = Dict{String, NamedTuple}()
 for name in star_names
     star_samples[name] = (
-        a  = vec(chain[Symbol("$(name)_a")]),
-        e  = vec(chain[Symbol("$(name)_e")]),
-        i  = vec(chain[Symbol("$(name)_i")]),
-        ω  = vec(chain[Symbol("$(name)_ω")]),
-        Ω  = vec(chain[Symbol("$(name)_Ω")]),
-        tp = vec(chain[Symbol("$(name)_tp")]),
+        a  = vec(chain[find_col(col_names, name, "a")]),
+        e  = vec(chain[find_col(col_names, name, "e")]),
+        i  = vec(chain[find_col(col_names, name, "i")]),
+        ω  = vec(chain[find_col(col_names, name, "ω")]),
+        Ω  = vec(chain[find_col(col_names, name, "Ω")]),
+        tp = vec(chain[find_col(col_names, name, "tp")]),
     )
 end
 
