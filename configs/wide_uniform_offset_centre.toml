@@ -68,7 +68,7 @@ theta = "UniformCircular()"          # Mean anomaly at reference epoch [rad]
 
 # --- Sampling ---
 [sampling]
-n_rounds             = 18
+n_rounds             = 15
 n_chains             = 192
 n_chains_variational = 192
 checkpoint           = false
