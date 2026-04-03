@@ -305,8 +305,8 @@ for (k, name) in enumerate(star_names)
         astrom_obs[name].table.ra[1], astrom_obs[name].table.dec[1],
         pm_obs[name].table.pmra[1], pm_obs[name].table.pmdec[1],
         epoch_mjd, sample_idx, color)
-    text!(ax, "Star $name"; position=(:left, :top), align=(:left, :top),
-          space=:relative, offset=(4, -4), fontsize=18)
+    text!(ax, "Star $name"; position=(0.05, 0.95), align=(:left, :top),
+          space=:relative, fontsize=18)
 end
 
 # ── Combined panel: all stars on one plate ───────────────────────────────────
