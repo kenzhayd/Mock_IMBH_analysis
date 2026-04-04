@@ -1,0 +1,92 @@
+Loaded config: /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/configs/default.toml
+[ Info: Preparing model
+┌ Info: Determined number of free variables
+└   D = 49
+┌ Info: Determined number type
+└   T = Float64
+ℓπcallback(θ): 0.000042 seconds
+∇ℓπcallback(θ): 0.002345 seconds (7 allocations: 181.047 KiB)
+Run summary written to /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/configs/../results/run_outputs/starsACDEF_192c_15r_9781546_summary.md
+┌ Warning: This model has priors that cannot be sampled IID.
+└ @ OctofitterPigeonsExt /lustre09/project/6039459/vhenault/OCen_IMBH/Octofitter_imbh.jl/ext/OctofitterPigeonsExt/OctofitterPigeonsExt.jl:105
+[ Info: Sampler running with multiple threads     : true
+[ Info: Likelihood evaluated with multiple threads: false
+┌ Info: Starting values not provided for all parameters! Guessing starting point using global optimization:
+│   num_params = 49
+└   num_fixed = 0
+┌ Info: Found sample of initial positions
+│   logpost_range = (4.5211534740455335, 5.6926584121152075)
+└   mean_logpost = 5.668056808415748
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  scans     restarts      Λ        Λ_var      time(s)    allc(B)  log(Z₁/Z₀)   min(α)     mean(α)    min(αₑ)   mean(αₑ) 
+────────── ────────── ────────── ────────── ────────── ────────── ────────── ────────── ────────── ────────── ──────────
+        2          0       7.99       7.06       0.95   4.69e+07  -4.01e+07          0      0.961          1          1 
+        4          0       12.2         12       0.59   2.88e+06  -7.27e+05          0      0.937          1          1 
+        8          0       17.1       18.8       1.18   5.75e+06  -3.29e+04          0      0.906          1          1 
+       16          0         22       21.4       2.36   1.15e+07       -478          0      0.887          1          1 
+       32          0       25.6       25.2       4.72   2.02e+07       -193  5.15e-137      0.867          1          1 
+       64          0       26.6       11.2       9.62      3e+09       -268   4.21e-13      0.901          1          1 
+      128          0       28.3       10.7       19.1   6.23e+09       -149     0.0199      0.898          1          1 
+      256          0       29.8       11.6       39.2   1.24e+10       -141      0.209      0.892          1          1 
+      512          0       30.4       13.1       76.9   2.46e+10       -133      0.591      0.886          1          1 
+ 1.02e+03          1       30.6       13.7        162   4.82e+10       -128      0.806      0.884          1          1 
+ 2.05e+03          9       30.8       14.5        323   9.53e+10       -123      0.809      0.882          1          1 
+  4.1e+03         20         31       15.2        691   1.88e+11       -118      0.813       0.88          1          1 
+ 8.19e+03         69       31.2         16   1.34e+03   3.73e+11       -115      0.822      0.877          1          1 
+ 1.64e+04         99       31.2         17   2.81e+03   7.34e+11       -110      0.825      0.874          1          1 
+ 3.28e+04        205       31.5       17.8    5.6e+03   1.46e+12       -108      0.819      0.871          1          1 
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+MCMC chain (32768×83×1 Array{Float64, 3})
+Loaded configuration from: /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/results/run_outputs/starsACDEF_192c_15r_9781546_summary.md
+Reference epoch: 55197.0 MJD (2010.0 yr)
+Loaded chain: /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/configs/../results/run_outputs/starsACDEF_192c_15r_9781546_chain.fits
+MCMC chain (32768×83×1 Array{Float64, 3})
+Star names from summary: A, C, D, E, F
+[ Info: Preparing model
+┌ Info: Determined number of free variables
+└   D = 49
+┌ Info: Determined number type
+└   T = Float64
+ℓπcallback(θ): 0.000036 seconds
+∇ℓπcallback(θ): 0.002667 seconds (6 allocations: 180.969 KiB)
+
+=== Posterior summaries (median, 68% CI) ===
+Param                     Median  [     16%,      84%]
+M_IMBH [10⁴ M☉]           10.853  [   9.459,   11.687]
+plx [mas]                  0.191  [   0.188,    0.196]
+offsetx [mas]           -233.169  [-368.715, -125.799]
+offsety [mas]            614.260  [ 532.747,  730.331]
+A: a [AU]               6573.145  [5421.395, 7976.574]
+A: e                       0.085  [   0.021,    0.303]
+A: i [°]                 113.875  [ 106.040,  121.253]
+A: ω [°]                -120.736  [-157.922,  124.712]
+A: Ω [°]                -132.998  [-139.115, -126.305]
+C: a [AU]               9605.121  [6693.075, 11524.940]
+C: e                       0.128  [   0.032,    0.349]
+C: i [°]                  81.518  [  77.820,   86.997]
+C: ω [°]                 -81.583  [-133.161,  -19.897]
+C: Ω [°]                -162.532  [-165.076, -159.718]
+D: a [AU]              14229.282  [10618.683, 17208.513]
+D: e                       0.128  [   0.033,    0.337]
+D: i [°]                  83.183  [  81.042,   84.197]
+D: ω [°]                  83.611  [  24.093,  133.744]
+D: Ω [°]                 122.071  [ 119.932,  123.914]
+E: a [AU]              13855.941  [11518.142, 16526.885]
+E: e                       0.892  [   0.863,    0.926]
+E: i [°]                  82.765  [  81.627,   83.676]
+E: ω [°]                  27.054  [  23.800,   29.553]
+E: Ω [°]                 -56.013  [ -56.792,  -54.828]
+F: a [AU]              20145.864  [16820.018, 22444.959]
+F: e                       0.060  [   0.019,    0.128]
+F: i [°]                  52.840  [  46.757,   56.563]
+F: ω [°]                  66.547  [ -79.430,  104.469]
+F: Ω [°]                 170.536  [  -8.820,  172.745]
+
+Generating corner plot...
+Corner plot saved.
+Generating orbit panels...
+Orbit panels saved.
+Generating posterior panels...
+Posterior panels saved.
+
+Done. All plots written to: /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/results/run_outputs
