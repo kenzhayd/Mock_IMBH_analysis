@@ -22,6 +22,7 @@ using LinearAlgebra
 using Statistics
 using Dates
 using Pigeons
+using OctofitterRadialVelocity
 
 # Add the directory to LOAD_PATH
 push!(LOAD_PATH, @__DIR__)
@@ -40,15 +41,18 @@ epoch_year = cfg["epoch"]["year"]
 
 # === 2. Build observation objects for each star ===
 astrom_obs = Dict{String, Any}()
-pm_obs = Dict{String, Any}()
-acc_obs = Dict{String, Any}()
+pm_obs     = Dict{String, Any}()
+acc_obs    = Dict{String, Any}()
+rv_obs     = Dict{String, Any}()
 
 for name in star_names
     star = octo_utils.stars[name]
-    a, p, ac = octo_utils.build_star_observations(star, epoch_mjd)
+    include_rv = get_data_flag(cfg, name, "radial_velocity")
+    a, p, ac, r = octo_utils.build_star_observations(star, epoch_mjd; include_rv)
     astrom_obs[name] = a
-    pm_obs[name] = p
-    acc_obs[name] = ac
+    pm_obs[name]     = p
+    acc_obs[name]    = ac
+    rv_obs[name]     = r
 end
 
 # === 3. Define companions ===
@@ -62,10 +66,25 @@ for name in star_names
     Ω_prior = parse_prior(get_companion_prior(cfg, name, "Omega"))
     θ_prior = parse_prior(get_companion_prior(cfg, name, "theta"))
 
+    # Build observation list based on config data flags
+    obs_list = Any[]
+    if get_data_flag(cfg, name, "position")
+        push!(obs_list, ObsPriorAstromONeil2019(astrom_obs[name]))
+    end
+    if get_data_flag(cfg, name, "proper_motion")
+        push!(obs_list, pm_obs[name])
+    end
+    if get_data_flag(cfg, name, "acceleration")
+        push!(obs_list, acc_obs[name])
+    end
+    if get_data_flag(cfg, name, "radial_velocity") && rv_obs[name] !== nothing
+        push!(obs_list, rv_obs[name])
+    end
+
     star = Planet(
         name = name,
         basis = Visual{KepOrbit},
-        observations = [ObsPriorAstromONeil2019(astrom_obs[name]), pm_obs[name], acc_obs[name]],
+        observations = obs_list,
         variables = @variables begin
             M = system.M
             P ~ P_prior                  # Period [yrs]

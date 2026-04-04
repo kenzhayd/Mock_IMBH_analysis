@@ -108,6 +108,25 @@ end
 
 # ── Epoch helper ────────────────────────────────────────────────────────
 
+# ── Data selection flags ───────────────────────────────────────────────
+
+"""
+    get_data_flag(cfg, star_name::String, data_type::String) -> Bool
+
+Return whether observation type `data_type` should be included for star
+`star_name`.  Checks `cfg["data"]["overrides"][star_name][data_type]`
+first; falls back to `cfg["data"]["defaults"][data_type]`; defaults to
+`true` if neither section exists.
+"""
+function get_data_flag(cfg, star_name::String, data_type::String)::Bool
+    defaults  = get(get(cfg, "data", Dict()), "defaults", Dict())
+    default_val = get(defaults, data_type, true)
+    overrides = get(get(get(cfg, "data", Dict()), "overrides", Dict()), star_name, Dict())
+    return Bool(get(overrides, data_type, default_val))
+end
+
+# ── Epoch helper ────────────────────────────────────────────────────────
+
 """
     get_epoch_mjd(cfg) -> Float64
 

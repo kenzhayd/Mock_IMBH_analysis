@@ -9,7 +9,8 @@ ENV["OCTOFITTERPY_AUTOLOAD_EXTENSIONS"] = "yes"
 using Unitful
 using UnitfulAstro
 using LinearAlgebra
-using Octofitter  
+using Octofitter
+using OctofitterRadialVelocity
 using Statistics
 
 
@@ -57,6 +58,10 @@ distance_km = uconvert(u"km", distance_kpc)
 # Assumed errors in position (mas)
 ra_err = 0.5u"mas"
 dec_err = 0.5u"mas"
+
+# Cluster systemic radial velocity (Baumgardt catalogue)
+const rv_cluster     = 232780.0   # [m/s]  (232.78 ± 0.21 km/s)
+const rv_cluster_err = 210.0      # [m/s]
 
 # ========== Define Error Propagation Function ==========
 """
@@ -355,20 +360,21 @@ end
 #  Build Direct Observation Objects for Octofitter v8
 # ========================================================
 """
-Build PlanetRelAstromObs, PlanetPMObs, and PlanetAccelObs from a StarData object
-at a single epoch. Uses the direct kinematic observables rather than synthetic
-multi-epoch astrometry.
+Build observation objects from a StarData object at a single epoch.
+Uses the direct kinematic observables rather than synthetic multi-epoch astrometry.
 
 Parameters:
-- star: StarData object with position, PM, and acceleration data
+- star: StarData object with position, PM, acceleration, and (optional) RV data
 - epoch_mjd: Observation epoch in Modified Julian Date
+- include_rv: Whether to build RV observation (default true; only used if star has RV data)
 
 Returns:
 - astrom: PlanetRelAstromObs (single-epoch relative position)
 - pm: PlanetPMObs (single-epoch proper motion)
 - acc: PlanetAccelObs (single-epoch acceleration)
+- rv: PlanetRelativeRVObs or nothing (single-epoch peculiar radial velocity)
 """
-function build_star_observations(star::StarData, epoch_mjd::Float64)
+function build_star_observations(star::StarData, epoch_mjd::Float64; include_rv::Bool=true)
     # 1. Single-epoch position relative to cluster center.
     # RA offset is multiplied by cos(δ_ref) to give Δα* (east in mas), consistent
     # with the α* convention used by raoff(sol), pmra(sol), and the input PM/accel data.
@@ -394,7 +400,19 @@ function build_star_observations(star::StarData, epoch_mjd::Float64)
         name="$(star.name)_acc"
     )
 
-    return astrom, pm, acc
+    # 4. Radial velocity (peculiar, relative to cluster systemic RV)
+    rv = nothing
+    if include_rv && !isnan(star.rv) && !isnan(star.rv_err)
+        rv_peculiar = star.rv - rv_cluster
+        σ_rv_total  = hypot(star.rv_err, rv_cluster_err)
+        rv = PlanetRelativeRVObs(
+            (epoch = epoch_mjd, rv = rv_peculiar, σ_rv = σ_rv_total);
+            name = "$(star.name)_rv",
+            variables = @variables begin end
+        )
+    end
+
+    return astrom, pm, acc, rv
 end
 
 end

@@ -1,2 +1,5 @@
 results/run_outputs/*.fits
 results/run_outputs/*.fits
+.DS_Store
+.DS_Store
+.DS_Store
