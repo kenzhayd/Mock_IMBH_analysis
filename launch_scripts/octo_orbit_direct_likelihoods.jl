@@ -13,6 +13,18 @@ If no config path is given, falls back to ../configs/default.toml.
 
 ENV["OCTOFITTERPY_AUTOLOAD_EXTENSIONS"] = "yes"
 
+# Ensure OctofitterRadialVelocity is dev'd into the project environment
+# (it is a sub-package inside the Octofitter repo, not auto-discovered).
+import Pkg
+let rv_pkg = "OctofitterRadialVelocity"
+    deps = Pkg.dependencies()
+    if !any(p -> p.second.name == rv_pkg, deps)
+        rv_path = normpath(joinpath(@__DIR__, "..", "..", "Octofitter_imbh.jl", "OctofitterRadialVelocity"))
+        @info "Adding $rv_pkg from $rv_path"
+        Pkg.develop(path=rv_path)
+    end
+end
+
 using Octofitter
 using Octofitter: @variables, System
 using Distributions
