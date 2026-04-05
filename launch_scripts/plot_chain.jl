@@ -478,7 +478,7 @@ axislegend(ax3; position = :rt, framevisible = false)
 # seamless looping.
 n_frames   = 240
 framerate   = 30
-elev_max   = 80 * π / 180   # near face-on
+elev_max   = 70 * π / 180   # near face-on
 elev_min   = 20 * π / 180   # low angle, reveals LOS depth
 anim_path  = joinpath(output_dir, "$(run_prefix)_orbits_3d.mp4")
 
