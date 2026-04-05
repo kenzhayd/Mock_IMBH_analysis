@@ -202,26 +202,45 @@ end
 
 # ── 8. Posterior summaries ───────────────────────────────────────────────────
 
-println("\n=== Posterior summaries (median, 68% CI) ===")
-@printf("%-20s  %10s  [%8s, %8s]\n", "Param", "Median", "16%", "84%")
-function print_stat(label, samples; scale=1.0)
+function format_stat(label, samples; scale=1.0)
     med = median(samples) * scale
     lo  = quantile(samples, 0.16) * scale
     hi  = quantile(samples, 0.84) * scale
-    @printf("%-20s  %10.3f  [%8.3f, %8.3f]\n", label, med, lo, hi)
+    return @sprintf("%-20s  %10.3f  [%8.3f, %8.3f]", label, med, lo, hi)
 end
-print_stat("M_IMBH [10⁴ M☉]", M_samples; scale=1e-4)
-print_stat("plx [mas]",        plx_samples)
-print_stat("offsetx [mas]",    ox_samples)
-print_stat("offsety [mas]",    oy_samples)
+
+stat_lines = String[]
+push!(stat_lines, @sprintf("%-20s  %10s  [%8s, %8s]", "Param", "Median", "16%", "84%"))
+push!(stat_lines, format_stat("M_IMBH [10⁴ M☉]", M_samples; scale=1e-4))
+push!(stat_lines, format_stat("plx [mas]",        plx_samples))
+push!(stat_lines, format_stat("offsetx [mas]",    ox_samples))
+push!(stat_lines, format_stat("offsety [mas]",    oy_samples))
 for name in star_names
     s = star_samples[name]
-    print_stat("$(name): a [AU]", s.a)
-    print_stat("$(name): e",      s.e)
-    print_stat("$(name): i [°]",  s.i; scale=180/π)
-    print_stat("$(name): ω [°]",  s.ω; scale=180/π)
-    print_stat("$(name): Ω [°]",  s.Ω; scale=180/π)
+    push!(stat_lines, format_stat("$(name): a [AU]", s.a))
+    push!(stat_lines, format_stat("$(name): e",      s.e))
+    push!(stat_lines, format_stat("$(name): i [°]",  s.i; scale=180/π))
+    push!(stat_lines, format_stat("$(name): ω [°]",  s.ω; scale=180/π))
+    push!(stat_lines, format_stat("$(name): Ω [°]",  s.Ω; scale=180/π))
 end
+
+println("\n=== Posterior summaries (median, 68% CI) ===")
+for line in stat_lines
+    println(line)
+end
+
+stats_path = joinpath(output_dir, "$(run_prefix)_posterior_stats.txt")
+open(stats_path, "w") do io
+    println(io, "Posterior summaries (median, 68% CI)")
+    println(io, "Chain: $chain_path")
+    println(io, "Epoch: $epoch_mjd MJD ($epoch_year yr)")
+    println(io, "Stars: $(join(star_names, ", "))")
+    println(io)
+    for line in stat_lines
+        println(io, line)
+    end
+end
+println("Posterior stats saved to: $stats_path")
 
 # ── 9. Corner plot ───────────────────────────────────────────────────────────
 
