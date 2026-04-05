@@ -491,13 +491,12 @@ meshscatter!(ax3, [0.0], [0.0], [0.0];
 
 axislegend(ax3; position = :rt, framevisible = false)
 
-# Animate: azimuth pans 360° while elevation oscillates between near
-# face-on (~80°, almost x-y projection) and a low viewing angle (20°)
-# using a cosine profile so both the first and last frames match for
-# seamless looping.
+# Animate: azimuth pans 360° while elevation oscillates between ~50°
+# and 20° using a cosine profile so both the first and last frames
+# match for seamless looping.
 n_frames   = 240
-framerate   = 30
-elev_max   = 70 * π / 180   # near face-on
+framerate   = 15
+elev_max   = 50 * π / 180   # start/end elevation
 elev_min   = 20 * π / 180   # low angle, reveals LOS depth
 anim_path  = joinpath(output_dir, "$(run_prefix)_orbits_3d.mp4")
 
