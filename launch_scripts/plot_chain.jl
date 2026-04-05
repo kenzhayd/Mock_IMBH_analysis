@@ -472,18 +472,21 @@ meshscatter!(ax3, [0.0], [0.0], [0.0];
 
 axislegend(ax3; position = :rt, framevisible = false)
 
-# Animate: start face-on (x-y plane, looking down z), then pan azimuth
-# through 360° at fixed elevation to reveal LOS depth.  Last frame is one
-# step before the first so the video loops seamlessly.
-n_frames  = 180
-framerate  = 30
-elev_fixed = π / 4   # 45° elevation gives good depth perception
+# Animate: azimuth pans 360° while elevation oscillates between near
+# face-on (~80°, almost x-y projection) and a low viewing angle (20°)
+# using a cosine profile so both the first and last frames match for
+# seamless looping.
+n_frames   = 240
+framerate   = 30
+elev_max   = 80 * π / 180   # near face-on
+elev_min   = 20 * π / 180   # low angle, reveals LOS depth
 anim_path  = joinpath(output_dir, "$(run_prefix)_orbits_3d.mp4")
 
 record(fig3d, anim_path, 0:(n_frames - 1); framerate) do frame
-    θ = 2π * frame / n_frames
-    ax3.azimuth[]   = -π / 2 + θ
-    ax3.elevation[] = elev_fixed
+    t = frame / n_frames                                   # 0 → 1 (exclusive)
+    ax3.azimuth[]   = -π / 2 + 2π * t
+    ax3.elevation[] = (elev_max + elev_min) / 2 +
+                      (elev_max - elev_min) / 2 * cos(2π * t)  # starts high, dips low at t=0.5
 end
 
 println("3D orbit animation saved to: $anim_path")
