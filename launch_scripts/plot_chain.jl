@@ -264,14 +264,9 @@ sample_idx = round.(Int, range(1, length(M_samples), length=100))
 function star_orbit_panel!(ax, s, M_samp, plx_samp, ox_samp, oy_samp,
                             obs_ra, obs_dec, obs_pmra, obs_pmdec,
                             epoch_mjd, sample_idx, color;
-                            scale_pm=250.0, scale_acc=25000.0)
+                            scale_pm=250.0)
     ox_med_loc = median(ox_samp)
     oy_med_loc = median(oy_samp)
-    orb_med = Visual{KepOrbit}(;
-        a=median(s.a), e=median(s.e), i=median(s.i),
-        ω=median(s.ω), Ω=median(s.Ω), tp=median(s.tp),
-        M=median(M_samp), plx=median(plx_samp))
-    sol_med = orbitsolve(orb_med, epoch_mjd)
     for idx in sample_idx
         orb_s = Visual{KepOrbit}(;
             a=s.a[idx], e=s.e[idx], i=s.i[idx],
@@ -288,12 +283,6 @@ function star_orbit_panel!(ax, s, M_samp, plx_samp, ox_samp, oy_samp,
     arrows2d!(ax, [obs_ra], [obs_dec],
         [obs_pmra * scale_pm], [obs_pmdec * scale_pm];
         color=:royalblue, shaftwidth=2.0, tipwidth=10, tiplength=10)
-    arrows2d!(ax, [obs_ra], [obs_dec],
-        [pmra(sol_med) * scale_pm], [pmdec(sol_med) * scale_pm];
-        color=(:royalblue, 0.4), shaftwidth=2.0, tipwidth=10, tiplength=10)
-    arrows2d!(ax, [obs_ra], [obs_dec],
-        [accra(sol_med) * scale_acc], [accdec(sol_med) * scale_acc];
-        color=(:firebrick, 0.4), shaftwidth=2.0, tipwidth=10, tiplength=10)
     scatter!(ax, [obs_ra], [obs_dec];
         marker='★', color=Makie.wong_colors()[2], markersize=14,
         strokecolor=:black, strokewidth=0.5)
