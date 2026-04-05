@@ -474,6 +474,11 @@ ax3 = Axis3(fig3d[1, 1];
     elevation = elev_max,
 )
 
+# Per-sample IMBH mass (used to scale star marker sizes below).
+sample_masses = M_samples[sample_idx]
+mass_ref      = median(sample_masses)
+base_size     = lim * 0.012
+
 # Draw orbit samples and current-epoch star positions
 for (k, name) in enumerate(star_names)
     color = Makie.wong_colors()[mod1(k, length(Makie.wong_colors()))]
@@ -483,8 +488,11 @@ for (k, name) in enumerate(star_names)
     px = [p.x for p in star_pos_3d[name]]
     py = [p.y for p in star_pos_3d[name]]
     pz = [p.z for p in star_pos_3d[name]]
+    # Marker radius proportional to the IMBH mass of each chain sample,
+    # normalized so the median-mass sample matches the previous default size.
+    marker_sizes = base_size .* (sample_masses ./ mass_ref)
     meshscatter!(ax3, px, py, pz;
-        markersize = lim * 0.012, color = color)
+        markersize = marker_sizes, color = color)
     lines!(ax3, [NaN], [NaN], [NaN]; color = color, linewidth = 2, label = "Star $name")
 end
 
