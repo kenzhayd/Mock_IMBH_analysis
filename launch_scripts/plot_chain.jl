@@ -385,4 +385,100 @@ end
 save(joinpath(output_dir, "$(run_prefix)_posteriors.png"), fig_post, px_per_unit=3)
 println("Posterior panels saved.")
 
+# ── 12. 3D orbit animation (360° pan, IMBH-centric) ───────────────────────
+
+println("Generating 3D orbit animation...")
+
+using PlanetOrbits: posx, posy, posz
+
+const AU_PER_PC = 206265.0
+
+# Pre-compute 3D orbit trajectories for each posterior sample (reuses
+# sample_idx from the orbit panels).  All positions are relative to the
+# IMBH and converted from AU to parsec.
+orbit_3d_samples = Dict{String, Vector{NamedTuple}}()
+star_pos_3d      = Dict{String, Vector{NamedTuple}}()
+
+for name in star_names
+    s = star_samples[name]
+    orbits_list = NamedTuple[]
+    pos_list    = NamedTuple[]
+    for idx in sample_idx
+        orb = Visual{KepOrbit}(;
+            a = s.a[idx], e = s.e[idx], i = s.i[idx],
+            ω = s.ω[idx], Ω = s.Ω[idx], tp = s.tp[idx],
+            M = M_samples[idx], plx = plx_samples[idx])
+        P_yr = s.a[idx]^1.5 / sqrt(M_samples[idx])
+        ts   = range(epoch_mjd, epoch_mjd + P_yr * 365.25; length=300)
+        sols = [orbitsolve(orb, t) for t in ts]
+        push!(orbits_list, (
+            x = [posx(sl) for sl in sols] ./ AU_PER_PC,
+            y = [posy(sl) for sl in sols] ./ AU_PER_PC,
+            z = [posz(sl) for sl in sols] ./ AU_PER_PC,
+        ))
+        sol_now = orbitsolve(orb, epoch_mjd)
+        push!(pos_list, (
+            x = posx(sol_now) / AU_PER_PC,
+            y = posy(sol_now) / AU_PER_PC,
+            z = posz(sol_now) / AU_PER_PC,
+        ))
+    end
+    orbit_3d_samples[name] = orbits_list
+    star_pos_3d[name]      = pos_list
+end
+
+# Symmetric axis limits from all orbit samples
+all_coords = Float64[]
+for name in star_names
+    for o in orbit_3d_samples[name]
+        append!(all_coords, o.x)
+        append!(all_coords, o.y)
+        append!(all_coords, o.z)
+    end
+end
+lim = 1.1 * maximum(abs.(all_coords))
+
+# Build figure with Axis3
+fig3d = Figure(size = (800, 800), fontsize = 16)
+ax3 = Axis3(fig3d[1, 1];
+    xlabel = "x [pc]", ylabel = "y [pc]", zlabel = "z (LOS) [pc]",
+    title  = "3D Orbits — Stars $(join(star_names, ", "))",
+    limits = (-lim, lim, -lim, lim, -lim, lim),
+    aspect = :data,
+    azimuth = 0.0,
+    elevation = π / 6,
+)
+
+# Draw orbit samples and current-epoch star positions
+for (k, name) in enumerate(star_names)
+    color = Makie.wong_colors()[mod1(k, length(Makie.wong_colors()))]
+    for o in orbit_3d_samples[name]
+        lines!(ax3, o.x, o.y, o.z; color = (color, 0.3), linewidth = 0.5)
+    end
+    px = [p.x for p in star_pos_3d[name]]
+    py = [p.y for p in star_pos_3d[name]]
+    pz = [p.z for p in star_pos_3d[name]]
+    scatter!(ax3, px, py, pz;
+        marker = '★', markersize = 10, color = (color, 0.4),
+        strokecolor = :black, strokewidth = 0.3)
+    lines!(ax3, [NaN], [NaN], [NaN]; color = color, linewidth = 2, label = "Star $name")
+end
+
+# IMBH at origin
+scatter!(ax3, [0.0], [0.0], [0.0];
+    marker = :circle, markersize = 12, color = :black, label = "IMBH")
+
+axislegend(ax3; position = :rt, framevisible = false)
+
+# Animate: 360° azimuthal pan
+n_frames  = 180
+framerate  = 30
+anim_path = joinpath(output_dir, "$(run_prefix)_orbits_3d.mp4")
+
+record(fig3d, anim_path, 1:n_frames; framerate) do frame
+    ax3.azimuth[] = 2π * (frame - 1) / n_frames
+end
+
+println("3D orbit animation saved to: $anim_path")
+
 println("\nDone. All plots written to: $output_dir")
