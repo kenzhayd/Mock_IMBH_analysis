@@ -438,15 +438,18 @@ for name in star_names
 end
 lim = 1.1 * maximum(abs.(all_coords))
 
-# Build figure with Axis3
+# Build figure with Axis3.
+# Start face-on (x-y plane): azimuth = -π/2 so that x is to the right,
+# elevation = π/2 so we look straight down the z (LOS) axis.
+# Then rotate around the y axis (vary elevation) over a full 360°.
 fig3d = Figure(size = (800, 800), fontsize = 16)
 ax3 = Axis3(fig3d[1, 1];
     xlabel = "x [pc]", ylabel = "y [pc]", zlabel = "z (LOS) [pc]",
     title  = "3D Orbits — Stars $(join(star_names, ", "))",
     limits = (-lim, lim, -lim, lim, -lim, lim),
     aspect = :data,
-    azimuth = 0.0,
-    elevation = π / 6,
+    azimuth   = -π / 2,
+    elevation =  π / 2,
 )
 
 # Draw orbit samples and current-epoch star positions
@@ -458,25 +461,28 @@ for (k, name) in enumerate(star_names)
     px = [p.x for p in star_pos_3d[name]]
     py = [p.y for p in star_pos_3d[name]]
     pz = [p.z for p in star_pos_3d[name]]
-    scatter!(ax3, px, py, pz;
-        marker = '★', markersize = 10, color = (color, 0.4),
-        strokecolor = :black, strokewidth = 0.3)
+    meshscatter!(ax3, px, py, pz;
+        markersize = lim * 0.012, color = color)
     lines!(ax3, [NaN], [NaN], [NaN]; color = color, linewidth = 2, label = "Star $name")
 end
 
 # IMBH at origin
-scatter!(ax3, [0.0], [0.0], [0.0];
-    marker = :circle, markersize = 12, color = :black, label = "IMBH")
+meshscatter!(ax3, [0.0], [0.0], [0.0];
+    markersize = lim * 0.015, color = :black, label = "IMBH")
 
 axislegend(ax3; position = :rt, framevisible = false)
 
-# Animate: 360° azimuthal pan
+# Animate: start face-on (x-y), rotate around the y axis over 360°,
+# returning to the starting view so the video loops seamlessly.
+# Elevation sweeps from π/2 → −3π/2 (full circle); azimuth stays at −π/2.
 n_frames  = 180
 framerate  = 30
 anim_path = joinpath(output_dir, "$(run_prefix)_orbits_3d.mp4")
 
-record(fig3d, anim_path, 1:n_frames; framerate) do frame
-    ax3.azimuth[] = 2π * (frame - 1) / n_frames
+record(fig3d, anim_path, 0:(n_frames - 1); framerate) do frame
+    θ = 2π * frame / n_frames          # 0 → 2π (frame n_frames not rendered)
+    ax3.elevation[] = π / 2 - θ        # rotate around y axis
+    ax3.azimuth[]   = -π / 2           # keep x to the right
 end
 
 println("3D orbit animation saved to: $anim_path")
