@@ -458,10 +458,11 @@ end
 lim = 0.7 * maximum(abs.(all_coords))   # shrink axis range by 20% — larger orbits clip
 
 # Animation view-angle parameters (also used for the initial Axis3 view).
-elev_max = 50 * π / 180   # start/end elevation
-elev_min = 20 * π / 180   # low angle, reveals LOS depth
+azim_start = -3 * π / 4    # starting azimuth (three-quarter view)
+elev_max   = 50 * π / 180  # start/end elevation
+elev_min   = 10 * π / 180  # low angle, reveals LOS depth
 
-# Build figure with Axis3.  Starting azimuth (-π/2) places x to the right.
+# Build figure with Axis3.  Starting azimuth (-3π/4) places x to the right.
 # viewmode = :fit keeps ticks/labels inside the viewport as the camera rotates
 # (the default :fitzoom lets labels drift outside the frame).
 fig3d = Figure(size = (800, 800), fontsize = 16, figure_padding = 30)
@@ -470,7 +471,7 @@ ax3 = Axis3(fig3d[1, 1];
     limits = (-lim, lim, -lim, lim, -lim, lim),
     aspect = :data,
     viewmode = :fit,
-    azimuth   = -π / 2,
+    azimuth   = azim_start,
     elevation = elev_max,
 )
 
@@ -511,7 +512,7 @@ anim_path  = joinpath(output_dir, "$(run_prefix)_orbits_3d.mp4")
 
 record(fig3d, anim_path, 0:(n_frames - 1); framerate) do frame
     t = frame / n_frames                                   # 0 → 1 (exclusive)
-    ax3.azimuth[]   = -π / 2 + 2π * t
+    ax3.azimuth[]   = azim_start + 2π * t
     ax3.elevation[] = (elev_max + elev_min) / 2 +
                       (elev_max - elev_min) / 2 * cos(2π * t)  # starts high, dips low at t=0.5
 end
