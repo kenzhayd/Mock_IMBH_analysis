@@ -1,0 +1,73 @@
+slurmstepd: error: *** JOB 9832175 ON rc31722 CANCELLED AT 2026-04-05T16:35:16 DUE TO TIME LIMIT ***
+
+[1085742] signal (15): Terminated
+in expression starting at /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/launch_scripts/plot_chain.jl:512
+cairo_mesh_pattern_begin_patch at /workspace/srcdir/cairo-1.18.4/output/../src/cairo-pattern.c:1276
+mesh_pattern_begin_patch at /home/vhenault/.julia/packages/Cairo/FQrbN/src/Cairo.jl:1069 [inlined]
+draw_pattern at /home/vhenault/.julia/packages/CairoMakie/ohA3a/src/mesh.jl:234
+draw_mesh3D at /home/vhenault/.julia/packages/CairoMakie/ohA3a/src/mesh.jl:386
+draw_mesh3D at /home/vhenault/.julia/packages/CairoMakie/ohA3a/src/mesh.jl:332
+draw_scattered_mesh at /home/vhenault/.julia/packages/CairoMakie/ohA3a/src/mesh.jl:476
+unknown function (ip: 0x146f1b7e70fd)
+_jl_invoke at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/gf.c:2895 [inlined]
+ijl_apply_generic at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/gf.c:3077
+draw_atomic at /home/vhenault/.julia/packages/CairoMakie/ohA3a/src/mesh.jl:405
+draw_plot at /home/vhenault/.julia/packages/CairoMakie/ohA3a/src/plot-primitives.jl:135
+_jl_invoke at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/gf.c:2895 [inlined]
+ijl_apply_generic at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/gf.c:3077
+cairo_draw at /home/vhenault/.julia/packages/CairoMakie/ohA3a/src/plot-primitives.jl:49
+#colorbuffer#4 at /home/vhenault/.julia/packages/CairoMakie/ohA3a/src/screen.jl:381
+colorbuffer at /home/vhenault/.julia/packages/CairoMakie/ohA3a/src/screen.jl:378 [inlined]
+#colorbuffer#1798 at /home/vhenault/.julia/packages/Makie/kJl0u/src/display.jl:395
+colorbuffer at /home/vhenault/.julia/packages/Makie/kJl0u/src/display.jl:394
+unknown function (ip: 0x146f1b7f145b)
+_jl_invoke at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/gf.c:2895 [inlined]
+ijl_apply_generic at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/gf.c:3077
+recordframe! at /home/vhenault/.julia/packages/Makie/kJl0u/src/ffmpeg-util.jl:302
+#Record#1823 at /home/vhenault/.julia/packages/Makie/kJl0u/src/recording.jl:174
+unknown function (ip: 0x146f1b7e0fc0)
+_jl_invoke at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/gf.c:2895 [inlined]
+ijl_apply_generic at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/gf.c:3077
+Record at /home/vhenault/.julia/packages/Makie/kJl0u/src/recording.jl:170
+#record#1821 at /home/vhenault/.julia/packages/Makie/kJl0u/src/recording.jl:154
+record at /home/vhenault/.julia/packages/Makie/kJl0u/src/recording.jl:152
+unknown function (ip: 0x146f1b7dcc29)
+_jl_invoke at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/gf.c:2895 [inlined]
+ijl_apply_generic at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/gf.c:3077
+jl_apply at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/julia.h:1982 [inlined]
+do_call at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/interpreter.c:126
+eval_value at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/interpreter.c:223
+eval_stmt_value at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/interpreter.c:174 [inlined]
+eval_body at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/interpreter.c:617
+jl_interpret_toplevel_thunk at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/interpreter.c:775
+jl_toplevel_eval_flex at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/toplevel.c:934
+jl_toplevel_eval_flex at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/toplevel.c:877
+ijl_toplevel_eval_in at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/toplevel.c:985
+eval at ./boot.jl:385 [inlined]
+include_string at ./loading.jl:2146
+_jl_invoke at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/gf.c:2895 [inlined]
+ijl_apply_generic at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/gf.c:3077
+_include at ./loading.jl:2206
+include at ./Base.jl:495
+jfptr_include_46653.1 at /cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v3/Core/julia/1.10.10/lib/julia/sys.so (unknown line)
+_jl_invoke at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/gf.c:2895 [inlined]
+ijl_apply_generic at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/gf.c:3077
+exec_options at ./client.jl:323
+_start at ./client.jl:557
+jfptr__start_83114.1 at /cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v3/Core/julia/1.10.10/lib/julia/sys.so (unknown line)
+_jl_invoke at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/gf.c:2895 [inlined]
+ijl_apply_generic at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/gf.c:3077
+jl_apply at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/julia.h:1982 [inlined]
+true_main at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/jlapi.c:582
+jl_repl_entrypoint at /cache/build/builder-amdci5-7/julialang/julia-release-1-dot-10/src/jlapi.c:731
+main at julia (unknown line)
+unknown function (ip: 0x146f227d4949)
+__libc_start_main at /cvmfs/soft.computecanada.ca/gentoo/2023/x86-64-v3/usr/lib64/libc.so.6 (unknown line)
+unknown function (ip: 0x4010b8)
+unknown function (ip: (nil))
+Allocations: 442744281 (Pool: 441782735; Big: 961546); GC: 166
+[ Info: Preparing model
+┌ Info: Determined number of free variables
+└   D = 49
+┌ Info: Determined number type
+└   T = Float64
