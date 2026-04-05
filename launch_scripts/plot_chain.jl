@@ -455,7 +455,7 @@ for name in star_names
         append!(all_coords, o.z)
     end
 end
-lim = 1.1 * maximum(abs.(all_coords))
+lim = 0.85 * maximum(abs.(all_coords))   # shrink axis range by 20% — larger orbits clip
 
 # Animation view-angle parameters (also used for the initial Axis3 view).
 elev_max = 50 * π / 180   # start/end elevation
