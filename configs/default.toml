@@ -49,7 +49,7 @@ offsety = "Uniform(-3000, 3000)"                        # IMBH Dec offset from a
 
 # Default companion (per-star) priors — applied to every star unless overridden below
 [priors.companion_defaults]
-P     = "Uniform(10, 2_000_000)"    # Orbital period [yr]
+P     = "Uniform(10, 800_000)"    # Orbital period [yr]
 e     = "Uniform(0.0, 0.99)"        # Eccentricity
 i     = "Sine()"                     # Inclination [rad]
 omega = "UniformCircular()"          # Argument of periastron [rad]
