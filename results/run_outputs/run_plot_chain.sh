@@ -13,7 +13,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=8G
-#SBATCH --time=00:30:00
+#SBATCH --time=01:15:00
 #SBATCH --output=../logs/plot_chain_%j.out
 #SBATCH --error=../logs/plot_chain_%j.err
 #SBATCH --mail-type=ALL
