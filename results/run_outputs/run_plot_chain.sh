@@ -21,7 +21,9 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Under Slurm, BASH_SOURCE[0] points to a copy in /localscratch, so use
+# SLURM_SUBMIT_DIR (the directory sbatch was invoked from) when available.
+SCRIPT_DIR="${SLURM_SUBMIT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
 OCTOFITTER_DIR="$(cd "${SCRIPT_DIR}/../../../Octofitter_imbh.jl" && pwd)"
 PLOT_SCRIPT="$(cd "${SCRIPT_DIR}/../../launch_scripts" && pwd)/plot_chain.jl"
 LOG_DIR="$(cd "${SCRIPT_DIR}/../logs" && pwd)"
