@@ -457,18 +457,21 @@ for name in star_names
 end
 lim = 1.1 * maximum(abs.(all_coords))
 
-# Build figure with Axis3.
-# Start face-on (x-y plane): azimuth = -π/2 so that x is to the right,
-# elevation = π/2 so we look straight down the z (LOS) axis.
-# Then rotate around the y axis (vary elevation) over a full 360°.
-fig3d = Figure(size = (800, 800), fontsize = 16)
+# Animation view-angle parameters (also used for the initial Axis3 view).
+elev_max = 50 * π / 180   # start/end elevation
+elev_min = 20 * π / 180   # low angle, reveals LOS depth
+
+# Build figure with Axis3.  Starting azimuth (-π/2) places x to the right.
+# viewmode = :fit keeps ticks/labels inside the viewport as the camera rotates
+# (the default :fitzoom lets labels drift outside the frame).
+fig3d = Figure(size = (800, 800), fontsize = 16, figure_padding = 30)
 ax3 = Axis3(fig3d[1, 1];
     xlabel = "x [pc]", ylabel = "y [pc]", zlabel = "z (LOS) [pc]",
-    title  = "3D Orbits — Stars $(join(star_names, ", "))",
     limits = (-lim, lim, -lim, lim, -lim, lim),
     aspect = :data,
+    viewmode = :fit,
     azimuth   = -π / 2,
-    elevation =  π / 2,
+    elevation = elev_max,
 )
 
 # Draw orbit samples and current-epoch star positions
@@ -495,9 +498,7 @@ axislegend(ax3; position = :rt, framevisible = false)
 # and 20° using a cosine profile so both the first and last frames
 # match for seamless looping.
 n_frames   = 240
-framerate   = 15
-elev_max   = 50 * π / 180   # start/end elevation
-elev_min   = 20 * π / 180   # low angle, reveals LOS depth
+framerate  = 15
 anim_path  = joinpath(output_dir, "$(run_prefix)_orbits_3d.mp4")
 
 record(fig3d, anim_path, 0:(n_frames - 1); framerate) do frame
