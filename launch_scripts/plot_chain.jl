@@ -399,28 +399,78 @@ println("Generating IMBH position density map...")
 
 using KernelDensity
 
-# Convert posterior offset samples (mas) to absolute RA/Dec (degrees).
-# offsetx is Δα* (includes cos δ), offsety is Δδ.
-imbh_ra  = octo_utils.ra_cm_deg  .+ ox_samples ./ (3600e3 .* cosd(octo_utils.dec_cm_deg))
-imbh_dec = octo_utils.dec_cm_deg .+ oy_samples ./ 3600e3
+# Work in arcsec offsets from AvdM10 centre (primary axes).
+# offsetx/offsety are in mas; convert to arcsec.
+dra_arcsec  = ox_samples ./ 1000.0   # Δα* [arcsec]
+ddec_arcsec = oy_samples ./ 1000.0   # Δδ  [arcsec]
 
-# 2D kernel density estimate
-kd = kde((imbh_ra, imbh_dec))
+# 2D kernel density estimate in arcsec space
+kd = kde((dra_arcsec, ddec_arcsec))
 
-fig_imbh = Figure(size = (700, 600), fontsize = 16)
+# Normalize so the density integrates to 1 over the grid
+dx = step(kd.x)
+dy = step(kd.y)
+density_norm = kd.density ./ (sum(kd.density) * dx * dy)
+
+# Compute 1σ, 2σ, 3σ contour levels from the normalized density.
+# Sort density values descending; accumulate probability mass to find
+# the threshold enclosing 68.3%, 95.4%, 99.7% of the total.
+sorted_d = sort(vec(density_norm); rev = true)
+cum_prob = cumsum(sorted_d) .* (dx * dy)
+sigma_probs = [0.6827, 0.9545, 0.9973]
+sigma_levels = Float64[]
+for sp in sigma_probs
+    idx = findfirst(>=(sp), cum_prob)
+    push!(sigma_levels, sorted_d[idx])
+end
+
+# Axis limits locked to the KDE grid so the heatmap fills the entire
+# plot area (no white background where density is zero).
+dra_lo, dra_hi   = extrema(kd.x)
+ddec_lo, ddec_hi = extrema(kd.y)
+
+fig_imbh = Figure(size = (750, 650), fontsize = 16)
+
+# Primary axes: Δα* and Δδ in arcsec (bottom / left)
 ax_imbh = Axis(fig_imbh[1, 1];
-    xlabel = "RA [°]", ylabel = "Dec [°]",
+    xlabel = "Δα* [arcsec]", ylabel = "Δδ [arcsec]",
     xreversed = true,
     autolimitaspect = 1,
     xgridvisible = false, ygridvisible = false,
+    limits = ((dra_lo, dra_hi), (ddec_lo, ddec_hi)),
 )
-hm = heatmap!(ax_imbh, kd.x, kd.y, kd.density; colormap = :viridis, rasterize = 4)
-Colorbar(fig_imbh[1, 2], hm; label = "Probability density")
 
-# AvdM10 centre
-scatter!(ax_imbh, [octo_utils.ra_cm_deg], [octo_utils.dec_cm_deg];
+hm = heatmap!(ax_imbh, kd.x, kd.y, density_norm;
+    colormap = :viridis, rasterize = 4)
+
+# 1σ, 2σ, 3σ contours
+contour!(ax_imbh, kd.x, kd.y, density_norm;
+    levels = sort(sigma_levels),
+    color = :white, linestyle = :dash, linewidth = 0.8)
+
+Colorbar(fig_imbh[1, 2], hm; label = "Normalized probability density")
+
+# AvdM10 centre is at (0, 0) in offset coordinates
+scatter!(ax_imbh, [0.0], [0.0];
     marker = '+', markersize = 20, color = :red, label = "AvdM10 centre")
 axislegend(ax_imbh; position = :rt, framevisible = false)
+
+# Secondary axes: absolute RA (top) and Dec (right) in degrees.
+# Overlaid invisible Axis with transformed limits.
+cos_dec0 = cosd(octo_utils.dec_cm_deg)
+ra_lo  = octo_utils.ra_cm_deg  + dra_lo  / (3600.0 * cos_dec0)
+ra_hi  = octo_utils.ra_cm_deg  + dra_hi  / (3600.0 * cos_dec0)
+dec_lo = octo_utils.dec_cm_deg + ddec_lo / 3600.0
+dec_hi = octo_utils.dec_cm_deg + ddec_hi / 3600.0
+
+ax_deg = Axis(fig_imbh[1, 1];
+    xaxisposition = :top, yaxisposition = :right,
+    xlabel = "RA [°]", ylabel = "Dec [°]",
+    xreversed = true,
+    xgridvisible = false, ygridvisible = false,
+    limits = ((ra_lo, ra_hi), (dec_lo, dec_hi)),
+)
+hidespines!(ax_deg)
 
 save(joinpath(output_dir, "$(run_prefix)_imbh_position.png"), fig_imbh, px_per_unit = 3)
 println("IMBH position density map saved.")
