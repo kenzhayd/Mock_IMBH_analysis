@@ -393,7 +393,39 @@ end
 save(joinpath(output_dir, "$(run_prefix)_posteriors.png"), fig_post, px_per_unit=3)
 println("Posterior panels saved.")
 
-# ── 12. 3D orbit animation (360° pan, IMBH-centric) ───────────────────────
+# ── 12. IMBH position density map ────────────────────────────────────────
+
+println("Generating IMBH position density map...")
+
+using KernelDensity
+
+# Convert posterior offset samples (mas) to absolute RA/Dec (degrees).
+# offsetx is Δα* (includes cos δ), offsety is Δδ.
+imbh_ra  = octo_utils.ra_cm_deg  .+ ox_samples ./ (3600e3 .* cosd(octo_utils.dec_cm_deg))
+imbh_dec = octo_utils.dec_cm_deg .+ oy_samples ./ 3600e3
+
+# 2D kernel density estimate
+kd = kde((imbh_ra, imbh_dec))
+
+fig_imbh = Figure(size = (700, 600), fontsize = 16)
+ax_imbh = Axis(fig_imbh[1, 1];
+    xlabel = "RA [°]", ylabel = "Dec [°]",
+    xreversed = true,
+    autolimitaspect = 1,
+    xgridvisible = false, ygridvisible = false,
+)
+hm = heatmap!(ax_imbh, kd.x, kd.y, kd.density; colormap = :viridis, rasterize = 4)
+Colorbar(fig_imbh[1, 2], hm; label = "Probability density")
+
+# AvdM10 centre
+scatter!(ax_imbh, [octo_utils.ra_cm_deg], [octo_utils.dec_cm_deg];
+    marker = '+', markersize = 20, color = :red, label = "AvdM10 centre")
+axislegend(ax_imbh; position = :rt, framevisible = false)
+
+save(joinpath(output_dir, "$(run_prefix)_imbh_position.png"), fig_imbh, px_per_unit = 3)
+println("IMBH position density map saved.")
+
+# ── 13. 3D orbit animation (360° pan, IMBH-centric) ───────────────────────
 
 println("Generating 3D orbit animation...")
 
