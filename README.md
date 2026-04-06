@@ -11,15 +11,22 @@ Ocen_IMBH_analysis/
 ├── configs/
 │   └── default.toml                          # Reference run configuration
 ├── launch_scripts/
-│   ├── octo_utils.jl                         # Star data and observation builder
+│   ├── octo_utils.jl                         # Star data, RV constants, observation builder
 │   ├── octo_orbit_direct_likelihoods.jl      # Main fitting script (v8 API)
-│   ├── parse_config.jl                       # TOML loader and prior parser
+│   ├── parse_config.jl                       # TOML loader, prior parser, data flag helpers
+│   ├── plot_chain.jl                         # Post-fit plotting (posteriors, orbits, 3D animation)
 │   ├── submit_job.jl                         # Slurm job generator/submitter
 │   └── old_scripts/
-│       └── octo_orbit_192c_18r.jl                    # Legacy script (v7 API)
+│       ├── octo_orbit_192c_18r.jl            # Legacy fitting script (v7 API)
+│       └── run_octo_192_all_MCMC_centre.sh   # Legacy Slurm launcher
+├── results/
+│   ├── run_outputs/                          # Chain files, plots, summaries
+│   │   └── run_plot_chain.sh                 # Slurm job to regenerate plots from a chain
+│   └── logs/                                 # Slurm stdout/stderr and generated job scripts
 └── tests/
     ├── run_tests.sh                          # Slurm batch script to run all tests
     ├── test_likelihoods.jl                   # Unit tests for PM/accel likelihoods
+    ├── test_rv_likelihood.jl                 # Unit tests for RV likelihood (PlanetRelativeRVObs)
     ├── test_ad_compatibility.jl              # ForwardDiff gradient verification
     └── test_small_fit.jl                     # End-to-end 2-star sampling test
 ```
@@ -32,6 +39,8 @@ Ocen_IMBH_analysis/
 - On DAC HPC clusters: `module load julia/1.10.10`
 
 All scripts are run with `--project=path/to/Octofitter_imbh.jl` so that the local fork is used rather than any registered Octofitter version.
+
+The fitting script auto-installs `OctofitterRadialVelocity` (a sub-package inside `Octofitter_imbh.jl`) if it is not already present in the project environment.
 
 ---
 
@@ -56,7 +65,7 @@ description = "5-star direct likelihood fit"
 ```
 
 #### `[stars]`
-Which stars to include. Available labels: `A`, `B`, `C`, `D`, `E`, `F`, `G`. Stars B and G have lower-quality data.
+Which stars to include. Available labels: `A`, `B`, `C`, `D`, `E`, `F`, `G`. Stars B and G have lower-quality data. Stars E and F have radial velocity measurements.
 
 ```toml
 [stars]
@@ -84,9 +93,9 @@ System-level parameters shared across all stars.
 ```toml
 [priors.system]
 plx     = "truncated(Normal(0.19, 0.004), lower=0)"
-M       = "Uniform(100, 120000)"
-offsetx = "Normal(0, 10)"
-offsety = "Normal(0, 10)"
+M       = "Uniform(100, 100000)"
+offsetx = "Uniform(-3000, 3000)"
+offsety = "Uniform(-3000, 3000)"
 ```
 
 #### `[priors.companion_defaults]`
@@ -107,9 +116,6 @@ Override defaults for individual stars. Only list parameters that differ.
 ```toml
 [priors.overrides.B]
 P = "Uniform(1, 2_000_000)"
-
-[priors.overrides.G]
-P = "Uniform(1, 200_000)"
 ```
 
 #### Prior specification syntax
@@ -125,14 +131,29 @@ Prior strings are parsed at runtime. Supported forms:
 "UniformCircular()"
 ```
 
-Underscores in numbers are allowed (`"Uniform(10, 2_000_000)"`).
+Underscores in numbers are allowed (`"Uniform(10, 800_000)"`).
+
+#### `[data.defaults]` and `[data.overrides.<STAR>]`
+Controls which observation types enter the likelihood per star. Defaults apply to all stars; per-star overrides can disable specific data types. Radial velocity is only used for stars that have RV data in `octo_utils.jl` (currently E and F).
+
+```toml
+[data.defaults]
+position        = true
+proper_motion   = true
+acceleration    = true
+radial_velocity = true
+
+# Per-star overrides (uncomment to disable specific data for a star):
+# [data.overrides.A]
+# acceleration = false
+```
 
 #### `[sampling]`
 Controls Pigeons parallel-tempering run.
 
 ```toml
 [sampling]
-n_rounds             = 18     # 2^n_rounds total iterations
+n_rounds             = 15     # 2^n_rounds total iterations
 n_chains             = 192    # parallel chains (should match CPU count)
 n_chains_variational = 192
 checkpoint           = false
@@ -148,7 +169,7 @@ job_name      = "octo_imbh"
 nodes         = 1
 cpus_per_task = 192
 mem_per_cpu   = "3G"
-time          = "72:00:00"
+time          = "15:00:00"
 julia_module  = "julia/1.10.10"
 julia_threads = 192
 mail_type     = "ALL"
@@ -160,16 +181,16 @@ Paths are resolved relative to the config file's directory.
 
 ```toml
 [paths]
-project    = "../../Octofitter_imbh.jl"   # --project= for Julia
-output_dir = "run_outputs"                 # chain files, plots, summaries
-log_dir    = "logs"                        # Slurm stdout/stderr and tee logs
+project    = "../../Octofitter_imbh.jl"     # --project= for Julia
+output_dir = "../results/run_outputs"        # chain files, plots, summaries
+log_dir    = "../results/logs"               # Slurm stdout/stderr and tee logs
 ```
 
 ---
 
 ## Running Tests
 
-The three test scripts can be run individually or via the Slurm batch script. Since `test_small_fit.jl` runs a short MCMC it benefits from multiple CPUs and is best submitted as a cluster job.
+The test scripts can be run individually or via the Slurm batch script. Since `test_small_fit.jl` runs a short MCMC it benefits from multiple CPUs and is best submitted as a cluster job.
 
 ### Run on HPC (recommended)
 
@@ -188,11 +209,12 @@ Output is written to `tests/logs/octo_tests_<JOBID>.out` and `.err`.
 
 ### Run locally (fast tests only)
 
-`test_likelihoods.jl` and `test_ad_compatibility.jl` are lightweight and finish in under a minute:
+`test_likelihoods.jl`, `test_ad_compatibility.jl`, and `test_rv_likelihood.jl` are lightweight and finish in under a minute:
 
 ```bash
 julia --project=../Octofitter_imbh.jl tests/test_likelihoods.jl
 julia --project=../Octofitter_imbh.jl tests/test_ad_compatibility.jl
+julia --project=../Octofitter_imbh.jl tests/test_rv_likelihood.jl
 ```
 
 `test_small_fit.jl` runs a real 2-star fit and requires multiple threads:
@@ -206,6 +228,7 @@ julia --project=../Octofitter_imbh.jl -t 4 tests/test_small_fit.jl
 | Script | What it tests |
 |--------|--------------|
 | `test_likelihoods.jl` | `PlanetPMObs` and `PlanetAccelObs` evaluate correctly on a known orbit; position/PM/acceleration recover injected values |
+| `test_rv_likelihood.jl` | `PlanetRelativeRVObs` construction, combined pos+PM+accel+RV model compilation, ForwardDiff gradient through RV likelihood |
 | `test_ad_compatibility.jl` | Model compiles as type-stable; ForwardDiff can compute gradients without errors |
 | `test_small_fit.jl` | End-to-end: 2-star MCMC sampling completes; posterior plots are generated |
 
@@ -242,26 +265,41 @@ julia submit_job.jl ../configs/my_run.toml
 2. Generate a Slurm batch script in `<log_dir>/job_<timestamp>.sh`
 3. Call `sbatch` to submit it
 
-The Slurm job runs `octo_orbit_direct_likelihoods.jl` with the config as its only argument.
+The Slurm job runs `octo_orbit_direct_likelihoods.jl` with the config as its only argument. At the end of the fitting run, `plot_chain.jl` is called automatically to generate all plots and summaries.
 
 ### 4. Monitor
 
 ```bash
 squeue -u $USER
-tail -f logs/octo_imbh_<JOBID>.out
+tail -f results/logs/octo_imbh_<JOBID>.out
 ```
 
 ### 5. Outputs
 
-All outputs land in `<output_dir>` (default: `run_outputs/` relative to the config file):
+All outputs land in `<output_dir>` (default: `results/run_outputs/` relative to the config file):
 
 | File | Contents |
 |------|---------|
-| `stars<XYZ>_<N>c_<R>r_<JOBID>_summary.md` | Run metadata, priors, full config |
-| `stars<XYZ>_<N>c_<R>r_<JOBID>_chain.fits` | Full posterior chain (load with `Octofitter.loadchain`) |
-| `stars<XYZ>_<N>c_<R>r_<JOBID>_corner.png` | Corner plot of all parameters |
-| `stars<XYZ>_<N>c_<R>r_<JOBID>_orbit_panels.png` | Sky-plane orbit panels per star |
-| `stars<XYZ>_<N>c_<R>r_<JOBID>_posteriors.png` | Marginal posterior histograms |
+| `*_summary.md` | Run metadata, priors, full config |
+| `*_chain.fits` | Full posterior chain (load with `Octofitter.loadchain`) |
+| `*_corner.png` | Corner plot of all parameters |
+| `*_orbit_panels.png` | Sky-plane orbit panels per star + combined |
+| `*_posteriors.png` | Marginal posterior histograms |
+| `*_posterior_stats.txt` | Posterior summaries (median + 68% CI) |
+| `*_orbits_3d.mp4` | 3D orbit animation (360° pan with elevation oscillation) |
+
+---
+
+## Regenerating Plots from an Existing Chain
+
+To regenerate plots without re-running the fit, use the standalone Slurm script:
+
+```bash
+cd results/run_outputs/
+sbatch run_plot_chain.sh <chain.fits>
+```
+
+This submits a lightweight 1-CPU job that runs `plot_chain.jl` on the specified chain file.
 
 ---
 
@@ -283,14 +321,35 @@ If no config path is given, the script falls back to `configs/default.toml`.
 
 [`launch_scripts/octo_utils.jl`](launch_scripts/octo_utils.jl) is a Julia module providing:
 
-- `StarData` struct — position (RA/Dec), proper motion, and acceleration with uncertainties for each star
+- `StarData` struct — position (RA/Dec), proper motion, acceleration, 2D velocity, and radial velocity with uncertainties for each star
 - `stars` dictionary — labelled `"A"` through `"G"` with measured observables
-- `build_star_observations(star, epoch_mjd)` — returns `(astrom_obs, pm_obs, acc_obs)` ready to pass to `Planet(observations=[...])`
+- `build_star_observations(star, epoch_mjd; include_rv)` — returns `(astrom_obs, pm_obs, acc_obs, rv_obs)` ready to pass to `Planet(observations=[...])`; `rv_obs` is `nothing` for stars without RV data
+- Cluster constants: centre coordinates (Anderson & van der Marel 2010), distance, systemic radial velocity (Baumgardt catalogue)
+- Unit conversion and error propagation utilities
 
 This module is included automatically by `octo_orbit_direct_likelihoods.jl` and all test scripts.
 
 ---
 
-## Legacy Script
+## Plot Chain Script
 
-[`launch_scripts/old_scripts/octo_orbit_192c_18r.jl`](launch_scripts/old_scripts/octo_orbit_192c_18r.jl) uses the v7 Octofitter API with synthetic 3-epoch astrometry rather than direct PM/acceleration likelihoods. It is kept for comparison only and is not actively maintained.
+[`launch_scripts/plot_chain.jl`](launch_scripts/plot_chain.jl) loads a saved chain FITS file and generates:
+
+1. **Corner plot** — pair plot of system-level parameters (M, plx, offsetx, offsety)
+2. **Orbit panels** — sky-plane orbits per star with observed proper motion vectors, plus a combined panel
+3. **Posterior histograms** — marginal distributions for each star's orbital elements
+4. **Posterior statistics** — median and 68% credible intervals printed to screen and saved to file
+5. **3D orbit animation** — rotating view of all orbits in parsec, IMBH-centric frame, with star marker sizes scaled by the IMBH mass of each chain sample
+
+This script is called automatically at the end of a fitting run, or can be run standalone via `run_plot_chain.sh`.
+
+---
+
+## Legacy Scripts
+
+[`launch_scripts/old_scripts/`](launch_scripts/old_scripts/) contains:
+
+- `octo_orbit_192c_18r.jl` — v7 Octofitter API with synthetic 3-epoch astrometry rather than direct PM/acceleration likelihoods
+- `run_octo_192_all_MCMC_centre.sh` — corresponding Slurm launcher
+
+These are kept for comparison only and are not actively maintained.
