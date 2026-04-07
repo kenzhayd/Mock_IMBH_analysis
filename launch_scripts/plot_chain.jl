@@ -397,37 +397,31 @@ println("Posterior panels saved.")
 
 println("Generating IMBH position density map...")
 
-using KernelDensity
-
 # Work in arcsec offsets from AvdM10 centre (primary axes).
-# offsetx/offsety are in mas; convert to arcsec.
 dra_arcsec  = ox_samples ./ 1000.0   # Δα* [arcsec]
 ddec_arcsec = oy_samples ./ 1000.0   # Δδ  [arcsec]
 
-# 2D kernel density estimate in arcsec space
-kd = kde((dra_arcsec, ddec_arcsec))
-
-# Normalize so the density integrates to 1 over the grid
-dx = step(kd.x)
-dy = step(kd.y)
-density_norm = kd.density ./ (sum(kd.density) * dx * dy)
-
-# Compute 1σ, 2σ, 3σ contour levels from the normalized density.
-# Sort density values descending; accumulate probability mass to find
-# the threshold enclosing 68.3%, 95.4%, 99.7% of the total.
-sorted_d = sort(vec(density_norm); rev = true)
-cum_prob = cumsum(sorted_d) .* (dx * dy)
-sigma_probs = [0.6827, 0.9545, 0.9973]
-sigma_levels = Float64[]
-for sp in sigma_probs
-    idx = findfirst(>=(sp), cum_prob)
-    push!(sigma_levels, sorted_d[idx])
+# 2D histogram
+n_bins = 120
+hist_x = range(extrema(dra_arcsec)..., length = n_bins + 1)
+hist_y = range(extrema(ddec_arcsec)..., length = n_bins + 1)
+hist_counts = zeros(n_bins, n_bins)
+dx = step(hist_x)
+dy = step(hist_y)
+for (x, y) in zip(dra_arcsec, ddec_arcsec)
+    ix = clamp(floor(Int, (x - first(hist_x)) / dx) + 1, 1, n_bins)
+    iy = clamp(floor(Int, (y - first(hist_y)) / dy) + 1, 1, n_bins)
+    hist_counts[ix, iy] += 1
 end
+# Normalize to peak = 1
+hist_norm = hist_counts ./ maximum(hist_counts)
 
-# Axis limits locked to the KDE grid so the heatmap fills the entire
-# plot area (no white background where density is zero).
-dra_lo, dra_hi   = extrema(kd.x)
-ddec_lo, ddec_hi = extrema(kd.y)
+# Bin centres
+cx = [first(hist_x) + (i - 0.5) * dx for i in 1:n_bins]
+cy = [first(hist_y) + (j - 0.5) * dy for j in 1:n_bins]
+
+# Greyscale colormap: white (0) → black (1)
+cmap_grey = cgrad([:white, :black])
 
 fig_imbh = Figure(size = (750, 650), fontsize = 16)
 
@@ -437,27 +431,39 @@ ax_imbh = Axis(fig_imbh[1, 1];
     xreversed = true,
     autolimitaspect = 1,
     xgridvisible = false, ygridvisible = false,
-    limits = ((dra_lo, dra_hi), (ddec_lo, ddec_hi)),
+    backgroundcolor = :white,
 )
 
-hm = heatmap!(ax_imbh, kd.x, kd.y, density_norm;
-    colormap = :viridis, rasterize = 4)
+hm = heatmap!(ax_imbh, cx, cy, hist_norm;
+    colormap = cmap_grey, colorrange = (0, 1), rasterize = 4)
+Colorbar(fig_imbh[1, 2], hm; label = "Normalized density")
 
-# 1σ, 2σ, 3σ contours
-contour!(ax_imbh, kd.x, kd.y, density_norm;
-    levels = sort(sigma_levels),
-    color = :white, linestyle = :dash, linewidth = 0.8)
-
-Colorbar(fig_imbh[1, 2], hm; label = "Normalized probability density")
-
-# AvdM10 centre is at (0, 0) in offset coordinates
+# AvdM10 centre at (0, 0) in offset coordinates
 scatter!(ax_imbh, [0.0], [0.0];
     marker = '+', markersize = 20, color = :red, label = "AvdM10 centre")
+
+# Overlay star positions and observed PM vectors (converted mas → arcsec)
+scale_pm = 0.25   # arcsec per mas/yr for arrow length
+for (k, name) in enumerate(star_names)
+    color = Makie.wong_colors()[mod1(k, length(Makie.wong_colors()))]
+    obs_ra_as   = astrom_obs[name].table.ra[1]  / 1000.0
+    obs_dec_as  = astrom_obs[name].table.dec[1]  / 1000.0
+    obs_pmra    = pm_obs[name].table.pmra[1]
+    obs_pmdec   = pm_obs[name].table.pmdec[1]
+    arrows2d!(ax_imbh, [obs_ra_as], [obs_dec_as],
+        [obs_pmra * scale_pm], [obs_pmdec * scale_pm];
+        color = :royalblue, shaftwidth = 2.0, tipwidth = 10, tiplength = 10)
+    scatter!(ax_imbh, [obs_ra_as], [obs_dec_as];
+        marker = '★', color = Makie.wong_colors()[2], markersize = 14,
+        strokecolor = :black, strokewidth = 0.5)
+end
+
 axislegend(ax_imbh; position = :rt, framevisible = false)
 
 # Secondary axes: absolute RA (top) and Dec (right) in degrees.
-# Overlaid invisible Axis with transformed limits.
 cos_dec0 = cosd(octo_utils.dec_cm_deg)
+dra_lo, dra_hi   = extrema(cx)
+ddec_lo, ddec_hi = extrema(cy)
 ra_lo  = octo_utils.ra_cm_deg  + dra_lo  / (3600.0 * cos_dec0)
 ra_hi  = octo_utils.ra_cm_deg  + dra_hi  / (3600.0 * cos_dec0)
 dec_lo = octo_utils.dec_cm_deg + ddec_lo / 3600.0
