@@ -245,7 +245,15 @@ println("Posterior stats saved to: $stats_path")
 # ── 9. Corner plot ───────────────────────────────────────────────────────────
 
 println("\nGenerating corner plot...")
-corner_plot = octocorner(model, chain; small=true,
+# Subsample chain for corner plot to limit memory usage
+max_corner_samples = 10_000
+if size(chain, 1) > max_corner_samples
+    thin_idx = round.(Int, range(1, size(chain, 1), length=max_corner_samples))
+    chain_thin = chain[thin_idx, :, :]
+else
+    chain_thin = chain
+end
+corner_plot = octocorner(model, chain_thin; small=true,
     includecols=["M", "offsetx", "offsety"],
     labels=Dict{Symbol,Any}(
         :offsetx => "Δα*_IMBH [mas]",
@@ -253,6 +261,7 @@ corner_plot = octocorner(model, chain; small=true,
     )
 )
 save(joinpath(output_dir, "$(run_prefix)_corner.png"), corner_plot, px_per_unit=3)
+corner_plot = nothing; chain_thin = nothing; GC.gc()
 println("Corner plot saved.")
 
 # ── 10. Sky-plane orbit panels ───────────────────────────────────────────────
@@ -352,6 +361,7 @@ scatter!(ax_all, [median(ox_samples)], [median(oy_samples)];
 axislegend(ax_all; position=:rt, framevisible=false)
 
 save(joinpath(output_dir, "$(run_prefix)_orbit_panels.png"), fig_orbits, px_per_unit=3)
+fig_orbits = nothing; GC.gc()
 println("Orbit panels saved.")
 
 # ── 11. Posterior histogram panels ───────────────────────────────────────────
@@ -391,6 +401,7 @@ for (k, name) in enumerate(star_names)
     param_panel!(fig_post, row, 5, cidx, rad2deg.(s.Ω), "$(name): Ω [°]")
 end
 save(joinpath(output_dir, "$(run_prefix)_posteriors.png"), fig_post, px_per_unit=3)
+fig_post = nothing; GC.gc()
 println("Posterior panels saved.")
 
 # ── 12. IMBH position density map ────────────────────────────────────────
@@ -479,6 +490,7 @@ ax_deg = Axis(fig_imbh[1, 1];
 hidespines!(ax_deg)
 
 save(joinpath(output_dir, "$(run_prefix)_imbh_position.png"), fig_imbh, px_per_unit = 3)
+fig_imbh = nothing; GC.gc()
 println("IMBH position density map saved.")
 
 # ── 13. 3D orbit animation (360° pan, IMBH-centric) ───────────────────────
