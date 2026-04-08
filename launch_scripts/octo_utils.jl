@@ -11,6 +11,7 @@ using UnitfulAstro
 using LinearAlgebra
 using Octofitter
 using OctofitterRadialVelocity
+using Distributions
 using Statistics
 
 
