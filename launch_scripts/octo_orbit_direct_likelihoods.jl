@@ -56,15 +56,20 @@ astrom_obs = Dict{String, Any}()
 pm_obs     = Dict{String, Any}()
 acc_obs    = Dict{String, Any}()
 rv_obs     = Dict{String, Any}()
+zp_obs     = Dict{String, Any}()
+
+z_prior_sigma = get_z_prior_sigma(cfg)
 
 for name in star_names
     star = octo_utils.stars[name]
     include_rv = get_data_flag(cfg, name, "radial_velocity")
-    a, p, ac, r = octo_utils.build_star_observations(star, epoch_mjd; include_rv)
+    a, p, ac, r, zp = octo_utils.build_star_observations(star, epoch_mjd;
+                        include_rv, z_prior_sigma)
     astrom_obs[name] = a
     pm_obs[name]     = p
     acc_obs[name]    = ac
     rv_obs[name]     = r
+    zp_obs[name]     = zp
 end
 
 # === 3. Define companions ===
@@ -91,6 +96,9 @@ for name in star_names
     end
     if get_data_flag(cfg, name, "radial_velocity") && rv_obs[name] !== nothing
         push!(obs_list, rv_obs[name])
+    end
+    if get_data_flag(cfg, name, "z_prior") && zp_obs[name] !== nothing
+        push!(obs_list, zp_obs[name])
     end
 
     star = Planet(
@@ -175,6 +183,9 @@ open(summary_path, "w") do io
     println(io, "|---|---|")
     for (k, v) in sys_priors
         println(io, "| $(k) | $(v) |")
+    end
+    if z_prior_sigma !== nothing
+        println(io, "| z_prior | Normal(0, $(z_prior_sigma)) AU |")
     end
     println(io)
     println(io, "## Companion Priors (defaults)")

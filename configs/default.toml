@@ -49,7 +49,7 @@ offsety = "Uniform(-3000, 3000)"                        # IMBH Dec offset from a
 
 # Default companion (per-star) priors — applied to every star unless overridden below
 [priors.companion_defaults]
-P     = "Uniform(10, 800_000)"    # Orbital period [yr]
+P     = "Uniform(10, 2_000_000)"    # Orbital period [yr]
 e     = "Uniform(0.0, 0.99)"        # Eccentricity
 i     = "Sine()"                     # Inclination [rad]
 omega = "UniformCircular()"          # Argument of periastron [rad]
@@ -75,6 +75,14 @@ position        = true
 proper_motion   = true
 acceleration    = true
 radial_velocity = true
+
+z_prior         = true      # LOS position prior (cluster membership constraint)
+
+# Line-of-sight (z) prior — constrains each star's LOS offset from the IMBH.
+# sigma_z_au is the width of a Normal(0, σ) prior in AU.
+# Omega Cen core radius ≈ 4.1 pc ≈ 845,000 AU; half-light radius ≈ 7.9 pc ≈ 1,629,000 AU.
+[data.z_prior]
+sigma_z_au = 845_000        # 1σ = core radius [AU]
 
 # Per-star overrides (uncomment to disable specific data for a star):
 # [data.overrides.A]

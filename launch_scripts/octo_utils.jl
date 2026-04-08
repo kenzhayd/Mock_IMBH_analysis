@@ -367,14 +367,18 @@ Parameters:
 - star: StarData object with position, PM, acceleration, and (optional) RV data
 - epoch_mjd: Observation epoch in Modified Julian Date
 - include_rv: Whether to build RV observation (default true; only used if star has RV data)
+- z_prior_sigma: If not nothing, build a PlanetZPriorObs with Normal(0, z_prior_sigma) in AU
 
 Returns:
 - astrom: PlanetRelAstromObs (single-epoch relative position)
 - pm: PlanetPMObs (single-epoch proper motion)
 - acc: PlanetAccelObs (single-epoch acceleration)
 - rv: PlanetRelativeRVObs or nothing (single-epoch peculiar radial velocity)
+- zp: PlanetZPriorObs or nothing (LOS position prior)
 """
-function build_star_observations(star::StarData, epoch_mjd::Float64; include_rv::Bool=true)
+function build_star_observations(star::StarData, epoch_mjd::Float64;
+                                  include_rv::Bool=true,
+                                  z_prior_sigma::Union{Nothing,Float64}=nothing)
     # 1. Single-epoch position relative to cluster center.
     # RA offset is multiplied by cos(δ_ref) to give Δα* (east in mas), consistent
     # with the α* convention used by raoff(sol), pmra(sol), and the input PM/accel data.
@@ -412,7 +416,14 @@ function build_star_observations(star::StarData, epoch_mjd::Float64; include_rv:
         )
     end
 
-    return astrom, pm, acc, rv
+    # 5. LOS position prior (z ~ Normal(0, σ_z) in AU)
+    zp = nothing
+    if z_prior_sigma !== nothing
+        zp = PlanetZPriorObs(epoch_mjd, Normal(0.0, z_prior_sigma);
+                              name="$(star.name)_zprior")
+    end
+
+    return astrom, pm, acc, rv, zp
 end
 
 end
