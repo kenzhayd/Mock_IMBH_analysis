@@ -275,7 +275,7 @@ for name in star_names
     if name == "A"
         star_colors[name] = colorant"grey60"
     else
-        wong_i += 1
+        global wong_i += 1
         star_colors[name] = Makie.wong_colors()[mod1(wong_i, length(Makie.wong_colors()))]
     end
 end
