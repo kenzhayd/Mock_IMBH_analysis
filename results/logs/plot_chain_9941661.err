@@ -1,0 +1,12 @@
+[ Info: Preparing model
+┌ Info: Determined number of free variables
+└   D = 49
+┌ Info: Determined number type
+└   T = Float64
+┌ Warning: Assignment to `wong_i` in soft scope is ambiguous because a global variable by the same name exists: `wong_i` will be treated as a new local. Disambiguate by using `local wong_i` to suppress this warning or `global wong_i` to assign to the existing global variable.
+└ @ /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/launch_scripts/plot_chain.jl:278
+ERROR: LoadError: UndefVarError: `wong_i` not defined
+Stacktrace:
+ [1] top-level scope
+   @ /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/launch_scripts/plot_chain.jl:278
+in expression starting at /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/launch_scripts/plot_chain.jl:274
