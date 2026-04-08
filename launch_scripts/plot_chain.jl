@@ -544,7 +544,7 @@ for name in star_names
         append!(all_coords, o.z)
     end
 end
-lim = 0.7 * maximum(abs.(all_coords))   # shrink axis range by 20% — larger orbits clip
+lim = 0.5 * maximum(abs.(all_coords))   # shrink axis range — larger orbits clip
 
 # Animation view-angle parameters (also used for the initial Axis3 view).
 azim_start = -3 * π / 4    # starting azimuth (three-quarter view)
