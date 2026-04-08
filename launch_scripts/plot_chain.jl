@@ -268,6 +268,18 @@ println("Corner plot saved.")
 
 println("Generating orbit panels...")
 
+# Per-star color: grey for star A, Wong palette (starting at index 1) for all others.
+star_colors = Dict{String, Any}()
+wong_i = 0
+for name in star_names
+    if name == "A"
+        star_colors[name] = colorant"grey60"
+    else
+        wong_i += 1
+        star_colors[name] = Makie.wong_colors()[mod1(wong_i, length(Makie.wong_colors()))]
+    end
+end
+
 sample_idx = round.(Int, range(1, length(M_samples), length=100))
 
 function star_orbit_panel!(ax, s, M_samp, plx_samp, ox_samp, oy_samp,
@@ -312,7 +324,7 @@ fig_orbits = Figure(size=(n_cols_orb * 420, n_rows_fig * 440), fontsize=18)
 for (k, name) in enumerate(star_names)
     row   = ceil(Int, k / n_cols_orb)
     col   = mod1(k, n_cols_orb)
-    color = Makie.wong_colors()[mod1(k, length(Makie.wong_colors()))]
+    color = star_colors[name]
     ax    = Axis(fig_orbits[row, col];
         xlabel="Δα* [mas]", ylabel="Δδ [mas]",
         xreversed=true, autolimitaspect=1,
@@ -333,7 +345,7 @@ ax_all = Axis(fig_orbits[combined_row, combined_cols];
     xgridvisible=false, ygridvisible=false)
 
 for (k, name) in enumerate(star_names)
-    color    = Makie.wong_colors()[mod1(k, length(Makie.wong_colors()))]
+    color    = star_colors[name]
     s        = star_samples[name]
     obs_ra   = astrom_obs[name].table.ra[1]
     obs_dec  = astrom_obs[name].table.dec[1]
@@ -368,37 +380,37 @@ println("Orbit panels saved.")
 
 println("Generating posterior panels...")
 
-function param_panel!(layout, row, col, cidx, samples, xlabel; show_legend=false)
+function param_panel!(layout, row, col, color, samples, xlabel; show_legend=false)
     ax = Axis(layout[row, col]; xlabel=xlabel, ylabel="Probability Density",
               xgridvisible=false, ygridvisible=false)
     med = median(samples)
     hist!(ax, samples; normalization=:pdf, bins=30,
-          color=(Makie.wong_colors()[cidx], 0.7))
+          color=(color, 0.7))
     vlines!(ax, [med]; color=Makie.wong_colors()[2], linestyle=:solid, label="Median")
     show_legend && axislegend(ax; position=:rt, framevisible=false)
 end
 
 fig_post = Figure(size=(1600, (1 + n_stars) * 260), fontsize=18)
 
-param_panel!(fig_post, 1, 1, 1, M_samples ./ 1e4,
+sys_color = Makie.wong_colors()[1]
+param_panel!(fig_post, 1, 1, sys_color, M_samples ./ 1e4,
     Makie.rich("M", Makie.subscript("IMBH"), " [10⁴ M", Makie.subscript("☉"), "]");
     show_legend=true)
-param_panel!(fig_post, 1, 2, 1, plx_samples, "plx [mas]")
-param_panel!(fig_post, 1, 3, 1, ox_samples,
+param_panel!(fig_post, 1, 2, sys_color, plx_samples, "plx [mas]")
+param_panel!(fig_post, 1, 3, sys_color, ox_samples,
     Makie.rich("Δα*", Makie.subscript("IMBH"), " [mas]"))
-param_panel!(fig_post, 1, 4, 1, oy_samples,
+param_panel!(fig_post, 1, 4, sys_color, oy_samples,
     Makie.rich("Δδ", Makie.subscript("IMBH"), " [mas]"))
 
-star_cidx = [3, 4, 5, 6, 7]
 for (k, name) in enumerate(star_names)
-    cidx = star_cidx[mod1(k, length(star_cidx))]
     row  = k + 1
     s    = star_samples[name]
-    param_panel!(fig_post, row, 1, cidx, s.a,           "$(name): a [AU]")
-    param_panel!(fig_post, row, 2, cidx, s.e,           "$(name): e")
-    param_panel!(fig_post, row, 3, cidx, rad2deg.(s.i), "$(name): i [°]")
-    param_panel!(fig_post, row, 4, cidx, rad2deg.(s.ω), "$(name): ω [°]")
-    param_panel!(fig_post, row, 5, cidx, rad2deg.(s.Ω), "$(name): Ω [°]")
+    c    = star_colors[name]
+    param_panel!(fig_post, row, 1, c, s.a,           "$(name): a [AU]")
+    param_panel!(fig_post, row, 2, c, s.e,           "$(name): e")
+    param_panel!(fig_post, row, 3, c, rad2deg.(s.i), "$(name): i [°]")
+    param_panel!(fig_post, row, 4, c, rad2deg.(s.ω), "$(name): ω [°]")
+    param_panel!(fig_post, row, 5, c, rad2deg.(s.Ω), "$(name): Ω [°]")
 end
 save(joinpath(output_dir, "$(run_prefix)_posteriors.png"), fig_post, px_per_unit=3)
 fig_post = nothing; GC.gc()
@@ -456,7 +468,7 @@ scatter!(ax_imbh, [0.0], [0.0];
 # Overlay star positions and observed PM vectors (converted mas → arcsec)
 scale_pm = 0.25   # arcsec per mas/yr for arrow length
 for (k, name) in enumerate(star_names)
-    color = Makie.wong_colors()[mod1(k, length(Makie.wong_colors()))]
+    color = star_colors[name]
     obs_ra_as   = astrom_obs[name].table.ra[1]  / 1000.0
     obs_dec_as  = astrom_obs[name].table.dec[1]  / 1000.0
     obs_pmra    = pm_obs[name].table.pmra[1]
@@ -571,7 +583,7 @@ base_size     = lim * 0.012
 
 # Draw orbit samples and current-epoch star positions
 for (k, name) in enumerate(star_names)
-    color = Makie.wong_colors()[mod1(k, length(Makie.wong_colors()))]
+    color = star_colors[name]
     for o in orbit_3d_samples[name]
         lines!(ax3, o.x, o.y, o.z; color = (color, 0.3), linewidth = 0.5)
     end
