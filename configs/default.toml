@@ -80,9 +80,10 @@ z_prior         = true      # LOS position prior (cluster membership constraint)
 
 # Line-of-sight (z) prior — constrains each star's LOS offset from the IMBH.
 # sigma_z_au is the width of a Normal(0, σ) prior in AU.
+# 0.0221 pc = 4558 AU (one-dimensional positional standard deviation from Haberle)
 # Omega Cen core radius ≈ 4.1 pc ≈ 845,000 AU; half-light radius ≈ 7.9 pc ≈ 1,629,000 AU.
 [data.z_prior]
-sigma_z_au = 845_000        # 1σ = core radius [AU]
+sigma_z_au = 4558           # 1σ = 0.0221 pc [AU]
 
 # Per-star overrides (uncomment to disable specific data for a star):
 # [data.overrides.A]
