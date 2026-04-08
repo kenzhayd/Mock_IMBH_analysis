@@ -1,5 +1,5 @@
 Posterior summaries (median, 68% CI)
-Chain: /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/configs/../results/run_outputs/starsACDEF_192c_15r_9927880_chain.fits
+Chain: starsACDEF_192c_15r_9927880_chain.fits
 Epoch: 55197.0 MJD (2010.0 yr)
 Stars: A, C, D, E, F
 
