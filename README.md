@@ -142,11 +142,17 @@ position        = true
 proper_motion   = true
 acceleration    = true
 radial_velocity = true
+z_prior         = true      # LOS position prior (cluster membership)
+
+[data.z_prior]
+sigma_z_au = 845_000        # Normal(0, σ) prior on LOS offset [AU]
 
 # Per-star overrides (uncomment to disable specific data for a star):
 # [data.overrides.A]
 # acceleration = false
 ```
+
+The `z_prior` adds a `Normal(0, sigma_z_au)` prior on each star's line-of-sight separation from the IMBH (in AU), constraining stars to lie within the cluster extent. The default `sigma_z_au = 845,000` corresponds to the core radius of ω Cen (~4.1 pc).
 
 #### `[sampling]`
 Controls Pigeons parallel-tempering run.

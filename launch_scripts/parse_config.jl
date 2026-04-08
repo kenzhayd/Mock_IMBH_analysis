@@ -125,6 +125,20 @@ function get_data_flag(cfg, star_name::String, data_type::String)::Bool
     return Bool(get(overrides, data_type, default_val))
 end
 
+# ── Z-prior configuration ─────────────────────────────────────────────
+
+"""
+    get_z_prior_sigma(cfg) -> Union{Nothing, Float64}
+
+Return the σ_z value (in AU) for the LOS position prior, or `nothing`
+if the `[data.z_prior]` section is absent.
+"""
+function get_z_prior_sigma(cfg)::Union{Nothing, Float64}
+    z_cfg = get(get(cfg, "data", Dict()), "z_prior", nothing)
+    z_cfg === nothing && return nothing
+    return Float64(z_cfg["sigma_z_au"])
+end
+
 # ── Epoch helper ────────────────────────────────────────────────────────
 
 """
