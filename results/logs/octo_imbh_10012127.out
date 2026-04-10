@@ -1,0 +1,119 @@
+┌ Warning: Circular dependency detected.
+│ Precompilation will be skipped for dependencies in this cycle:
+│  ┌ Octofitter
+│  └─ OctofitterRadialVelocity
+│ Precompilation will also be skipped for the following, which depend on the above cycle:
+│   Octofitter → OctofitterPairPlotsExt
+│   Octofitter → OctofitterPigeonsExt
+│   Octofitter → OctofitterMakieExt
+│   OctofitterRadialVelocity → OctofitterRadialVelocityMakieExt
+└ @ Pkg.API.Precompilation /cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v3/Core/julia/1.10.10/share/julia/stdlib/v1.10/Pkg/src/precompilation.jl:583
+┌ Warning: could not download https://pkg.julialang.org/registries
+│   exception = RequestError: Failed to connect to pkg.julialang.org port 443 after 30005 ms: Timeout was reached while requesting https://pkg.julialang.org/registries
+└ @ Pkg.Registry /cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v3/Core/julia/1.10.10/share/julia/stdlib/v1.10/Pkg/src/Registry/Registry.jl:69
+    Updating registry at `~/.julia/registries/General.toml`
+   Resolving package versions...
+  No Changes to `/lustre09/project/6039459/vhenault/OCen_IMBH/Octofitter_imbh.jl/Project.toml`
+  No Changes to `/lustre09/project/6039459/vhenault/OCen_IMBH/Octofitter_imbh.jl/Manifest.toml`
+┌ Warning: Circular dependency detected.
+│ Precompilation will be skipped for dependencies in this cycle:
+│  ┌ Octofitter
+│  └─ OctofitterRadialVelocity
+│ Precompilation will also be skipped for the following, which depend on the above cycle:
+│   Octofitter → OctofitterPairPlotsExt
+│   Octofitter → OctofitterPigeonsExt
+│   Octofitter → OctofitterMakieExt
+│   OctofitterRadialVelocity → OctofitterRadialVelocityMakieExt
+└ @ Pkg.API.Precompilation /cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v3/Core/julia/1.10.10/share/julia/stdlib/v1.10/Pkg/src/precompilation.jl:583
+Loaded config: /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/configs/leaveE.toml
+[ Info: Preparing model
+┌ Info: Determined number of free variables
+└   D = 40
+┌ Info: Determined number type
+└   T = Float64
+ℓπcallback(θ): 0.000038 seconds
+∇ℓπcallback(θ): 0.001694 seconds (2 allocations: 112 bytes)
+Run summary written to /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/configs/../results/run_outputs/starsACDF_192c_15r_10012127_summary.md
+┌ Warning: This model has priors that cannot be sampled IID.
+└ @ OctofitterPigeonsExt /lustre09/project/6039459/vhenault/OCen_IMBH/Octofitter_imbh.jl/ext/OctofitterPigeonsExt/OctofitterPigeonsExt.jl:105
+[ Info: Sampler running with multiple threads     : true
+[ Info: Likelihood evaluated with multiple threads: false
+┌ Info: Starting values not provided for all parameters! Guessing starting point using global optimization:
+│   num_params = 40
+└   num_fixed = 0
+┌ Info: Found sample of initial positions
+│   logpost_range = (-51.59876590426745, -35.520628185654296)
+└   mean_logpost = -38.126341117313224
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  scans     restarts      Λ        Λ_var      time(s)    allc(B)  log(Z₁/Z₀)   min(α)     mean(α)    min(αₑ)   mean(αₑ) 
+────────── ────────── ────────── ────────── ────────── ────────── ────────── ────────── ────────── ────────── ──────────
+        2          0       9.68       7.52       1.06    1.1e+08  -3.94e+07          0      0.955          1          1 
+        4          0         11         12      0.395   2.78e+06  -8.34e+05          0       0.94          1          1 
+        8          0       16.2       16.9      0.801   5.57e+06  -5.02e+04          0      0.914          1          1 
+       16          0       19.3       19.8       1.59   1.12e+07       -260          0      0.898          1          1 
+       32          0       23.9       21.8       3.21   1.96e+07       -105    3.3e-30      0.881          1          1 
+       64          0       24.9       11.2       6.73   2.18e+09       -140    0.00137      0.906          1          1 
+      128          0       26.2       11.1       13.6   4.54e+09       -133     0.0957      0.903          1          1 
+      256          0       26.4       11.8       27.3   9.13e+09       -131      0.338        0.9          1          1 
+      512          0         27         12         56   1.81e+10       -128      0.738      0.898          1          1 
+ 1.02e+03          2       27.4       13.2        115   3.61e+10       -125      0.822      0.894          1          1 
+ 2.05e+03         10       27.4       14.3        231   7.12e+10       -122      0.832      0.891          1          1 
+  4.1e+03         35       27.6         15        464    1.4e+11       -119      0.831      0.889          1          1 
+ 8.19e+03         87       27.8       15.6        950   2.77e+11       -117      0.838      0.887          1          1 
+ 1.64e+04        176       27.9       16.5    1.9e+03   5.52e+11       -116      0.836      0.884          1          1 
+ 3.28e+04        325         28       17.1   3.82e+03    1.1e+12       -115      0.839      0.882          1          1 
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+MCMC chain (32768×68×1 Array{Float64, 3})
+Loaded configuration from: /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/results/run_outputs/starsACDF_192c_15r_10012127_summary.md
+Reference epoch: 55197.0 MJD (2010.0 yr)
+Loaded chain: /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/configs/../results/run_outputs/starsACDF_192c_15r_10012127_chain.fits
+MCMC chain (32768×68×1 Array{Float64, 3})
+Star names from summary: A, C, D, F
+[ Info: Preparing model
+┌ Info: Determined number of free variables
+└   D = 40
+┌ Info: Determined number type
+└   T = Float64
+ℓπcallback(θ): 0.000028 seconds
+∇ℓπcallback(θ): 0.000601 seconds (1 allocation: 32 bytes)
+
+=== Posterior summaries (median, 68% CI) ===
+Param                     Median  [     16%,      84%]
+M_IMBH [10⁴ M☉]            7.086  [   6.401,    7.978]
+plx [mas]                  0.190  [   0.187,    0.194]
+offsetx [mas]           -376.930  [-448.705, -176.271]
+offsety [mas]            610.130  [ 453.059,  732.188]
+A: a [AU]               4768.174  [4038.139, 6035.194]
+A: e                       0.243  [   0.048,    0.627]
+A: i [°]                 130.247  [ 118.850,  145.338]
+A: ω [°]                   9.320  [ -72.721,   89.065]
+A: Ω [°]                  43.122  [-119.919,   57.599]
+C: a [AU]               6065.843  [4252.568, 7422.892]
+C: e                       0.154  [   0.043,    0.354]
+C: i [°]                  82.869  [  73.134,   87.641]
+C: ω [°]                  39.847  [-114.547,  124.793]
+C: Ω [°]                  14.371  [-162.979,   18.523]
+D: a [AU]               8003.322  [4865.779, 10453.703]
+D: e                       0.208  [   0.059,    0.415]
+D: i [°]                  75.810  [  69.167,   80.398]
+D: ω [°]                 -75.063  [-123.071,  -15.032]
+D: Ω [°]                 -58.362  [ -62.169,  -48.399]
+F: a [AU]              13328.876  [12077.231, 14245.885]
+F: e                       0.079  [   0.023,    0.130]
+F: i [°]                  14.323  [   5.839,   24.140]
+F: ω [°]                  15.038  [-120.720,   92.706]
+F: Ω [°]                   3.463  [ -45.334,  169.432]
+Posterior stats saved to: /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/results/run_outputs/starsACDF_192c_15r_10012127_posterior_stats.txt
+
+Generating corner plot...
+Corner plot saved.
+Generating orbit panels...
+Orbit panels saved.
+Generating posterior panels...
+Posterior panels saved.
+Generating IMBH position density map...
+IMBH position density map saved.
+Generating 3D orbit animation...
+3D orbit animation saved to: /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/results/run_outputs/starsACDF_192c_15r_10012127_orbits_3d.mp4
+
+Done. All plots written to: /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/results/run_outputs

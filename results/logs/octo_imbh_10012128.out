@@ -1,0 +1,63 @@
+┌ Warning: Circular dependency detected.
+│ Precompilation will be skipped for dependencies in this cycle:
+│  ┌ Octofitter
+│  └─ OctofitterRadialVelocity
+│ Precompilation will also be skipped for the following, which depend on the above cycle:
+│   Octofitter → OctofitterPairPlotsExt
+│   Octofitter → OctofitterPigeonsExt
+│   Octofitter → OctofitterMakieExt
+│   OctofitterRadialVelocity → OctofitterRadialVelocityMakieExt
+└ @ Pkg.API.Precompilation /cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v3/Core/julia/1.10.10/share/julia/stdlib/v1.10/Pkg/src/precompilation.jl:583
+┌ Warning: could not download https://pkg.julialang.org/registries
+│   exception = RequestError: Failed to connect to pkg.julialang.org port 443 after 30004 ms: Timeout was reached while requesting https://pkg.julialang.org/registries
+└ @ Pkg.Registry /cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v3/Core/julia/1.10.10/share/julia/stdlib/v1.10/Pkg/src/Registry/Registry.jl:69
+    Updating registry at `~/.julia/registries/General.toml`
+   Resolving package versions...
+  No Changes to `/lustre09/project/6039459/vhenault/OCen_IMBH/Octofitter_imbh.jl/Project.toml`
+  No Changes to `/lustre09/project/6039459/vhenault/OCen_IMBH/Octofitter_imbh.jl/Manifest.toml`
+┌ Warning: Circular dependency detected.
+│ Precompilation will be skipped for dependencies in this cycle:
+│  ┌ Octofitter
+│  └─ OctofitterRadialVelocity
+│ Precompilation will also be skipped for the following, which depend on the above cycle:
+│   Octofitter → OctofitterPairPlotsExt
+│   Octofitter → OctofitterPigeonsExt
+│   Octofitter → OctofitterMakieExt
+│   OctofitterRadialVelocity → OctofitterRadialVelocityMakieExt
+└ @ Pkg.API.Precompilation /cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v3/Core/julia/1.10.10/share/julia/stdlib/v1.10/Pkg/src/precompilation.jl:583
+Loaded config: /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/configs/leaveF.toml
+[ Info: Preparing model
+┌ Info: Determined number of free variables
+└   D = 40
+┌ Info: Determined number type
+└   T = Float64
+ℓπcallback(θ): 0.000036 seconds
+∇ℓπcallback(θ): 0.001742 seconds (2 allocations: 112 bytes)
+Run summary written to /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/configs/../results/run_outputs/starsACDE_192c_15r_10012128_summary.md
+┌ Warning: This model has priors that cannot be sampled IID.
+└ @ OctofitterPigeonsExt /lustre09/project/6039459/vhenault/OCen_IMBH/Octofitter_imbh.jl/ext/OctofitterPigeonsExt/OctofitterPigeonsExt.jl:105
+[ Info: Sampler running with multiple threads     : true
+[ Info: Likelihood evaluated with multiple threads: false
+┌ Info: Starting values not provided for all parameters! Guessing starting point using global optimization:
+│   num_params = 40
+└   num_fixed = 0
+┌ Info: Found sample of initial positions
+│   logpost_range = (-71.01623894019639, -60.01602729487146)
+└   mean_logpost = -70.69940586468502
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  scans     restarts      Λ        Λ_var      time(s)    allc(B)  log(Z₁/Z₀)   min(α)     mean(α)    min(αₑ)   mean(αₑ) 
+────────── ────────── ────────── ────────── ────────── ────────── ────────── ────────── ────────── ────────── ──────────
+        2          0       7.27       7.07       0.94   5.61e+07  -3.53e+07          0      0.963          1          1 
+        4          0       10.1       9.57      0.455   2.78e+06  -1.59e+05          0      0.949          1          1 
+        8          0       14.3       15.6       0.91    5.6e+06  -1.33e+04          0      0.922          1          1 
+       16          0       19.1       17.7       1.82   1.14e+07       -607          0      0.904          1          1 
+       32          0       20.7       20.8       3.64   1.98e+07       -108   1.54e-27      0.892      0.999          1 
+       64          0       24.2       10.5       7.69   2.53e+09       -414     0.0239      0.909          1          1 
+      128          0       25.9       11.1       14.8   5.28e+09       -188     0.0832      0.904          1          1 
+      256          0       25.8         11       29.4   1.05e+10       -184      0.498      0.904          1          1 
+      512          0       26.3         12       62.2   2.09e+10       -177      0.764        0.9          1          1 
+ 1.02e+03          0         27       13.6        134   4.13e+10       -167      0.803      0.894          1          1 
+ 2.05e+03         15       27.1       14.9        248    8.1e+10       -151      0.826       0.89          1          1 
+  4.1e+03         19       27.5         15        520   1.57e+11       -142      0.832      0.889          1          1 
+ 8.19e+03         55       27.6       15.2   1.04e+03   3.15e+11       -139      0.842      0.888          1          1 
+ 1.64e+04         81       27.5       15.5    2.1e+03   6.26e+11       -135      0.837      0.888          1          1 

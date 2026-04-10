@@ -58,3 +58,62 @@ Run summary written to /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_an
       512          0       26.9       12.3       62.3   1.99e+10       -159      0.801      0.898          1          1 
  1.02e+03          2       27.5       12.7        122   3.96e+10       -154      0.823      0.895          1          1 
  2.05e+03         11       27.5       13.7        246    7.8e+10       -149      0.826      0.892          1          1 
+  4.1e+03         19       27.9       14.2        522   1.54e+11       -145      0.828       0.89          1          1 
+ 8.19e+03         64       28.1       14.8   1.01e+03   3.06e+11       -143      0.839      0.888          1          1 
+ 1.64e+04        123       28.2       15.4   2.06e+03   6.02e+11       -140      0.842      0.886          1          1 
+ 3.28e+04        268       28.3       16.4   4.18e+03    1.2e+12       -139      0.842      0.883          1          1 
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+MCMC chain (32768×68×1 Array{Float64, 3})
+Loaded configuration from: /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/results/run_outputs/starsADEF_192c_15r_10012124_summary.md
+Reference epoch: 55197.0 MJD (2010.0 yr)
+Loaded chain: /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/configs/../results/run_outputs/starsADEF_192c_15r_10012124_chain.fits
+MCMC chain (32768×68×1 Array{Float64, 3})
+Star names from summary: A, D, E, F
+[ Info: Preparing model
+┌ Info: Determined number of free variables
+└   D = 40
+┌ Info: Determined number type
+└   T = Float64
+ℓπcallback(θ): 0.000030 seconds
+∇ℓπcallback(θ): 0.000636 seconds (1 allocation: 32 bytes)
+
+=== Posterior summaries (median, 68% CI) ===
+Param                     Median  [     16%,      84%]
+M_IMBH [10⁴ M☉]            5.691  [   5.028,    6.622]
+plx [mas]                  0.190  [   0.186,    0.195]
+offsetx [mas]           -321.169  [-604.720, -271.013]
+offsety [mas]             13.816  [ -33.809,   89.774]
+A: a [AU]               3606.543  [2658.773, 4384.569]
+A: e                       0.131  [   0.030,    0.329]
+A: i [°]                  97.884  [  92.282,  111.484]
+A: ω [°]                 -75.626  [-129.371,   -3.759]
+A: Ω [°]                -125.369  [-126.756, -121.037]
+D: a [AU]               5718.257  [4560.099, 7573.003]
+D: e                       0.175  [   0.067,    0.326]
+D: i [°]                  44.671  [  36.051,   54.289]
+D: ω [°]                 -39.834  [-129.702,   96.156]
+D: Ω [°]                 -14.514  [ -61.067,  135.701]
+E: a [AU]              10067.608  [8826.231, 11549.117]
+E: e                       0.978  [   0.973,    0.984]
+E: i [°]                 154.957  [ 153.104,  156.987]
+E: ω [°]                  71.257  [  67.874,   74.614]
+E: Ω [°]                  17.190  [  14.194,   20.311]
+F: a [AU]              20492.914  [17355.583, 23650.384]
+F: e                       0.343  [   0.255,    0.443]
+F: i [°]                  14.429  [   6.988,   22.678]
+F: ω [°]                 -40.910  [ -59.181,  -16.461]
+F: Ω [°]                 162.422  [ -19.559,  172.898]
+Posterior stats saved to: /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/results/run_outputs/starsADEF_192c_15r_10012124_posterior_stats.txt
+
+Generating corner plot...
+Corner plot saved.
+Generating orbit panels...
+Orbit panels saved.
+Generating posterior panels...
+Posterior panels saved.
+Generating IMBH position density map...
+IMBH position density map saved.
+Generating 3D orbit animation...
+3D orbit animation saved to: /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/results/run_outputs/starsADEF_192c_15r_10012124_orbits_3d.mp4
+
+Done. All plots written to: /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/results/run_outputs
