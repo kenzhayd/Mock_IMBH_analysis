@@ -527,11 +527,50 @@ function accel_alignment_angle(name, ox_samp, oy_samp)
     return rad2deg.(acos.(cosφ))
 end
 
-fig_pa = Figure(size=(1000, n_stars * 240), fontsize=18)
+"""
+    accel_toward_imbh_zscore(name, ox_samp, oy_samp)
+
+Per-posterior-sample z-score: the component of the measured acceleration in
+the direction of the star→IMBH unit vector, divided by the propagated
+uncertainty of that component.  z > 0 means the measured acceleration has a
+component pointing toward the IMBH; z ≈ 0 means the measurement cannot
+distinguish the IMBH direction; z < 0 means it points away.
+
+Also returns the angular uncertainty on the measured acceleration direction
+(in degrees), which is constant across the posterior.
+"""
+function accel_toward_imbh_zscore(name, ox_samp, oy_samp)
+    obs_ra  = astrom_obs[name].table.ra[1]
+    obs_dec = astrom_obs[name].table.dec[1]
+    ax_meas = acc_obs[name].table.accra[1]
+    ay_meas = acc_obs[name].table.accdec[1]
+    σx      = acc_obs[name].table.σ_accra[1]
+    σy      = acc_obs[name].table.σ_accdec[1]
+
+    # Angular uncertainty of the measured direction via error propagation on atan2
+    σ_φ_deg = rad2deg(sqrt((ay_meas * σx)^2 + (ax_meas * σy)^2) / (ax_meas^2 + ay_meas^2))
+
+    # Per-sample unit vector from star toward IMBH
+    dx = ox_samp .- obs_ra
+    dy = oy_samp .- obs_dec
+    r  = hypot.(dx, dy)
+    dxh = dx ./ r
+    dyh = dy ./ r
+
+    # Component of measured acceleration in the IMBH direction and its uncertainty
+    a_toward  = ax_meas .* dxh .+ ay_meas .* dyh
+    σ_toward  = sqrt.((σx .* dxh).^2 .+ (σy .* dyh).^2)
+
+    z = a_toward ./ σ_toward
+    return z, σ_φ_deg
+end
+
+fig_pa = Figure(size=(1500, n_stars * 240), fontsize=18)
 for (k, name) in enumerate(star_names)
     c  = star_colors[name]
     ν  = true_anomaly_at_epoch(star_samples[name], M_samples, plx_samples, epoch_mjd)
     Δφ = accel_alignment_angle(name, ox_samples, oy_samples)
+    z_accel, σ_φ_deg = accel_toward_imbh_zscore(name, ox_samples, oy_samples)
 
     ax_ν = Axis(fig_pa[k, 1];
         xlabel="$(name): ν(t_obs) [°]", ylabel="Probability Density",
@@ -545,10 +584,28 @@ for (k, name) in enumerate(star_names)
         ylabel="Probability Density",
         xgridvisible=false, ygridvisible=false)
     hist!(ax_φ, Δφ; normalization=:pdf, bins=40, color=(c, 0.7))
-    vlines!(ax_φ, [0.0]; color=:black, linestyle=:dot)
+    # Dashed line at 0° (perfect alignment) and shaded band showing the
+    # angular uncertainty of the measured acceleration direction
+    vlines!(ax_φ, [0.0]; color=:black, linestyle=:dot, label="Perfect alignment")
+    vspan!(ax_φ, 0.0, σ_φ_deg; color=(:grey, 0.25), label="Meas. dir. uncertainty (1σ)")
+    k == 1 && axislegend(ax_φ; position=:rt, framevisible=false, labelsize=12)
+
+    # Column 3: z-score (component of measured acc toward IMBH / uncertainty)
+    ax_z = Axis(fig_pa[k, 3];
+        xlabel="$(name): accel z-score toward IMBH",
+        ylabel="Probability Density",
+        xgridvisible=false, ygridvisible=false)
+    hist!(ax_z, z_accel; normalization=:pdf, bins=40, color=(c, 0.7))
+    vlines!(ax_z, [0.0]; color=:black, linestyle=:dot)
+    vlines!(ax_z, [-1.0, 1.0]; color=:grey, linestyle=:dash)
+    k == 1 && text!(ax_z, "z>0: acc toward IMBH"; position=(0.55, 0.90),
+                    align=(:left, :top), space=:relative, fontsize=11, color=:grey40)
 
     push!(stat_lines, format_stat("$(name): ν(t_obs) [°]", ν))
     push!(stat_lines, format_stat("$(name): Δφ_accel [°]", Δφ))
+    push!(stat_lines,
+          @sprintf("%-20s  %10.1f °", "$(name): σ_φ_acc (meas)", σ_φ_deg))
+    push!(stat_lines, format_stat("$(name): z_acc→IMBH", z_accel))
 end
 save(joinpath(output_dir, "$(run_prefix)_phase_accel.png"), fig_pa, px_per_unit=3)
 fig_pa = nothing; GC.gc()
