@@ -288,10 +288,14 @@ All outputs land in `<output_dir>` (default: `results/run_outputs/` relative to 
 |------|---------|
 | `*_summary.md` | Run metadata, priors, full config |
 | `*_chain.fits` | Full posterior chain (load with `Octofitter.loadchain`) |
-| `*_corner.png` | Corner plot of all parameters |
+| `*_corner.png` | Corner plot of system-level parameters |
 | `*_orbit_panels.png` | Sky-plane orbit panels per star + combined |
 | `*_posteriors.png` | Marginal posterior histograms |
-| `*_posterior_stats.txt` | Posterior summaries (median + 68% CI) |
+| `*_posterior_stats.txt` | Posterior summaries (median + 68% CI) including physical diagnostics |
+| `*_plausibility.png` | Pericenter distance and speed distributions with tidal/Schwarzschild reference lines |
+| `*_phase_accel.png` | True anomaly at obs epoch and acceleration-vector misalignment angle |
+| `*_rv_check.png` | RV posterior prediction vs measurement (stars with RV data only) |
+| `*_imbh_position.png` | IMBH position 2D density map |
 | `*_orbits_3d.mp4` | 3D orbit animation (360° pan with elevation oscillation) |
 
 ---
@@ -329,7 +333,7 @@ If no config path is given, the script falls back to `configs/default.toml`.
 
 - `StarData` struct — position (RA/Dec), proper motion, acceleration, 2D velocity, and radial velocity with uncertainties for each star
 - `stars` dictionary — labelled `"A"` through `"G"` with measured observables
-- `build_star_observations(star, epoch_mjd; include_rv)` — returns `(astrom_obs, pm_obs, acc_obs, rv_obs)` ready to pass to `Planet(observations=[...])`; `rv_obs` is `nothing` for stars without RV data
+- `build_star_observations(star, epoch_mjd; include_rv, z_prior_sigma)` — returns `(astrom_obs, pm_obs, acc_obs, rv_obs, zp_obs)`; `rv_obs` and `zp_obs` are `nothing` when the star has no RV data or when `z_prior_sigma` is not supplied
 - Cluster constants: centre coordinates (Anderson & van der Marel 2010), distance, systemic radial velocity (Baumgardt catalogue)
 - Unit conversion and error propagation utilities
 
@@ -341,11 +345,17 @@ This module is included automatically by `octo_orbit_direct_likelihoods.jl` and 
 
 [`launch_scripts/plot_chain.jl`](launch_scripts/plot_chain.jl) loads a saved chain FITS file and generates:
 
-1. **Corner plot** — pair plot of system-level parameters (M, plx, offsetx, offsety)
-2. **Orbit panels** — sky-plane orbits per star with observed proper motion vectors, plus a combined panel
-3. **Posterior histograms** — marginal distributions for each star's orbital elements
-4. **Posterior statistics** — median and 68% credible intervals printed to screen and saved to file
-5. **3D orbit animation** — rotating view of all orbits in parsec, IMBH-centric frame, with star marker sizes scaled by the IMBH mass of each chain sample
+1. **Corner plot** (`*_corner.png`) — pair plot of system-level parameters (M, plx, offsetx, offsety)
+2. **Orbit panels** (`*_orbit_panels.png`) — sky-plane orbits per star with observed proper motion vectors, plus a combined panel
+3. **Posterior histograms** (`*_posteriors.png`) — marginal distributions for each star's orbital elements
+4. **Posterior statistics** (`*_posterior_stats.txt`) — median and 68% credible intervals for all orbital elements and physical diagnostics; printed to screen and saved to file
+5. **Physical plausibility** (`*_plausibility.png`) — per-star histograms of pericenter distance (log-scale AU) and pericenter speed (km/s via vis-viva), with reference lines for the main-sequence tidal disruption radius, red-giant tidal disruption radius, and Schwarzschild radius
+6. **Phase and alignment** (`*_phase_accel.png`) — per-star histograms of the true anomaly at the observation epoch ν(t_obs) and of the angle Δφ between the measured acceleration vector and the star→IMBH direction (an independent geometric consistency check)
+7. **RV consistency** (`*_rv_check.png`, only for stars with RV data) — posterior-predicted peculiar radial velocity compared to the measured value ± 1σ; only produced for stars E and F
+8. **IMBH position map** (`*_imbh_position.png`) — 2D density of the IMBH position posterior with absolute RA/Dec secondary axes
+9. **3D orbit animation** (`*_orbits_3d.mp4`) — rotating view of all orbits in parsec, IMBH-centric frame, with star marker sizes scaled by the IMBH mass of each chain sample
+
+The `*_posterior_stats.txt` file includes orbital elements, pericenter/apocenter distances, pericenter/apocenter speeds, orbital periods, tidal radii, Schwarzschild radius, true anomaly at epoch, acceleration misalignment angle, and (where applicable) the RV residual in units of σ.
 
 This script is called automatically at the end of a fitting run, or can be run standalone via `run_plot_chain.sh`.
 
