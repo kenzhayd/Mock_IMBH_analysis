@@ -1,0 +1,15 @@
+Posterior summaries (median, 68% CI)
+Chain: /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/configs/../results/run_outputs/starsD_192c_15r_10036745_chain.fits
+Epoch: 55197.0 MJD (2010.0 yr)
+Stars: D
+
+Param                     Median  [     16%,      84%]
+M_IMBH [10⁴ M☉]            6.790  [   4.027,    9.125]
+plx [mas]                  0.190  [   0.186,    0.194]
+offsetx [mas]            -12.298  [-928.688,  793.484]
+offsety [mas]            595.949  [-1005.762, 1723.079]
+D: a [AU]               7492.343  [4439.489, 12251.557]
+D: e                       0.164  [   0.041,    0.466]
+D: i [°]                  71.574  [  22.206,  145.480]
+D: ω [°]                  -5.223  [-124.443,  116.190]
+D: Ω [°]                  17.165  [ -79.865,  125.311]
