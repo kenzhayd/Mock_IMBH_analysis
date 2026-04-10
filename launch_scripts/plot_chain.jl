@@ -121,14 +121,16 @@ end
 astrom_obs = Dict{String, Any}()
 pm_obs     = Dict{String, Any}()
 acc_obs    = Dict{String, Any}()
+rv_obs     = Dict{String, Any}()   # may hold nothing for stars without RV
 for name in star_names
     haskey(octo_utils.stars, name) ||
         error("Star '$name' not found in octo_utils.stars.")
     star = octo_utils.stars[name]
-    a, p, ac = octo_utils.build_star_observations(star, epoch_mjd)
+    a, p, ac, rv, _zp = octo_utils.build_star_observations(star, epoch_mjd)
     astrom_obs[name] = a
     pm_obs[name]     = p
     acc_obs[name]    = ac
+    rv_obs[name]     = rv
 end
 
 # ── 6. Rebuild the Octofitter model (required by octocorner) ─────────────────
@@ -228,19 +230,10 @@ println("\n=== Posterior summaries (median, 68% CI) ===")
 for line in stat_lines
     println(line)
 end
-
+# Note: _posterior_stats.txt is written at the very end of the script so that
+# physical-plausibility diagnostics (Sections 11.5–11.7) can append to
+# stat_lines before the file is produced.
 stats_path = joinpath(output_dir, "$(run_prefix)_posterior_stats.txt")
-open(stats_path, "w") do io
-    println(io, "Posterior summaries (median, 68% CI)")
-    println(io, "Chain: $chain_path")
-    println(io, "Epoch: $epoch_mjd MJD ($epoch_year yr)")
-    println(io, "Stars: $(join(star_names, ", "))")
-    println(io)
-    for line in stat_lines
-        println(io, line)
-    end
-end
-println("Posterior stats saved to: $stats_path")
 
 # ── 9. Corner plot ───────────────────────────────────────────────────────────
 
@@ -415,6 +408,194 @@ end
 save(joinpath(output_dir, "$(run_prefix)_posteriors.png"), fig_post, px_per_unit=3)
 fig_post = nothing; GC.gc()
 println("Posterior panels saved.")
+
+# ── 11.5. Physical plausibility: pericenter, velocity, tidal radii ───────────
+
+println("Generating plausibility diagnostics...")
+
+# 1 AU/yr in km/s (1 AU / 1 yr in SI)
+const AU_YR_TO_KMS = 4.7404705
+# G·M_sun in AU³/yr² (Kepler's third law with a in AU, P in yr, M in M_sun)
+const FOUR_PI2 = 4 * π^2
+
+# Reference stellar templates (not priors — for tidal radius lines only)
+const R_SUN_AU   = 1 / 215.032           # 1 R_sun in AU
+const R_GIANT_AU = 30 * R_SUN_AU         # ~30 R_sun for a red giant
+tidal_radius(R_star_au, m_star_Msun, M_BH_Msun) =
+    R_star_au * cbrt(M_BH_Msun / m_star_Msun)
+
+"""
+Per-sample orbital scalars for one star: pericenter/apocenter distances (AU),
+pericenter/apocenter speeds (km/s, via vis-viva), and period (yr).
+"""
+function orbital_scalars(s, M_samples)
+    a = s.a; e = s.e
+    r_peri = a .* (1 .- e)
+    r_apo  = a .* (1 .+ e)
+    v_peri = @. sqrt(FOUR_PI2 * M_samples * (1 + e) / (a * (1 - e))) * AU_YR_TO_KMS
+    v_apo  = @. sqrt(FOUR_PI2 * M_samples * (1 - e) / (a * (1 + e))) * AU_YR_TO_KMS
+    P_yr   = @. sqrt(a^3 / M_samples)
+    return (; r_peri, r_apo, v_peri, v_apo, P_yr)
+end
+
+# Mass-dependent reference radii (one value per posterior draw)
+rt_ms_samples  = tidal_radius.(R_SUN_AU,   1.0, M_samples)
+rt_rg_samples  = tidal_radius.(R_GIANT_AU, 0.8, M_samples)
+# Schwarzschild radius in AU:  r_s = 2GM/c² ≈ M[M_sun] · 1.909e-8 AU
+r_schw_samples = M_samples .* 1.909e-8
+
+# Append scalars to the text summary
+for name in star_names
+    scal = orbital_scalars(star_samples[name], M_samples)
+    push!(stat_lines, format_stat("$(name): r_peri [AU]", scal.r_peri))
+    push!(stat_lines, format_stat("$(name): r_apo  [AU]", scal.r_apo))
+    push!(stat_lines, format_stat("$(name): v_peri [km/s]", scal.v_peri))
+    push!(stat_lines, format_stat("$(name): v_apo  [km/s]", scal.v_apo))
+    push!(stat_lines, format_stat("$(name): P      [yr]",   scal.P_yr))
+end
+push!(stat_lines, format_stat("r_tidal MS  [AU]", rt_ms_samples))
+push!(stat_lines, format_stat("r_tidal RG  [AU]", rt_rg_samples))
+push!(stat_lines, format_stat("r_Schw      [AU]", r_schw_samples))
+
+fig_phys = Figure(size=(1200, n_stars * 260), fontsize=18)
+for (k, name) in enumerate(star_names)
+    s    = star_samples[name]
+    scal = orbital_scalars(s, M_samples)
+    c    = star_colors[name]
+
+    ax_r = Axis(fig_phys[k, 1];
+        xlabel="$(name): r_peri [AU]", ylabel="Probability Density",
+        xscale=log10,
+        xgridvisible=false, ygridvisible=false)
+    # Build log-spaced bins so the histogram renders correctly on a log axis
+    r_lo = max(minimum(scal.r_peri),
+               0.5 * min(median(rt_ms_samples), median(r_schw_samples)))
+    r_hi = maximum(scal.r_peri)
+    r_bins = 10 .^ range(log10(r_lo), log10(r_hi); length=31)
+    hist!(ax_r, scal.r_peri; normalization=:pdf, bins=r_bins, color=(c, 0.7))
+    vlines!(ax_r, [median(rt_ms_samples)];
+            color=:steelblue, linestyle=:dash, label="r_t (MS)")
+    vlines!(ax_r, [median(rt_rg_samples)];
+            color=:firebrick, linestyle=:dash, label="r_t (RG)")
+    vlines!(ax_r, [median(r_schw_samples)];
+            color=:black, linestyle=:dot, label="r_Schw")
+    k == 1 && axislegend(ax_r; position=:lt, framevisible=false)
+
+    ax_v = Axis(fig_phys[k, 2];
+        xlabel="$(name): v_peri [km/s]", ylabel="Probability Density",
+        xgridvisible=false, ygridvisible=false)
+    hist!(ax_v, scal.v_peri; normalization=:pdf, bins=30, color=(c, 0.7))
+end
+save(joinpath(output_dir, "$(run_prefix)_plausibility.png"), fig_phys, px_per_unit=3)
+fig_phys = nothing; GC.gc()
+println("Plausibility diagnostics saved.")
+
+# ── 11.6. True anomaly at obs epoch + acceleration-vector alignment ──────────
+
+println("Generating phase / acceleration-alignment diagnostics...")
+
+using PlanetOrbits: trueanom, radvel
+
+"True anomaly (deg, wrapped to (-180, 180]) at epoch_mjd, one per chain draw."
+function true_anomaly_at_epoch(s, M_samp, plx_samp, epoch_mjd)
+    ν = Vector{Float64}(undef, length(M_samp))
+    @inbounds for idx in eachindex(M_samp)
+        orb = Visual{KepOrbit}(;
+            a=s.a[idx], e=s.e[idx], i=s.i[idx],
+            ω=s.ω[idx], Ω=s.Ω[idx], tp=s.tp[idx],
+            M=M_samp[idx], plx=plx_samp[idx])
+        ν[idx] = rad2deg(trueanom(orbitsolve(orb, epoch_mjd)))
+    end
+    return @. mod(ν + 180, 360) - 180
+end
+
+"Angle (deg, 0–180) between measured accel vector and star→IMBH direction."
+function accel_alignment_angle(name, ox_samp, oy_samp)
+    obs_ra  = astrom_obs[name].table.ra[1]
+    obs_dec = astrom_obs[name].table.dec[1]
+    ax_meas = acc_obs[name].table.accra[1]
+    ay_meas = acc_obs[name].table.accdec[1]
+    a_norm  = hypot(ax_meas, ay_meas)
+    ax_hat  = ax_meas / a_norm
+    ay_hat  = ay_meas / a_norm
+    dx = ox_samp .- obs_ra
+    dy = oy_samp .- obs_dec
+    r  = hypot.(dx, dy)
+    dxh = dx ./ r
+    dyh = dy ./ r
+    cosφ = clamp.(ax_hat .* dxh .+ ay_hat .* dyh, -1.0, 1.0)
+    return rad2deg.(acos.(cosφ))
+end
+
+fig_pa = Figure(size=(1000, n_stars * 240), fontsize=18)
+for (k, name) in enumerate(star_names)
+    c  = star_colors[name]
+    ν  = true_anomaly_at_epoch(star_samples[name], M_samples, plx_samples, epoch_mjd)
+    Δφ = accel_alignment_angle(name, ox_samples, oy_samples)
+
+    ax_ν = Axis(fig_pa[k, 1];
+        xlabel="$(name): ν(t_obs) [°]", ylabel="Probability Density",
+        xticks=-180:90:180,
+        xgridvisible=false, ygridvisible=false)
+    hist!(ax_ν, ν; normalization=:pdf, bins=40, color=(c, 0.7))
+    vlines!(ax_ν, [0.0]; color=:black, linestyle=:dot)
+
+    ax_φ = Axis(fig_pa[k, 2];
+        xlabel="$(name): accel misalignment Δφ [°]",
+        ylabel="Probability Density",
+        xgridvisible=false, ygridvisible=false)
+    hist!(ax_φ, Δφ; normalization=:pdf, bins=40, color=(c, 0.7))
+    vlines!(ax_φ, [0.0]; color=:black, linestyle=:dot)
+
+    push!(stat_lines, format_stat("$(name): ν(t_obs) [°]", ν))
+    push!(stat_lines, format_stat("$(name): Δφ_accel [°]", Δφ))
+end
+save(joinpath(output_dir, "$(run_prefix)_phase_accel.png"), fig_pa, px_per_unit=3)
+fig_pa = nothing; GC.gc()
+println("Phase / acceleration alignment diagnostics saved.")
+
+# ── 11.7. Radial-velocity consistency check (stars with RV data only) ────────
+
+rv_stars = [n for n in star_names if rv_obs[n] !== nothing]
+if !isempty(rv_stars)
+    println("Generating RV consistency check...")
+    fig_rv = Figure(size=(500 * length(rv_stars), 400), fontsize=18)
+    for (k, name) in enumerate(rv_stars)
+        s = star_samples[name]
+        rv_pred = Vector{Float64}(undef, length(M_samples))
+        @inbounds for idx in eachindex(M_samples)
+            orb = Visual{KepOrbit}(;
+                a=s.a[idx], e=s.e[idx], i=s.i[idx],
+                ω=s.ω[idx], Ω=s.Ω[idx], tp=s.tp[idx],
+                M=M_samples[idx], plx=plx_samples[idx])
+            rv_pred[idx] = radvel(orbitsolve(orb, epoch_mjd))  # m/s, peculiar
+        end
+        rv_pred_kms = rv_pred ./ 1000.0
+
+        rv_meas_kms  = rv_obs[name].table.rv[1]   / 1000.0
+        rv_sigma_kms = rv_obs[name].table.σ_rv[1] / 1000.0
+
+        ax = Axis(fig_rv[1, k];
+            xlabel="$(name): peculiar RV [km/s]",
+            ylabel="Probability Density",
+            xgridvisible=false, ygridvisible=false)
+        hist!(ax, rv_pred_kms; normalization=:pdf, bins=40,
+              color=(star_colors[name], 0.7), label="Posterior prediction")
+        vspan!(ax, rv_meas_kms - rv_sigma_kms, rv_meas_kms + rv_sigma_kms;
+               color=(:grey, 0.35), label="Measured ± 1σ")
+        vlines!(ax, [rv_meas_kms]; color=:black, linewidth=2, label="Measured")
+        k == 1 && axislegend(ax; position=:rt, framevisible=false)
+
+        z = (median(rv_pred_kms) - rv_meas_kms) / rv_sigma_kms
+        push!(stat_lines,
+              @sprintf("%-20s  %+10.2f σ", "$(name): RV residual", z))
+    end
+    save(joinpath(output_dir, "$(run_prefix)_rv_check.png"), fig_rv, px_per_unit=3)
+    fig_rv = nothing; GC.gc()
+    println("RV consistency check saved.")
+else
+    println("No stars with RV data; skipping RV consistency check.")
+end
 
 # ── 12. IMBH position density map ────────────────────────────────────────
 
@@ -619,5 +800,19 @@ record(fig3d, anim_path, 0:(n_frames - 1); framerate) do frame
 end
 
 println("3D orbit animation saved to: $anim_path")
+
+# ── 14. Write collected posterior stats (after all diagnostic sections) ──────
+
+open(stats_path, "w") do io
+    println(io, "Posterior summaries (median, 68% CI)")
+    println(io, "Chain: $chain_path")
+    println(io, "Epoch: $epoch_mjd MJD ($epoch_year yr)")
+    println(io, "Stars: $(join(star_names, ", "))")
+    println(io)
+    for line in stat_lines
+        println(io, line)
+    end
+end
+println("Posterior stats saved to: $stats_path")
 
 println("\nDone. All plots written to: $output_dir")
