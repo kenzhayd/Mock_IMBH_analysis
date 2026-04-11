@@ -1,0 +1,35 @@
+Loaded config: /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/configs/all_stars.toml
+[ Info: Preparing model
+┌ Info: Determined number of free variables
+└   D = 67
+┌ Info: Determined number type
+└   T = Float64
+ℓπcallback(θ): 0.000069 seconds
+∇ℓπcallback(θ): 0.005654 seconds (10 allocations: 518.609 KiB)
+Run summary written to /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/configs/../results/run_outputs/starsABCDEFG_192c_15r_10077104_summary.md
+┌ Warning: This model has priors that cannot be sampled IID.
+└ @ OctofitterPigeonsExt /lustre09/project/6039459/vhenault/OCen_IMBH/Octofitter_imbh.jl/ext/OctofitterPigeonsExt/OctofitterPigeonsExt.jl:105
+[ Info: Sampler running with multiple threads     : true
+[ Info: Likelihood evaluated with multiple threads: false
+┌ Info: Starting values not provided for all parameters! Guessing starting point using global optimization:
+│   num_params = 67
+└   num_fixed = 0
+┌ Info: Found sample of initial positions
+│   logpost_range = (-109.85347325210942, -96.35166757872739)
+└   mean_logpost = -101.19489726981753
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  scans     restarts      Λ        Λ_var      time(s)    allc(B)  log(Z₁/Z₀)   min(α)     mean(α)    min(αₑ)   mean(αₑ) 
+────────── ────────── ────────── ────────── ────────── ────────── ────────── ────────── ────────── ────────── ──────────
+        2          0       8.37       10.5       1.62   4.64e+07  -1.35e+08          0      0.951          1          1 
+        4          0       14.5         13       1.56   3.14e+06  -1.44e+06          0      0.928          1          1 
+        8          0       19.6       18.2       3.38   6.29e+06  -1.26e+05          0      0.901          1          1 
+       16          0       23.9       22.8       6.43   1.24e+07  -1.03e+04          0      0.878          1          1 
+       32          0       27.6       27.1       12.7   2.23e+07       -966          0      0.857          1          1 
+       64          0       26.8       12.3       26.5   4.19e+09   5.66e+04   6.39e-35      0.898          1          1 
+      128          0       31.4       20.5       50.5   8.43e+09       -266   1.44e-06      0.865          1          1 
+      256          0       33.8       15.8        101   1.66e+10       -294     0.0315       0.87          1          1 
+      512          0       34.8       18.7        198   3.41e+10       -278      0.413       0.86          1          1 
+ 1.02e+03          0       34.8       18.1        407    6.6e+10       -248      0.599      0.862          1          1 
+ 2.05e+03          4       35.1       20.2        834   1.36e+11       -263      0.528      0.856          1          1 
+  4.1e+03         15       35.6       20.1   1.67e+03   2.57e+11       -259      0.774      0.855          1          1 
+ 8.19e+03         20       35.9       19.9   3.42e+03   5.17e+11       -253      0.788      0.854          1          1 
