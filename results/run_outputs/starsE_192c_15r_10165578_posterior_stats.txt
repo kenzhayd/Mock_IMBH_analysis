@@ -1,0 +1,28 @@
+Posterior summaries (median, 68% CI)
+Chain: /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/configs/../results/run_outputs/starsE_192c_15r_10165578_chain.fits
+Epoch: 55197.0 MJD (2010.0 yr)
+Stars: E
+
+Param                     Median  [     16%,      84%]
+M_IMBH [10⁴ M☉]            4.839  [   2.789,    7.266]
+plx [mas]                  0.190  [   0.186,    0.194]
+offsetx [mas]           1061.593  [ 423.317, 1729.080]
+offsety [mas]          -1003.732  [-1943.875,  -25.969]
+E: a [AU]               6090.317  [3614.300, 9601.211]
+E: e                       0.160  [   0.041,    0.380]
+E: i [°]                 110.930  [  42.243,  145.511]
+E: ω [°]                  35.158  [-141.425,  139.557]
+E: Ω [°]                 -20.012  [ -69.072,  120.451]
+E: r_peri [AU]          4871.796  [2396.395, 8444.277]
+E: r_apo  [AU]          7408.485  [4398.072, 11293.885]
+E: v_peri [km/s]          93.130  [  78.050,  136.959]
+E: v_apo  [km/s]          70.698  [  58.735,   73.738]
+E: P      [yr]          2200.691  [1223.389, 3741.611]
+r_tidal MS  [AU]           0.169  [   0.141,    0.194]
+r_tidal RG  [AU]           5.477  [   4.557,    6.271]
+r_Schw      [AU]           0.001  [   0.001,    0.001]
+E: ν(t_obs) [°]          -64.398  [-158.731,  158.495]
+E: Δφ_accel [°]           96.319  [  51.759,  130.160]
+E: σ_φ_acc (meas)           58.9 °
+E: z_acc→IMBH             -0.108  [  -0.783,    0.720]
+E: RV residual             -0.07 σ
