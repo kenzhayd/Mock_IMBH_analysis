@@ -295,6 +295,7 @@ All outputs land in `<output_dir>` (default: `results/run_outputs/` relative to 
 | `*_plausibility.png` | Pericenter distance and speed distributions with tidal/Schwarzschild reference lines |
 | `*_phase_accel.png` | True anomaly at obs epoch and acceleration-vector misalignment angle |
 | `*_rv_check.png` | RV posterior prediction vs measurement (stars with RV data only) |
+| `*_accel_check.png` | Acceleration posterior predictive check: predicted vs measured (accra, accdec) per star |
 | `*_imbh_position.png` | IMBH position 2D density map |
 | `*_orbits_3d.mp4` | 3D orbit animation (360° pan with elevation oscillation) |
 
@@ -352,10 +353,11 @@ This module is included automatically by `octo_orbit_direct_likelihoods.jl` and 
 5. **Physical plausibility** (`*_plausibility.png`) — per-star histograms of pericenter distance (log-scale AU) and pericenter speed (km/s via vis-viva), with reference lines for the main-sequence tidal disruption radius, red-giant tidal disruption radius, and Schwarzschild radius
 6. **Phase and alignment** (`*_phase_accel.png`) — per-star histograms of (1) the true anomaly at the observation epoch ν(t_obs), (2) the misalignment angle Δφ between the measured acceleration vector and the star→IMBH direction with a shaded band showing the measurement angular uncertainty σ_φ, and (3) the z-score of the measured acceleration component toward the IMBH (accounts for measurement SNR; |z| < 1 means the measurement is direction-agnostic)
 7. **RV consistency** (`*_rv_check.png`, only for stars with RV data) — posterior-predicted peculiar radial velocity compared to the measured value ± 1σ; only produced for stars E and F
-8. **IMBH position map** (`*_imbh_position.png`) — 2D density of the IMBH position posterior with absolute RA/Dec secondary axes
-9. **3D orbit animation** (`*_orbits_3d.mp4`) — rotating view of all orbits in parsec, IMBH-centric frame, with star marker sizes scaled by the IMBH mass of each chain sample
+8. **Acceleration posterior predictive check** (`*_accel_check.png`) — for each star: (left) 2D scatter of posterior-predicted (accra, accdec) with the measured value overlaid as a cross with ±1σ error bars; (right) histogram of the per-sample 2D chi-squared residual χ²_i = (accra_meas − accra_pred)²/σ_ra² + (accdec_meas − accdec_pred)²/σ_dec², with a dashed line at χ² = 2.30 (the 68% contour of a 2-DOF chi-squared distribution). The fraction of draws inside the 1σ ellipse (f₆₈) is shown in the legend and recorded in `*_posterior_stats.txt`. A value near 0.68 indicates consistency; f₆₈ ≪ 0.68 indicates the model cannot reproduce the measured acceleration.
+9. **IMBH position map** (`*_imbh_position.png`) — 2D density of the IMBH position posterior with absolute RA/Dec secondary axes
+10. **3D orbit animation** (`*_orbits_3d.mp4`) — rotating view of all orbits in parsec, IMBH-centric frame, with star marker sizes scaled by the IMBH mass of each chain sample
 
-The `*_posterior_stats.txt` file includes orbital elements, pericenter/apocenter distances, pericenter/apocenter speeds, orbital periods, tidal radii, Schwarzschild radius, true anomaly at epoch, acceleration misalignment angle Δφ, acceleration direction uncertainty σ_φ, acceleration z-score toward the IMBH, and (where applicable) the RV residual in units of σ.
+The `*_posterior_stats.txt` file includes orbital elements, pericenter/apocenter distances, pericenter/apocenter speeds, orbital periods, tidal radii, Schwarzschild radius, true anomaly at epoch, acceleration misalignment angle Δφ, acceleration direction uncertainty σ_φ, acceleration z-score toward the IMBH, acceleration predictive check median χ² and f₆₈ per star, and (where applicable) the RV residual in units of σ.
 
 This script is called automatically at the end of a fitting run, or can be run standalone via `run_plot_chain.sh`.
 

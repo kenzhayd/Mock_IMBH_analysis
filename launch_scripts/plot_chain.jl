@@ -494,7 +494,7 @@ println("Plausibility diagnostics saved.")
 
 println("Generating phase / acceleration-alignment diagnostics...")
 
-using PlanetOrbits: trueanom, radvel
+using PlanetOrbits: trueanom, radvel, accra, accdec
 
 "True anomaly (deg, wrapped to (-180, 180]) at epoch_mjd, one per chain draw."
 function true_anomaly_at_epoch(s, M_samp, plx_samp, epoch_mjd)
@@ -653,6 +653,141 @@ if !isempty(rv_stars)
 else
     println("No stars with RV data; skipping RV consistency check.")
 end
+
+# ── 11.8. Acceleration posterior predictive check ────────────────────────────
+#
+# Goal: treat the acceleration measurements as an independent validation of the
+# orbit model rather than a fitting constraint.  For each posterior draw we
+# compute the sky-plane acceleration that the fitted Keplerian orbit predicts
+# at the observation epoch, then compare the full predictive distribution to the
+# measured values.
+#
+# This is a standard posterior predictive check (PPC): if the model is
+# consistent with the acceleration data, the measured acceleration should fall
+# in the bulk of the predictive cloud.  If it sits in a clear tail, the
+# acceleration is in tension with the model — which may indicate either a
+# genuine physical inconsistency or a systematic error in the measurement.
+#
+# Two complementary diagnostics per star:
+#
+#   Left panel — 2D predictive scatter in (accra, accdec) space [mas/yr²]:
+#     Each point is the sky-plane acceleration predicted by one posterior draw,
+#     computed via accra(sol) and accdec(sol) from PlanetOrbits.  The measured
+#     value is shown as a black cross with ±1σ error bars.  If the cross falls
+#     in the bulk of the scatter cloud the model is consistent with the
+#     acceleration data; if it is a clear outlier the two are in tension.
+#
+#   Right panel — Distribution of 2D chi-squared residuals:
+#     For each posterior draw i the 2D chi-squared distance between the
+#     predicted and measured acceleration is:
+#
+#         χ²_i = (accra_meas  - accra_pred_i )² / σ_ra²
+#               + (accdec_meas - accdec_pred_i)² / σ_dec²
+#
+#     The vertical dashed line marks χ² = 2.30, which is the 68th percentile
+#     of a chi-squared distribution with 2 degrees of freedom — i.e. the
+#     boundary of the 1σ error ellipse in 2D.  The fraction of posterior draws
+#     with χ²_i ≤ 2.30 is labelled f₆₈ on the plot:
+#       • f₆₈ ≈ 0.68 → the measurement lies in the typical 1σ bulk of the
+#         predictive distribution (fully consistent)
+#       • f₆₈ << 0.68 → the measurement is in the tail; the model cannot
+#         easily reproduce the observed acceleration, indicating tension
+#
+# Note: accra(sol) and accdec(sol) from PlanetOrbits return the gravitational
+# acceleration of the star toward the IMBH in the sky plane (mas/yr²), with
+# the same sign convention as PlanetAccelObs.  The IMBH offset (offsetx,
+# offsety) is already encoded in the orbital geometry, so no additional
+# correction is needed.
+
+println("Generating acceleration posterior predictive check...")
+
+fig_acc_ppc = Figure(size=(1000, n_stars * 280), fontsize=18)
+
+for (k, name) in enumerate(star_names)
+    s    = star_samples[name]
+    c    = star_colors[name]
+
+    # Measured acceleration and uncertainties for this star [mas/yr²]
+    ax_meas = acc_obs[name].table.accra[1]
+    ay_meas = acc_obs[name].table.accdec[1]
+    σ_ra    = acc_obs[name].table.σ_accra[1]
+    σ_dec   = acc_obs[name].table.σ_accdec[1]
+
+    # --- Compute predicted acceleration for every posterior draw ---
+    # accra(sol) and accdec(sol) evaluate the Keplerian gravitational
+    # acceleration at the solved orbital position (mas/yr²).  This is the
+    # model quantity that PlanetAccelObs compares to the measurement in the
+    # likelihood — here we compute it purely as a prediction check.
+    n_samp      = length(M_samples)
+    accra_pred  = Vector{Float64}(undef, n_samp)
+    accdec_pred = Vector{Float64}(undef, n_samp)
+    @inbounds for idx in 1:n_samp
+        orb = Visual{KepOrbit}(;
+            a=s.a[idx], e=s.e[idx], i=s.i[idx],
+            ω=s.ω[idx], Ω=s.Ω[idx], tp=s.tp[idx],
+            M=M_samples[idx], plx=plx_samples[idx])
+        sol = orbitsolve(orb, epoch_mjd)
+        accra_pred[idx]  = accra(sol)
+        accdec_pred[idx] = accdec(sol)
+    end
+
+    # --- 2D chi-squared residual per draw ---
+    # Measures the distance (in units of measurement uncertainty) between
+    # each predicted acceleration and the measured value.
+    chi2 = @. (ax_meas - accra_pred)^2 / σ_ra^2 +
+               (ay_meas - accdec_pred)^2 / σ_dec^2
+
+    # Fraction of draws that predict an acceleration within the 1σ error
+    # ellipse of the measurement (chi-squared 2-DOF threshold = 2.30).
+    chi2_1sigma = 2.30
+    f68 = mean(chi2 .<= chi2_1sigma)
+
+    # Append consistency metrics to the text summary
+    push!(stat_lines,
+          @sprintf("%-20s  %10.3f  (f68=%.2f)",
+                   "$(name): acc χ²_med", median(chi2), f68))
+
+    # --- Left panel: 2D predictive scatter ---
+    ax_2d = Axis(fig_acc_ppc[k, 1];
+        xlabel="$(name): predicted accra [mas/yr²]",
+        ylabel="$(name): predicted accdec [mas/yr²]",
+        xgridvisible=false, ygridvisible=false)
+
+    # Subsample for visual clarity; rasterize to keep file size small.
+    scatter!(ax_2d, accra_pred[sample_idx], accdec_pred[sample_idx];
+        color=(c, 0.3), markersize=4, rasterize=4,
+        label="Posterior predictions")
+
+    # Measured acceleration with ±1σ error bars
+    errorbars!(ax_2d, [ax_meas], [ay_meas], [σ_ra];
+        direction=:x, color=:black, linewidth=2)
+    errorbars!(ax_2d, [ax_meas], [ay_meas], [σ_dec];
+        direction=:y, color=:black, linewidth=2)
+    scatter!(ax_2d, [ax_meas], [ay_meas];
+        marker=:xcross, markersize=14, color=:black, strokewidth=2,
+        label="Measured ± 1σ")
+
+    k == 1 && axislegend(ax_2d; position=:rt, framevisible=false, labelsize=12)
+
+    # --- Right panel: chi-squared residual distribution ---
+    ax_chi = Axis(fig_acc_ppc[k, 2];
+        xlabel="$(name): χ² (predicted vs measured, 2-DOF)",
+        ylabel="Probability Density",
+        xgridvisible=false, ygridvisible=false)
+
+    hist!(ax_chi, chi2; normalization=:pdf, bins=40, color=(c, 0.7))
+
+    # Mark the 1σ ellipse boundary.  The fraction of draws to the left of
+    # this line (f₆₈) is the key consistency metric printed in the legend.
+    vlines!(ax_chi, [chi2_1sigma];
+        color=:black, linestyle=:dash,
+        label=@sprintf("χ²=2.30 (1σ ellipse), f₆₈=%.2f", f68))
+    axislegend(ax_chi; position=:rt, framevisible=false, labelsize=12)
+end
+
+save(joinpath(output_dir, "$(run_prefix)_accel_check.png"), fig_acc_ppc, px_per_unit=3)
+fig_acc_ppc = nothing; GC.gc()
+println("Acceleration posterior predictive check saved.")
 
 # ── 12. IMBH position density map ────────────────────────────────────────
 
