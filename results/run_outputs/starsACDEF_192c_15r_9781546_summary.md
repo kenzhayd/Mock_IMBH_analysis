@@ -84,7 +84,7 @@ year = 2010.0
 [priors.system]
 plx     = "truncated(Normal(0.19, 0.004), lower=0)"   # Parallax [mas]
 M       = "Uniform(100, 120000)"                        # IMBH mass [solar masses]
-offsetx = "Uniform(-3000, 3000)"                        # IMBH RA offset from assumed center [mas]; ±3" covers Haberle+2025 MCMC centre (0.77" NE of AvdM10)
+offsetx = "Uniform(-3000, 3000)"                        # IMBH RA offset from assumed center [mas]; ±3" covers Haberle+2024 MCMC centre (0.77" NE of AvdM10)
 offsety = "Uniform(-3000, 3000)"                        # IMBH Dec offset from assumed center [mas]
 
 # Default companion (per-star) priors — applied to every star unless overridden below
