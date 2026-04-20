@@ -289,7 +289,9 @@ pt    = chain_pt.pt
 println(chain)
 
 # Record the PT exec folder so checkpoint files can be located and deleted later.
-pt_exec_folder = try; pt.shared.exec_folder; catch _; "unknown"; end
+pt_exec_folder = try; pt.exec_folder; catch _
+    try; pt.shared.exec_folder; catch _; "unknown"; end
+end
 println("PT exec folder (intermediate checkpoints): $pt_exec_folder")
 
 # Write a small file containing just the PT exec folder path.
