@@ -1,5 +1,5 @@
 results/run_outputs/*.fits
-results/run_outputs/*.fits
 .DS_Store
-.DS_Store
-.DS_Store
+# Pigeons PT checkpoint directories (can be very large — located via *_pt_location.txt instead)
+launch_scripts/results/all/
+
