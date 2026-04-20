@@ -162,8 +162,21 @@ Controls Pigeons parallel-tempering run.
 n_rounds             = 15     # 2^n_rounds total iterations
 n_chains             = 192    # parallel chains (should match CPU count)
 n_chains_variational = 192
-checkpoint           = false
+checkpoint           = true   # must be true to enable restarts
 ```
+
+#### `[restart]` *(optional)*
+Resumes a previous run for additional rounds. Leave `job_id` empty (or omit the section entirely) for a fresh run.
+
+```toml
+[restart]
+job_id = ""   # Slurm job ID of the run to resume (e.g. "9781546")
+```
+
+When `job_id` is set:
+- `submit_job.jl` looks up `results/run_outputs/*_<job_id>_pt_location.txt` to find the Pigeons checkpoint directory and bakes `--resume <path>` into the generated Slurm script.
+- `n_rounds` in `[sampling]` is the **total** round target (e.g. set to `20` to add 5 rounds to a previous 15-round run). The script errors if `n_rounds` ≤ rounds already completed.
+- The resumed run also writes a new `*_pt_location.txt` and appends its checkpoint path to the run summary, so the chain can be extended again if needed.
 
 #### `[slurm]`
 Slurm resource requests. Adjust for the target cluster.
@@ -242,43 +255,71 @@ julia --project=../Octofitter_imbh.jl -t 4 tests/test_small_fit.jl
 
 ## Submitting a Production Fit
 
-### 1. Create (or choose) a config file
+### Fresh run
+
+#### 1. Create (or choose) a config file
 
 ```bash
 cp configs/default.toml configs/my_run.toml
 # edit configs/my_run.toml as needed
 ```
 
-Adjust at minimum: `[stars] selected`, `[slurm] account`, `[slurm] mail_user`, and `[paths] project`.
+Adjust at minimum: `[stars] selected`, `[slurm] account`, `[slurm] mail_user`, and `[paths] project`. Set `checkpoint = true` in `[sampling]` to enable future restarts.
 
-### 2. Preview the generated Slurm script (dry run)
+#### 2. Preview the generated Slurm script (dry run)
 
 ```bash
 cd launch_scripts/
 julia submit_job.jl ../configs/my_run.toml --dry-run
 ```
 
-This writes a timestamped `.sh` file to the log directory and prints the `sbatch` command to run, but does **not** submit.
+This writes a timestamped `.sh` file to the log directory and prints the `sbatch` command, but does **not** submit.
 
-### 3. Submit
+#### 3. Submit
 
 ```bash
 julia submit_job.jl ../configs/my_run.toml
 ```
 
-`submit_job.jl` will:
-1. Parse the config
-2. Generate a Slurm batch script in `<log_dir>/job_<timestamp>.sh`
-3. Call `sbatch` to submit it
+`submit_job.jl` parses the config, generates a Slurm batch script in `<log_dir>/job_<timestamp>.sh`, and calls `sbatch`. The job runs `octo_orbit_direct_likelihoods.jl` with the config as its argument; `plot_chain.jl` is called automatically at the end to generate all plots and summaries.
 
-The Slurm job runs `octo_orbit_direct_likelihoods.jl` with the config as its only argument. At the end of the fitting run, `plot_chain.jl` is called automatically to generate all plots and summaries.
-
-### 4. Monitor
+#### 4. Monitor
 
 ```bash
 squeue -u $USER
 tail -f results/logs/octo_imbh_<JOBID>.out
 ```
+
+---
+
+### Restarting a run for additional rounds
+
+Requires the original run to have completed with `checkpoint = true`.
+
+#### 1. Find the job ID
+
+Look for `*_pt_location.txt` in `results/run_outputs/` or check the original run summary — the job ID is the numeric suffix in every output filename (e.g. `starsACDEF_192c_15r_9781546_chain.fits` → job ID `9781546`).
+
+#### 2. Edit the config
+
+```toml
+[restart]
+job_id = "9781546"   # job ID of the run to resume
+
+[sampling]
+n_rounds  = 20       # TOTAL target (e.g. 20 adds 5 rounds to a 15-round run)
+checkpoint = true
+```
+
+#### 3. Submit
+
+```bash
+julia submit_job.jl ../configs/my_run.toml
+```
+
+`submit_job.jl` reads the `pt_location.txt` file, verifies the checkpoint directory exists, and bakes `--resume <path>` into the generated Slurm script. The resumed run produces outputs with a `_cont` suffix (e.g. `starsACDEF_192c_20r_cont_<NEWJOBID>_chain.fits`) and writes its own `*_pt_location.txt` so the chain can be extended again.
+
+---
 
 ### 5. Outputs
 
@@ -286,8 +327,9 @@ All outputs land in `<output_dir>` (default: `results/run_outputs/` relative to 
 
 | File | Contents |
 |------|---------|
-| `*_summary.md` | Run metadata, priors, full config |
+| `*_summary.md` | Run metadata, priors, full config, and PT checkpoint path |
 | `*_chain.fits` | Full posterior chain (load with `Octofitter.loadchain`) |
+| `*_pt_location.txt` | Path to the Pigeons PT checkpoint directory (used for restarts; can be deleted once the chain FITS is verified) |
 | `*_corner.png` | Corner plot of system-level parameters |
 | `*_orbit_panels.png` | Sky-plane orbit panels per star + combined |
 | `*_posteriors.png` | Marginal posterior histograms |
@@ -319,9 +361,15 @@ This submits a lightweight 1-CPU job that runs `plot_chain.jl` on the specified 
 For local testing or interactive use, bypass `submit_job.jl` and call the fitting script directly:
 
 ```bash
+# Fresh run
 julia --project=../Octofitter_imbh.jl -t <threads> \
     launch_scripts/octo_orbit_direct_likelihoods.jl \
     configs/my_run.toml
+
+# Resume from a checkpoint (n_rounds in config = total target)
+julia --project=../Octofitter_imbh.jl -t <threads> \
+    launch_scripts/octo_orbit_direct_likelihoods.jl \
+    configs/my_run.toml --resume /path/to/pt_exec_folder
 ```
 
 If no config path is given, the script falls back to `configs/default.toml`.
