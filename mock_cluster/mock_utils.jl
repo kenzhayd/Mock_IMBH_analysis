@@ -421,65 +421,65 @@ function make_run_id(job_name, n_rounds, n_chains)
     return "$(job_name)_$(n_rounds)r_$(n_chains)c"
 end
 
-# """
-# parse_args(args)
+"""
+parse_args(args)
 
-# Parse `key=value` CLI arguments into a dictionary.
-# """
-# function parse_args(args::Vector{String})
-#     out = Dict{String, String}()
+Parse `key=value` CLI arguments into a dictionary.
+"""
+function parse_args(args::Vector{String})
+    out = Dict{String, String}()
 
-#     for arg in args
-#         occursin("=", arg) || error("Invalid argument: $arg (expected key=value)")
-#         k, v = split(arg, "=", limit=2)
-#         out[k] = v
-#     end
+    for arg in args
+        occursin("=", arg) || error("Invalid argument: $arg (expected key=value)")
+        k, v = split(arg, "=", limit=2)
+        out[k] = v
+    end
 
-#     return out
-# end
+    return out
+end
 
-# """
-# run_config(args)
+"""
+run_config(args)
 
-# Build `RunConfig` from keyword arguments.
-# """
-# function run_config_dict(args::Vector{String})
-#     d = parse_args(args)
+Build `RunConfig` from keyword arguments.
+"""
+function run_config_dict(args::Vector{String})
+    d = parse_args(args)
 
-#     get(k) = haskey(d, k) ? d[k] : error("Missing argument: $k")
+    get(k) = haskey(d, k) ? d[k] : error("Missing argument: $k")
 
-#     return RunConfig(
-#         get("mock_name"),
-#         parse(Float64, get("M_IMBH")),
-#         parse(Float64, get("z_prior_sigma")),
-#         parse(Float64, get("plx")),
+    return RunConfig(
+        get("mock_name"),
+        parse(Float64, get("M_IMBH")),
+        parse(Float64, get("z_prior_sigma")),
+        parse(Float64, get("plx")),
 
-#         parse(Int, get("n_rounds")),
-#         parse(Int, get("n_chains")),
-#         parse(Int, get("n_chains_variational")),
+        parse(Int, get("n_rounds")),
+        parse(Int, get("n_chains")),
+        parse(Int, get("n_chains_variational")),
 
-#         parse(Float64, get("distance_kpc")),
-#         parse(Float64, get("tref")),
+        parse(Float64, get("distance_kpc")),
+        parse(Float64, get("tref")),
 
-#         parse(Float64, get("sigma_ra_off")),
-#         parse(Float64, get("sigma_dec_off")),
-#         parse(Float64, get("sigma_pm_ra")),
-#         parse(Float64, get("sigma_pm_dec")),
-#         parse(Float64, get("sigma_acc_ra")),
-#         parse(Float64, get("sigma_acc_dec")),
-#         parse(Float64, get("sigma_rv")),
+        parse(Float64, get("sigma_ra_off")),
+        parse(Float64, get("sigma_dec_off")),
+        parse(Float64, get("sigma_pm_ra")),
+        parse(Float64, get("sigma_pm_dec")),
+        parse(Float64, get("sigma_acc_ra")),
+        parse(Float64, get("sigma_acc_dec")),
+        parse(Float64, get("sigma_rv")),
 
-#         parse(Float64, get("imbh_ra")),
-#         parse(Float64, get("imbh_dec")),
+        parse(Float64, get("imbh_ra")),
+        parse(Float64, get("imbh_dec")),
 
-#         parse(Float64, get("rv_cluster")),
-#         parse(Float64, get("rv_cluster_err")),
+        parse(Float64, get("rv_cluster")),
+        parse(Float64, get("rv_cluster_err")),
 
-#         lowercase(get("include_acc")) == "true",
-#         get("job_name"),
-#         get("results_dir")
-#     )
-# end
+        lowercase(get("include_acc")) == "true",
+        get("job_name"),
+        get("results_dir")
+    )
+end
 
 """
 run_config(args)
@@ -490,7 +490,7 @@ Load run configuration from either a JSON file or CLI-style arguments.
   that file using JSON3.
 - Otherwise, `args` is parsed as `key=value` pairs via `parse_args`.
 """
-function run_config(args::Vector{String})
+function run_config_plots(args::Vector{String})
 
     # CASE 1: single JSON file
     if length(args) == 1 && endswith(args[1], ".json")

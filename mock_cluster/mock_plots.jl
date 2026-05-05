@@ -30,7 +30,7 @@ using .mock_utils
 
 # === CONFIGURATION 
 
-cfg = mock_utils.run_config(ARGS)
+cfg = mock_utils.run_config_plots(ARGS)
 
 mock_name = cfg.mock_name
 M_IMBH = cfg.M_IMBH

@@ -125,10 +125,6 @@ open(summary_path, "w") do io
     println(io, "include acceleration: $INCLUDE_ACC")
     println(io)
 
-    # --- Model structure ---
-    println(io, "=== MODEL STRUCTURE ===")
-    println(io, "n_stars: $(length(stars))")
-    println(io)
 
     println(io)
 end
