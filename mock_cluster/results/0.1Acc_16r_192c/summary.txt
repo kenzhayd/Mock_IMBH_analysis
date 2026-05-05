@@ -1,0 +1,9 @@
+Job name: 0.1Acc
+Parameter set: mock_10836842
+True mass: 63730.0
+z_prior_sigma: 4558.0
+plx: 0.191
+n_rounds: 16
+n_chains: 192
+Include acc: true
+resume: nothing
