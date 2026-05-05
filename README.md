@@ -15,9 +15,8 @@ mock_cluster/
 - mock_utils.jl                # Function library 
 - mock_inference.jl            # Main inference scipt
 - mock_plots.jl                # Posterior plots and diagnostics 
-- create_mock_job.jl           # SLURM job generator / runner
-- mock_oops.jl 			       # Builds a config.json file for the runs with the oops
-- mock_oops.jl 
+- create_mock_job.jl           # SLURM job generator  ===> Configuration Here
+- mock_oops.jl 			       # Builds a config.json file for the runs with the oops 
 - results/
     - (run_id)/
       -  *_chain.fits
