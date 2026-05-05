@@ -1,8 +1,0 @@
-Loaded config: /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/configs/default.toml
-ERROR: LoadError: UndefVarError: `Normal` not defined
-Stacktrace:
- [1] build_star_observations(star::octo_utils.StarData, epoch_mjd::Float64; include_rv::Bool, z_prior_sigma::Float64)
-   @ octo_utils /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/launch_scripts/octo_utils.jl:422
- [2] top-level scope
-   @ /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/launch_scripts/octo_orbit_direct_likelihoods.jl:66
-in expression starting at /lustre09/project/6039459/vhenault/OCen_IMBH/Ocen_IMBH_analysis/launch_scripts/octo_orbit_direct_likelihoods.jl:63
