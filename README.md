@@ -1,6 +1,6 @@
 Mock IMBH Orbit Analysis
 
-This repository contains a full simulation and inference pipeline for testing intermediate-mass black hole (IMBH) parameter recovery. The workflow uses Bayesian orbit-fitting package Octofitter (sefffal.github.io/Octofitter.jl/dev/) with additions specific to the orbits of stars around a black hole (https://github.com/vincent-hb/Octofitter_imbh.jl.git).
+This repository contains a simulation and inference pipeline for testing intermediate-mass black hole (IMBH) parameter recovery. The workflow uses the Bayesian orbit-fitting package Octofitter (sefffal.github.io/Octofitter.jl/dev/) with additions specific to the orbits of stars around a black hole (https://github.com/vincent-hb/Octofitter_imbh.jl.git).
 
 Workflow overview:
 
@@ -12,25 +12,24 @@ Workflow overview:
 Repository Structure: 
 
 mock_cluster/
-│
-├── mock_utils.jl          # Function library 
-├── mock_inference.jl      # Main inference scipt
-├── mock_plots.jl          # Posterior plots and diagnostics 
-├── create_mock_job.jl     # SLURM job generator / runner
-├── mock_oops.jl 			# Builds a config.json file for the runs with the oops
-├── mock_oops.jl 
-└── results/
-    └── (run_id)/
-        ├── *_chain.fits
-        ├── config.json
-        ├── args.txt
-        ├── summary.txt
-        ├── *_posterior_stats.txt
-        ├── *_mock_orbits.png
-        ├── *_imbh_map.png
-        └── *_accel_check.png
+- mock_utils.jl          # Function library 
+- mock_inference.jl      # Main inference scipt
+- mock_plots.jl          # Posterior plots and diagnostics 
+- create_mock_job.jl     # SLURM job generator / runner
+- mock_oops.jl 			# Builds a config.json file for the runs with the oops
+- mock_oops.jl 
+- results/
+    - (run_id)/
+          - *_chain.fits
+          - config.json
+          - args.txt
+          - summary.txt
+          -  *_posterior_stats.txt
+          -  *_mock_orbits.png
+          -  *_imbh_map.png
+          -  *_accel_check.png
 
-Key Assumptions:
+Notes:
 
  - Stars follow Keplerian orbits around a central IMBH
  - System parameters defined in create_mock_job.jl
