@@ -1,1165 +1,0 @@
-[ Info: Preparing model
-┌ Info: Determined number of free variables
-└   D = 1
-┌ Info: Determined number type
-└   T = Float64
-[ Info: Preparing model
-┌ Info: Determined number of free variables
-└   D = 1
-┌ Info: Determined number type
-└   T = Float64
-[ Info: Preparing model
-┌ Info: Determined number of free variables
-└   D = 1
-┌ Info: Determined number type
-└   T = Float64
-[ Info: Preparing model
-┌ Info: Determined number of free variables
-└   D = 1
-┌ Info: Determined number type
-└   T = Float64
-[ Info: Preparing model
-┌ Info: Determined number of free variables
-└   D = 12
-┌ Info: Determined number type
-└   T = Float64
-┌ Warning: At least 1000 steps of adapation are recomended for good sampling
-└ @ Octofitter ~/projects/def-vhenault/vhenault/Octofitter_imbh.jl/src/sampling.jl:330
-┌ Info: Starting values not provided for all parameters! Guessing starting point using global optimization:
-│   num_params = 12
-└   num_fixed = 0
-┌ Info: Found sample of initial positions
-│   logpost_range = (-4.849117841187271, 3.8708532495444032)
-└   mean_logpost = 1.5013674439869997
-┌ Info: Kepler solver will use multiple threads: false
-│   threads_avail = 4
-└   n_epochs > 15 = false
-[ Info: Sampling, beginning with adaptation phase...
-Sampling   1%|▎                              |  ETA: 0:00:15[K
-                                    iterations: 15[K
-                   ratio_divergent_transitions: 0.0[K
-   ratio_divergent_transitions_during_adaption: 0.4[K
-                                       n_steps: 1599[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.6624181069366017[K
-                                   log_density: -2.0199344746073677[K
-                            hamiltonian_energy: 6.087329526683454[K
-                      hamiltonian_energy_error: 0.7503752912151231[K
-                  max_hamiltonian_energy_error: 1.4438993254254973[K
-                                    tree_depth: 10[K
-                               numerical_error: false[K
-                                     step_size: 0.1266323408946146[K
-                                 nom_step_size: 0.1266323408946146[K
-                                      is_adapt: true[K
-                                   mass_matrix: DenseEuclideanMetric([0.0215868, 0.0353069, 0.10 ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling   5%|█▌                             |  ETA: 0:00:24[K
-                                    iterations: 103[K
-                   ratio_divergent_transitions: 0.0[K
-   ratio_divergent_transitions_during_adaption: 0.17[K
-                                       n_steps: 127[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9767933633729053[K
-                                   log_density: -4.685301137867647[K
-                            hamiltonian_energy: 11.830521115801085[K
-                      hamiltonian_energy_error: -0.11369920111384779[K
-                  max_hamiltonian_energy_error: -0.43147391746532193[K
-                                    tree_depth: 6[K
-                               numerical_error: false[K
-                                     step_size: 0.03881214121944422[K
-                                 nom_step_size: 0.03881214121944422[K
-                                      is_adapt: true[K
-                                   mass_matrix: DenseEuclideanMetric([0.00905704, 32.8106, 96.47 ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling   8%|██▌                            |  ETA: 0:00:15[K
-                                    iterations: 171[K
-                   ratio_divergent_transitions: 0.0[K
-   ratio_divergent_transitions_during_adaption: 0.12[K
-                                       n_steps: 255[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.4172395612966375[K
-                                   log_density: 0.5567775605280083[K
-                            hamiltonian_energy: 4.138351194070459[K
-                      hamiltonian_energy_error: -0.1848707330845647[K
-                  max_hamiltonian_energy_error: 214.14799164281868[K
-                                    tree_depth: 8[K
-                               numerical_error: false[K
-                                     step_size: 0.0280945384720196[K
-                                 nom_step_size: 0.0280945384720196[K
-                                      is_adapt: true[K
-                                   mass_matrix: DenseEuclideanMetric([0.0501013, 117.386, 124.23 ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  11%|███▌                           |  ETA: 0:00:12[K
-                                    iterations: 237[K
-                   ratio_divergent_transitions: 0.0[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 255[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9756681757774806[K
-                                   log_density: -1.2385321641993734[K
-                            hamiltonian_energy: 12.665026389241985[K
-                      hamiltonian_energy_error: -0.01439349200408735[K
-                  max_hamiltonian_energy_error: -0.13032066940289866[K
-                                    tree_depth: 7[K
-                               numerical_error: false[K
-                                     step_size: 0.014179209773385933[K
-                                 nom_step_size: 0.014179209773385933[K
-                                      is_adapt: true[K
-                                   mass_matrix: DenseEuclideanMetric([0.0501013, 117.386, 124.23 ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  15%|████▋                          |  ETA: 0:00:10[K
-                                    iterations: 311[K
-                   ratio_divergent_transitions: 0.0[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 255[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9336497699477012[K
-                                   log_density: -0.1130006882847745[K
-                            hamiltonian_energy: 8.067434504513503[K
-                      hamiltonian_energy_error: 0.05531539494548099[K
-                  max_hamiltonian_energy_error: 0.25679162272745515[K
-                                    tree_depth: 8[K
-                               numerical_error: false[K
-                                     step_size: 0.016466481723670337[K
-                                 nom_step_size: 0.016466481723670337[K
-                                      is_adapt: true[K
-                                   mass_matrix: DenseEuclideanMetric([0.248123, 77.8088, 72.7737 ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  19%|██████                         |  ETA: 0:00:08[K
-                                    iterations: 405[K
-                   ratio_divergent_transitions: 0.0[K
-   ratio_divergent_transitions_during_adaption: 0.12[K
-                                       n_steps: 511[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9817689097055556[K
-                                   log_density: -0.40240503438609565[K
-                            hamiltonian_energy: 6.920332621925124[K
-                      hamiltonian_energy_error: 0.044887159275992516[K
-                  max_hamiltonian_energy_error: -0.3395312779557935[K
-                                    tree_depth: 9[K
-                               numerical_error: false[K
-                                     step_size: 0.013614610124798069[K
-                                 nom_step_size: 0.013614610124798069[K
-                                      is_adapt: true[K
-                                   mass_matrix: DenseEuclideanMetric([0.248123, 77.8088, 72.7737 ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  23%|███████                        |  ETA: 0:00:07[K
-                                    iterations: 478[K
-                   ratio_divergent_transitions: 0.0[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 255[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.764536996461611[K
-                                   log_density: -0.820964337103252[K
-                            hamiltonian_energy: 4.779861272834559[K
-                      hamiltonian_energy_error: 0.8982666583193666[K
-                  max_hamiltonian_energy_error: 1.6460062597052163[K
-                                    tree_depth: 8[K
-                               numerical_error: false[K
-                                     step_size: 0.01568511535556981[K
-                                 nom_step_size: 0.01568511535556981[K
-                                      is_adapt: true[K
-                                   mass_matrix: DenseEuclideanMetric([0.248123, 77.8088, 72.7737 ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  25%|███████▉                       |  ETA: 0:00:06[K
-                                    iterations: 535[K
-                   ratio_divergent_transitions: 0.0[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 127[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9715841105209478[K
-                                   log_density: -1.5396288037646855[K
-                            hamiltonian_energy: 4.876501950351354[K
-                      hamiltonian_energy_error: 0.12159889258629253[K
-                  max_hamiltonian_energy_error: 0.12159889258629253[K
-                                    tree_depth: 7[K
-                               numerical_error: false[K
-                                     step_size: 0.026664739945752403[K
-                                 nom_step_size: 0.026664739945752403[K
-                                      is_adapt: true[K
-                                   mass_matrix: DenseEuclideanMetric([0.248123, 77.8088, 72.7737 ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  28%|████████▌                      |  ETA: 0:00:06[K
-                                    iterations: 580[K
-                   ratio_divergent_transitions: 0.0[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 511[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9969236629568707[K
-                                   log_density: -3.239794685630411[K
-                            hamiltonian_energy: 13.104237406041506[K
-                      hamiltonian_energy_error: -0.017231514639785672[K
-                  max_hamiltonian_energy_error: -0.024182433286409122[K
-                                    tree_depth: 9[K
-                               numerical_error: false[K
-                                     step_size: 0.007637548230928181[K
-                                 nom_step_size: 0.007637548230928181[K
-                                      is_adapt: true[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  30%|█████████▍                     |  ETA: 0:00:05[K
-                                    iterations: 634[K
-                   ratio_divergent_transitions: 0.0[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 255[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9126250897853767[K
-                                   log_density: -2.3767931709053407[K
-                            hamiltonian_energy: 9.621639779405701[K
-                      hamiltonian_energy_error: -0.06809068424001907[K
-                  max_hamiltonian_energy_error: 0.2804977043465282[K
-                                    tree_depth: 8[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  33%|██████████▏                    |  ETA: 0:00:05[K
-                                    iterations: 688[K
-                   ratio_divergent_transitions: 0.0[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 255[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.994176468988036[K
-                                   log_density: -2.35882132837099[K
-                            hamiltonian_energy: 11.57709088587367[K
-                      hamiltonian_energy_error: -0.05980520924444299[K
-                  max_hamiltonian_energy_error: -0.20041515321366177[K
-                                    tree_depth: 8[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  35%|███████████                    |  ETA: 0:00:05[K
-                                    iterations: 744[K
-                   ratio_divergent_transitions: 0.01[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 127[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9889813224701399[K
-                                   log_density: 2.5451019235893284[K
-                            hamiltonian_energy: 3.0370758842690915[K
-                      hamiltonian_energy_error: -0.07215948538877726[K
-                  max_hamiltonian_energy_error: -0.1366819395327883[K
-                                    tree_depth: 7[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  38%|███████████▉                   |  ETA: 0:00:04[K
-                                    iterations: 805[K
-                   ratio_divergent_transitions: 0.0[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 511[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9678818251126755[K
-                                   log_density: 0.30907622037614857[K
-                            hamiltonian_energy: 5.675888506168047[K
-                      hamiltonian_energy_error: -0.29108781170528175[K
-                  max_hamiltonian_energy_error: -0.4145959045422245[K
-                                    tree_depth: 9[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  41%|████████████▊                  |  ETA: 0:00:04[K
-                                    iterations: 866[K
-                   ratio_divergent_transitions: 0.0[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 255[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.8924375465530862[K
-                                   log_density: 0.7382577566850941[K
-                            hamiltonian_energy: 10.398921850497132[K
-                      hamiltonian_energy_error: 0.11704056748535052[K
-                  max_hamiltonian_energy_error: 0.47444429477947736[K
-                                    tree_depth: 8[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  44%|█████████████▋                 |  ETA: 0:00:04[K
-                                    iterations: 925[K
-                   ratio_divergent_transitions: 0.0[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 255[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.6667998717518685[K
-                                   log_density: 1.2758951937593075[K
-                            hamiltonian_energy: 1.6877701750639718[K
-                      hamiltonian_energy_error: -0.1727561275553966[K
-                  max_hamiltonian_energy_error: 1.0790201007068614[K
-                                    tree_depth: 8[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  47%|██████████████▌                |  ETA: 0:00:03[K
-                                    iterations: 985[K
-                   ratio_divergent_transitions: 0.0[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 255[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9958999888433804[K
-                                   log_density: -0.27099621383263894[K
-                            hamiltonian_energy: 1.8355528012474849[K
-                      hamiltonian_energy_error: 0.0061730429783419805[K
-                  max_hamiltonian_energy_error: -0.08054877112346492[K
-                                    tree_depth: 8[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  50%|███████████████▍               |  ETA: 0:00:03[K
-                                    iterations: 1043[K
-                   ratio_divergent_transitions: 0.0[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 255[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9382292004916329[K
-                                   log_density: -2.4278449321045095[K
-                            hamiltonian_energy: 6.372681523858907[K
-                      hamiltonian_energy_error: -0.07034016216072203[K
-                  max_hamiltonian_energy_error: 0.1991972366396917[K
-                                    tree_depth: 8[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  52%|████████████████▎              |  ETA: 0:00:03[K
-                                    iterations: 1098[K
-                   ratio_divergent_transitions: 0.0[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 127[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9167121466717609[K
-                                   log_density: 0.38053556207144723[K
-                            hamiltonian_energy: 8.927079749207019[K
-                      hamiltonian_energy_error: 0.10513348745337225[K
-                  max_hamiltonian_energy_error: 0.16146123522713474[K
-                                    tree_depth: 7[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  55%|█████████████████▏             |  ETA: 0:00:03[K
-                                    iterations: 1160[K
-                   ratio_divergent_transitions: 0.01[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 767[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9612209184319922[K
-                                   log_density: -1.1826765363386293[K
-                            hamiltonian_energy: 8.161836277071162[K
-                      hamiltonian_energy_error: -0.14335121863514466[K
-                  max_hamiltonian_energy_error: 1.0203433154868442[K
-                                    tree_depth: 9[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  58%|██████████████████             |  ETA: 0:00:02[K
-                                    iterations: 1220[K
-                   ratio_divergent_transitions: 0.01[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 255[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9993773196345307[K
-                                   log_density: 0.35070824172395376[K
-                            hamiltonian_energy: 5.1846201030565915[K
-                      hamiltonian_energy_error: -0.054604960395997715[K
-                  max_hamiltonian_energy_error: -0.13702339223408266[K
-                                    tree_depth: 8[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  61%|██████████████████▉            |  ETA: 0:00:02[K
-                                    iterations: 1281[K
-                   ratio_divergent_transitions: 0.01[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 511[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9735411295820202[K
-                                   log_density: -0.22619757778684146[K
-                            hamiltonian_energy: 4.865262477876426[K
-                      hamiltonian_energy_error: -0.019250788533089924[K
-                  max_hamiltonian_energy_error: 0.10940587183390349[K
-                                    tree_depth: 8[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  64%|███████████████████▊           |  ETA: 0:00:02[K
-                                    iterations: 1341[K
-                   ratio_divergent_transitions: 0.01[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 255[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9795769460102822[K
-                                   log_density: -0.11533666559125422[K
-                            hamiltonian_energy: 3.6758614580986615[K
-                      hamiltonian_energy_error: -0.005841181422170827[K
-                  max_hamiltonian_energy_error: 0.05562902377193035[K
-                                    tree_depth: 8[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  67%|████████████████████▊          |  ETA: 0:00:02[K
-                                    iterations: 1407[K
-                   ratio_divergent_transitions: 0.01[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 511[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9704518665035547[K
-                                   log_density: -2.2765659662435347[K
-                            hamiltonian_energy: 6.225889910891366[K
-                      hamiltonian_energy_error: 0.03387346691591642[K
-                  max_hamiltonian_energy_error: 0.11883990428300262[K
-                                    tree_depth: 9[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  70%|█████████████████████▊         |  ETA: 0:00:02[K
-                                    iterations: 1471[K
-                   ratio_divergent_transitions: 0.01[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 511[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9861679915593229[K
-                                   log_density: -0.3132772069035177[K
-                            hamiltonian_energy: 7.883179679694629[K
-                      hamiltonian_energy_error: 0.012128607097569244[K
-                  max_hamiltonian_energy_error: 0.05124248449364188[K
-                                    tree_depth: 8[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  73%|██████████████████████▋        |  ETA: 0:00:01[K
-                                    iterations: 1532[K
-                   ratio_divergent_transitions: 0.01[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 511[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.5009610001324012[K
-                                   log_density: -6.714604497141167[K
-                            hamiltonian_energy: 13.458043154489609[K
-                      hamiltonian_energy_error: -0.3262021712036347[K
-                  max_hamiltonian_energy_error: 22.76654081132247[K
-                                    tree_depth: 8[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  76%|███████████████████████▌       |  ETA: 0:00:01[K
-                                    iterations: 1592[K
-                   ratio_divergent_transitions: 0.01[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 255[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9693223658946857[K
-                                   log_density: -4.02739120606903[K
-                            hamiltonian_energy: 7.144000985342744[K
-                      hamiltonian_energy_error: 0.0270666711650156[K
-                  max_hamiltonian_energy_error: 0.0642634537768556[K
-                                    tree_depth: 8[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  79%|████████████████████████▍      |  ETA: 0:00:01[K
-                                    iterations: 1655[K
-                   ratio_divergent_transitions: 0.01[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 255[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9565601339844669[K
-                                   log_density: 0.7523680106027761[K
-                            hamiltonian_energy: 5.4352138050607675[K
-                      hamiltonian_energy_error: 0.02866620645814333[K
-                  max_hamiltonian_energy_error: 0.08206813136980706[K
-                                    tree_depth: 8[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  82%|█████████████████████████▍     |  ETA: 0:00:01[K
-                                    iterations: 1715[K
-                   ratio_divergent_transitions: 0.01[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 255[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9660428317121977[K
-                                   log_density: -1.830236178762533[K
-                            hamiltonian_energy: 9.377271828567176[K
-                      hamiltonian_energy_error: -0.13036116849867874[K
-                  max_hamiltonian_energy_error: -0.7173833818724233[K
-                                    tree_depth: 8[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  85%|██████████████████████████▎    |  ETA: 0:00:01[K
-                                    iterations: 1775[K
-                   ratio_divergent_transitions: 0.01[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 127[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.4388596323441207[K
-                                   log_density: -3.5463264926321436[K
-                            hamiltonian_energy: 9.710902732632452[K
-                      hamiltonian_energy_error: -0.0833311084448276[K
-                  max_hamiltonian_energy_error: 364.8560768600478[K
-                                    tree_depth: 6[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  88%|███████████████████████████▏   |  ETA: 0:00:01[K
-                                    iterations: 1839[K
-                   ratio_divergent_transitions: 0.01[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 255[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9250982931089846[K
-                                   log_density: -0.39897413483764055[K
-                            hamiltonian_energy: 6.740316769893337[K
-                      hamiltonian_energy_error: 0.061780881532684795[K
-                  max_hamiltonian_energy_error: 0.3087192591866472[K
-                                    tree_depth: 7[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  91%|████████████████████████████▏  |  ETA: 0:00:00[K
-                                    iterations: 1903[K
-                   ratio_divergent_transitions: 0.01[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 255[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.05641035939121015[K
-                                   log_density: -1.896981803675203[K
-                            hamiltonian_energy: 10.199669218941184[K
-                      hamiltonian_energy_error: 2.4486640640367865[K
-                  max_hamiltonian_energy_error: 74.30817213604162[K
-                                    tree_depth: 8[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  94%|█████████████████████████████▏ |  ETA: 0:00:00[K
-                                    iterations: 1977[K
-                   ratio_divergent_transitions: 0.01[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 319[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9506606437398862[K
-                                   log_density: 1.9849210466326639[K
-                            hamiltonian_energy: 6.512104815888138[K
-                      hamiltonian_energy_error: 0.026873818090540347[K
-                  max_hamiltonian_energy_error: 0.10409106476257435[K
-                                    tree_depth: 8[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling  97%|██████████████████████████████▏|  ETA: 0:00:00[K
-                                    iterations: 2041[K
-                   ratio_divergent_transitions: 0.01[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 191[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9975041963364868[K
-                                   log_density: 2.0857606071575674[K
-                            hamiltonian_energy: 4.627939815617109[K
-                      hamiltonian_energy_error: 0.00214031572426876[K
-                  max_hamiltonian_energy_error: 0.008639202112278532[K
-                                    tree_depth: 7[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[A[K[ASampling 100%|███████████████████████████████| Time: 0:00:04[K
-                                    iterations: 2100[K
-                   ratio_divergent_transitions: 0.01[K
-   ratio_divergent_transitions_during_adaption: 0.1[K
-                                       n_steps: 255[K
-                                     is_accept: true[K
-                               acceptance_rate: 0.9980290262710754[K
-                                   log_density: -0.6405352927914656[K
-                            hamiltonian_energy: 5.429019466833877[K
-                      hamiltonian_energy_error: -0.008661442013140785[K
-                  max_hamiltonian_energy_error: -0.019089846428522073[K
-                                    tree_depth: 8[K
-                               numerical_error: false[K
-                                     step_size: 0.013122680651987526[K
-                                 nom_step_size: 0.013122680651987526[K
-                                      is_adapt: false[K
-                                   mass_matrix: DenseEuclideanMetric([0.23585, 84.8426, 117.626, ...])[K
-[ Info: Sampling compete. Building chains.
-ERROR: LoadError: Columns must be arrays
-Stacktrace:
- [1] error(s::String)
-   @ Base ./error.jl:35
- [2] #s19#20
-   @ ~/.julia/packages/TypedTables/ItVth/src/Table.jl:60 [inlined]
- [3] var"#s19#20"(names::Any, T::Any, ::Any, nt::Any)
-   @ TypedTables ./none:0
- [4] (::Core.GeneratedFunctionStub)(::UInt64, ::LineNumberNode, ::Any, ::Vararg{Any})
-   @ Core ./boot.jl:602
- [5] Table(ts::@NamedTuple{epoch::Float64, ra::Float64, dec::Float64, σ_ra::Float64, σ_dec::Float64, cor::Float64}; kwargs::@Kwargs{})
-   @ TypedTables ~/.julia/packages/TypedTables/ItVth/src/Table.jl:24
- [6] Table
-   @ ~/.julia/packages/TypedTables/ItVth/src/Table.jl:24 [inlined]
- [7] PlanetRelAstromObs(observations::@NamedTuple{epoch::Float64, ra::Float64, dec::Float64, σ_ra::Float64, σ_dec::Float64, cor::Float64}; variables::Tuple{Octofitter.Priors, Octofitter.Derived}, name::String)
-   @ Octofitter ~/projects/def-vhenault/vhenault/Octofitter_imbh.jl/src/likelihoods/relative-astrometry.jl:32
- [8] build_star_observations(star::octo_utils_julia_MCMC_centre.StarData, epoch_mjd::Float64)
-   @ octo_utils_julia_MCMC_centre /project/6039459/vhenault/Ocen_IMBH_analysis/example_scripts/octo_utils_julia_MCMC_centre.jl:373
- [9] top-level scope
-   @ /project/6039459/vhenault/Ocen_IMBH_analysis/tests/test_ad_compatibility.jl:20
-in expression starting at /project/6039459/vhenault/Ocen_IMBH_analysis/tests/test_ad_compatibility.jl:20
