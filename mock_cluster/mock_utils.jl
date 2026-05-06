@@ -443,7 +443,7 @@ run_config(args)
 
 Build `RunConfig` from keyword arguments.
 """
-function run_config_dict(args::Vector{String})
+function run_config(args::Vector{String})
     d = parse_args(args)
 
     get(k) = haskey(d, k) ? d[k] : error("Missing argument: $k")
