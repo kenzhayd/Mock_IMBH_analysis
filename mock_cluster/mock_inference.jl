@@ -157,12 +157,10 @@ for (name, star) in stars
     obs[name] = mock_utils.build_star_observations(
         star,
         TREF;
-        include_rv = true,
+        include_rv = (name in ("E", "F")),  # Only include RV for stars E and F
         include_acc = INCLUDE_ACC,
         z_prior_sigma = z_prior_sigma,
-        rv_cluster = rv_cluster,
-        rv_cluster_err = rv_cluster_err
-)
+    )
 end
 
 
@@ -176,7 +174,6 @@ for (name, (astrom, pm, acc, rv, zp)) in obs
 
     obs_list = Any[
         ObsPriorAstromONeil2019(astrom),
-        astrom,
         pm,
     ]
     if acc !== nothing

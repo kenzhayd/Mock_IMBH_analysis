@@ -129,12 +129,14 @@ sample_idx = round.(Int, range(1, length(M_samples), length=100))
 
 # Convert each StarData object to Octofitter compatible observations
 obs = Dict{String, Any}()
+
 for (name, star) in stars
     obs[name] = mock_utils.build_star_observations(
         star,
         float(TREF);
-        include_rv = true,
-        z_prior_sigma = z_prior_sigma
+        include_rv = (name in ("E", "F")),  # Only include RV for stars E and F
+        include_acc = INCLUDE_ACC,
+        z_prior_sigma = z_prior_sigma,
     )
 end
 
@@ -160,11 +162,12 @@ for (name, (astrom, pm, acc, rv, zp)) in obs
 
     obs_list = Any[
         ObsPriorAstromONeil2019(astrom),
-        astrom,
-        pm,
-        acc
+        pm
     ]
-
+    if acc !== nothing
+    push!(obs_list, acc)
+    end
+    
     if rv !== nothing
         push!(obs_list, rv)
     end

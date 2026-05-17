@@ -98,7 +98,7 @@ restart_job_id = ""
 n_rounds = 16
 n_chains = 192
 n_chains_variational = 192
-include_acceleration = true
+include_acceleration = false
 
 # Slurm config
 job_name      = IDENTIFY_THIS_RUN
@@ -167,7 +167,7 @@ config_dict = Dict(
 
 config_json = JSON3.write(config_dict; indent=4)
 
-# Save CLI args exactly 
+# Save CLI args 
 args_string = """
 mock_name=$MOCK_NAME
 M_IMBH=$MOCK_MASS

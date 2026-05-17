@@ -1,0 +1,33 @@
+========================
+RUN SUMMARY
+========================
+
+=== RUN INFO ===
+Job name: small_sigmas
+Run ID: small_sigmas_16r_192c
+Mock dataset: mock_10836842
+Output dir: /home/kenzhayd/projects/def-vhenault/kenzhayd/mock_cluster/results/small_sigmas_16r_192c
+Resume path: nothing
+
+=== TRUE SIMULATION PARAMETERS ===
+M_IMBH [M☉]: 63730.0
+plx [mas]: 0.191
+z_prior_sigma [AU]: 4558.0
+distance [kpc]: 5.43
+
+=== OBSERVATIONAL MODEL ===
+σ_RA_off [mas]: 0.01
+σ_DEC_off [mas]: 0.01
+σ_PM_RA [mas/yr]: 0.0081
+σ_PM_DEC [mas/yr]: 0.0053
+σ_ACC_RA [mas/yr²]: 0.000168
+σ_ACC_DEC [mas/yr²]: 0.000118
+σ_RV [m/s]: 3350.0
+
+=== SAMPLING CONFIG ===
+n_rounds: 16
+n_chains: 192
+n_chains_variational: 192
+include acceleration: false
+
+

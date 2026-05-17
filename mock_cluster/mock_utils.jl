@@ -353,15 +353,12 @@ function build_star_observations(star::StarData, epoch_mjd::Real;
     rv = nothing
     if include_rv && !isnan(star.rv) && !isnan(star.rv_err)
 
-        rv_peculiar = star.rv - rv_cluster
-        σ_rv_total  = hypot(star.rv_err, rv_cluster_err)
-
         rv = PlanetRelativeRVObs(
             (epoch = epoch_mjd,
-            rv    = rand(Normal(rv_peculiar, σ_rv_total)),
-            σ_rv  = σ_rv_total);
+            rv    = rand(Normal(star.rv, star.rv_err)),
+            σ_rv  = star.rv_err,
             name = "$(star.name)_rv",
-            variables = @variables begin end
+            )
         )
     end
 
